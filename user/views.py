@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
 
@@ -16,5 +16,6 @@ class CustomerRegistrationView(View):
             messages.success(
                 request, 'Congratulations!! Registered Successfully')
             form.save()
+            return redirect('login')
         return render(request, 'user/customerregistration.html', {'form': form})
 
