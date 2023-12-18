@@ -1,6 +1,6 @@
 {% extends 'user/base.html' %}
 {% load static %}
-{% block title %} User Registration {% endblock title %}
+{% block title %} Login {% endblock title %}
 
 {% block style %} 
 <link rel="stylesheet" href="{% static 'user/css/login.css' %}">
@@ -9,7 +9,7 @@
 {% block body %}
     <div class="bg-img" id="backgroundImage">
         <div class="content">
-            <header>User Registration</header>
+            <header>User Login</header>
             <form method="post">
                 {% csrf_token %}
                 {% for field in form %}
@@ -19,12 +19,12 @@
                         <label class="text-warning">{{ field.errors }}</label>
                     </div>
                 {% endfor %}
-                <button type="submit" class="button-89 mt-3" role="button">Register</button>
+                <button type="submit"  class="button-89 mt-3" role="button">Login</button>
             </form>
             <div class="text-center fw-bold mt-4">
                 <small id = "welcomeText">
-                    Already Registerd?
-                    <a href="{% url 'login' %}" class="text-primary">Login Here</a>
+                    New to TripVault ?
+                    <a href="{% url 'customerregistration' %}" class="text-danger">Register here!</a>
                 </small>
             </div>
         </div>
