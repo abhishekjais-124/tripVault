@@ -1,0 +1,37 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block title %} Login {% endblock title %}
+
+{% block style %} 
+<link rel="stylesheet" href="{% static 'user/css/login.css' %}">
+{% endblock style %}
+
+{% block body %}
+    <div class="bg-img" id="backgroundImage">
+        <div class="content">
+            <header>User Login</header>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-field">
+                        <label id="formLabel" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <label class="text-warning">{{ field.errors }}</label>
+                    </div>
+                {% endfor %}
+                <button type="submit"  class="button-89 mt-3" role="button">Login</button>
+            </form>
+            <div class="text-center fw-bold mt-4">
+                <small id = "welcomeText">
+                    New to TripVault ?
+                    <a href="{% url 'customerregistration' %}" class="text-danger">Register here!</a>
+                </small>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block script %}
+<script> const staticUrl = "{% static 'user/images/' %}";</script>
+<script src="{% static 'user/js/login.js' %}"></script>
+{% endblock script %}
