@@ -28,7 +28,7 @@
                         {% endif %}
                     </div>
                     <h5 class="user-name">{{user.username}}</h5>
-                    <h6 class="user-email">{{user.uid}}</h6>
+                    <h6 class="user-email">ID: {{user.uid}}</h6>
                 </div>
             </div>
         </div>
@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <div class="row gutters">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <h6 class="mb-2 text-primary">Personal Details</h6>
+                            <h6 class="mb-2 text-black-50">Personal Details</h6>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
@@ -58,7 +58,10 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 <label for="phone">Phone</label>
-                                <input type="text" class="form-control" maxlength="10" pattern="[0-9]{10}" id="phone" name="phone" value="{{ user.phone_number }} ">
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">+91</span>
+                                    <input type="text" class="form-control" maxlength="10" pattern="[0-9]{10}" id="phone" name="phone" value="{{ user.phone_number }}" style="margin-top:1px;">
+                                </div>                                
                             </div>
                         </div>
                     </div>

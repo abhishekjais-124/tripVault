@@ -11,4 +11,4 @@ def img_from_name(name):
         if i.isdigit() and 1 <= int(i) < 7:
             num = i
             break
-    return f"https://bootdey.com/img/Content/avatar/avatar{i}.png"
+    return f"https://bootdey.com/img/Content/avatar/avatar{num}.png"
