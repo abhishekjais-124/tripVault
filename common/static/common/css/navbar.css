@@ -35,6 +35,10 @@
     color: #ffcc00; /* Change color on hover */
 }
 
+.navbar{
+  background-color: black;
+  opacity: 50%;
+}
 
   .cloud {
     position: absolute;
