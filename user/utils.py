@@ -7,6 +7,8 @@ def get_user_by_uid(user_uid):
 
 
 def validate(full_name, email, phone_number):
+    if not email:
+        return False, "Email can't be empty."
     if full_name and len(full_name) > 30:
         return False, "Name is too long. Only 30 characters allowed."
     if email and not common_utils.validate_email(email):
