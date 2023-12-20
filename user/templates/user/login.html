@@ -12,11 +12,16 @@
             <header>User Login</header>
             <form method="post">
                 {% csrf_token %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <strong>{{ form.non_field_errors.as_text }}</strong>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
                 {% for field in form %}
-                    <div class="form-field">
+                    <div class="form-field mb-3">
                         <label id="formLabel" for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
-                        <label class="text-warning">{{ field.errors }}</label>
                     </div>
                 {% endfor %}
                 <button type="submit"  class="button-89 mt-3" role="button">Login</button>
