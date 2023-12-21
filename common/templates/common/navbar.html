@@ -28,12 +28,21 @@
             <li class="nav-item active">
               <a class="nav-link navbar-brand" onmouseover="showDiv()" onmouseout="hideDiv()" aria-current="page" href="#intro">TripVault</a>
             </li>
+            {% if request.user.is_authenticated %}
+            <li class="nav-item mt-1">
+              <a
+                 class="nav-link"
+                 href="{% url 'group' %}"
+                 rel="nofollow"
+                 >Groups</a
+                >
+            </li>
+            {% endif %}
             <li class="nav-item mt-1">
               <a
                  class="nav-link"
                  href=""
                  rel="nofollow"
-                 target="_blank"
                  >Contact</a
                 >
             </li>
@@ -41,7 +50,6 @@
               <a
                  class="nav-link"
                  href=""
-                 target="_blank"
                  >About</a
                 >
             </li>
@@ -49,7 +57,6 @@
                 <a
                    class="nav-link"
                    href=""
-                   target="_blank"
                    >Help</a
                   >
               </li>
@@ -63,6 +70,7 @@
             </a>
             <div class="dropdown-menu text-center" aria-labelledby="navbarDropdownMenuLink" style="margin-left: -40px;">
               <a class="dropdown-item font-weight-bold" href="{% url 'userprofile' %}">Profile</a>
+              <a class="dropdown-item font-weight-bold" href="{% url 'group' %}">Groups</a>
               <a class="dropdown-item" href="#">
                 <form method="post" action="{% url 'logout' %}">
                   {% csrf_token %}
