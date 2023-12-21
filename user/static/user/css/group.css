@@ -1,0 +1,95 @@
+body {
+    height: 90vh;
+    background: url('https://images.pexels.com/photos/1000445/pexels-photo-1000445.jpeg') center/cover no-repeat;
+    background-attachment: fixed; /* Make the background image fixed */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff; /* Text color */
+    font-family: 'Times New Roman', serif;
+}
+
+
+h1 {
+    font-size: 6em;
+    margin-bottom: 100px;
+}
+
+.container-f {
+    top: 50%;
+    position: absolute;
+    margin-top: auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-height: 60%; /* Set a minimum height to allow the container to expand from the bottom */
+    max-width: 1700px; /* Adjust the width as needed */
+}
+
+  table {
+    width: 1600px;
+    border-collapse: collapse;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  th,
+  td {
+    padding: 10px;
+    background-color: rgba(37, 36, 36, 0.167);
+    color: #fff;
+  }
+
+  thead th {
+    background-color: #000000;
+  }
+  tbody tr:hover {
+    background-color: rgba(37, 36, 36, 0.167);
+  }
+  tbody td {
+    position: relative;
+  }
+  tbody td:hover:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: rgba(37, 36, 36, 0.167);
+    z-index: -1;
+  }
+
+  #group-tooltip{
+    margin-right: 75px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: black;
+    font-weight: bolder;
+  }
+  
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050; /* or a higher value if needed */
+}
+
+.modal-dialog {
+  z-index: 1050; /* or a higher value if needed */
+}
+
+.modal-backdrop{
+  width: 0vw;
+}
+
+
+.modal-form-title{
+  font-weight: bolder;
+  margin-bottom: -20px;
+}
+
+.add-member-button{
+  margin-right: 75px;
+}

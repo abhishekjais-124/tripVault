@@ -68,3 +68,30 @@ class UserProfile(APIView):
         messages.success(request, 'User details updated successfully.')
 
         return render(request, "user/user_profile.html", {"user": user_instance})
+    
+
+@method_decorator(login_required(login_url='/user/login/'), name='dispatch')
+class GroupView(APIView):
+    def get(self, request):
+        user = request.user.user
+        if not user:
+            return Response(
+                {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
+            )
+        return render(request, "user/group_table.html", {"user": user})
+        
+        return render(request, "user/group.html", {"user": user})
+        
+
+    # def post(self, request):
+    #     # Extract data from the request
+    #     uid = request.POST.get('uid')
+    #     name = request.POST.get('name')
+    #     is_active = request.POST.get('is_active')
+    #     created_by = request.POST.get('created_by')
+    #     users_count = request.POST.get('users_count')
+
+    #     # Use the utility function to fetch and set data
+    #     fetch_and_set_data(uid, name, is_active, created_by, users_count)
+
+    #     return JsonResponse({'message': 'Data successfully saved'})
