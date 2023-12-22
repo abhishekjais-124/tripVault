@@ -63,23 +63,25 @@
           </ul>
         </div>
         {% if request.user.is_authenticated %}
+        <!-- Your dropdown menu -->
         <ul class="navbar-nav flex-row">
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="{% url 'userprofile' %}" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              User Profile
-            </a>
-            <div class="dropdown-menu text-center" aria-labelledby="navbarDropdownMenuLink" style="margin-left: -40px;">
-              <a class="dropdown-item font-weight-bold" href="{% url 'userprofile' %}">Profile</a>
-              <a class="dropdown-item font-weight-bold" href="{% url 'group' %}">Groups</a>
-              <a class="dropdown-item" href="#">
-                <form method="post" action="{% url 'logout' %}">
-                  {% csrf_token %}
-                  <button class="dropdown-item text-danger font-weight-bold mr-4" type="submit" style="margin-left: 0px; outline: none;">Logout</button>
-                </form>
+              <a class="nav-link dropdown-toggle" href="{% url 'userprofile' %}" id="navbarDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  User Profile
               </a>
+              <div class="dropdown-menu text-center dark-dropdown" aria-labelledby="navbarDropdownMenuLink" style="margin-left: -40px;background-color: rgba(0, 0, 0); border: 1px solid white;">
+                <a class="dropdown-item font-weight-bold text-white" href="{% url 'userprofile' %}">Profile</a>
+                <a class="dropdown-item font-weight-bold text-white" href="{% url 'group' %}">Groups</a>
+                <a class="dropdown-item logout-item" href="#">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="dropdown-item font-weight-bold mr-4 text-danger" type="submit" style="margin-left: 0px; outline: none;">Logout</button>
+                    </form>
+                </a>
             </div>
           </li>
         </ul>
+
         {% endif %}
       </div>
     </nav>

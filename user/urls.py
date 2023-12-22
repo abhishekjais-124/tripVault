@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('profile/', views.UserProfile.as_view(), name='userprofile'),  # for the registration
     path('groups/', views.GroupView.as_view(), name='group'),
+    path('user_group/', views.UserGroupView.as_view(), name='user_group'),
 ]

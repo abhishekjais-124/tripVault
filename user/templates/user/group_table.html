@@ -15,6 +15,8 @@
               </button>
               
               <!-- Modal -->
+              <form method="post">
+                {% csrf_token %}
               <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 1050;">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -23,21 +25,21 @@
                     </div>
                     <div class="modal-body text-center">
                       <!-- Form inside the modal -->
-                      <h4 class="text-black modal-form-title">Group Creation Form</h4>
+                      <h4 class="text-black modal-form-title mb-2">Group Creation Form</h4>
                       <form>
                         <div class="mb-3">
-                          <label for="groupName" class="form-label">Group Name</label>
-                          <input type="text" class="form-control" id="groupName" placeholder="Enter group name">
+                          <input type="text" class="form-control" id="groupName" name = "groupName" placeholder="Enter group name" required>
                         </div>
                       </form>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-dark" id="createGroupBtn">Create</button>
+                      <button type="submit" class="btn btn-dark" role="button" id="createGroupBtn">Create</button>
                     </div>
                   </div>
                 </div>
-              </div>
+            </div>
+        </form>
         </div>
 
   <!-- Bootstrap JS and Popper.js -->
@@ -46,42 +48,49 @@
   
 
   
-
-     </br>
-     <div class="d-flex justify-content-between">
-        <div class="">
-            <h4 class="text-white" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip on right">Group Name 1</h4>
+    {% for user_list, group in group_user_mapping %}
+        </br>
+        <div class="d-flex justify-content-between">
+            <div class="">
+                <h4 class="text-white" data-bs-toggle="tooltip" data-bs-placement="right" title="Group created by {{group.created_by}}">{{group.name}}</h4>
+            </div>
+            <div class="">
+                <a class="button inlineIcon new text-white add-member-button" href="#" data-bs-toggle="modal" data-bs-target="#memberModal">Add member</a>
+            </div>
         </div>
-        <div class="">
-            <a class="button inlineIcon new text-white add-member-button" href="#" data-bs-toggle="modal" data-bs-target="#memberModal">Add member</a>
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center">UserName</th>
+                        <th class="text-center">Name</th>
+                        <th class="text-center">Spends</th>
+                        <th class="text-center">Role</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group_user_list in user_list %}
+                        {% with group_user=group_user_list.0 %}
+                            <tr class="text-center" width="200px" id="user_group_{{group_user.id}}_{{group.id}}">
+                                <td>{{group_user.username}}</td>
+                                <td>{{group_user.name}}</td>
+                                <td>0</td>
+                                <td>{{group_user_list.1}}</td>
+                                {% if group_user_list.1 == 'Admin' %}
+                                    <td>
+                                        <a class="button inlineIcon edit" href="#"></a>
+                                        <a class="button inlineIcon delete" onclick="showDeleteConfirmation({{group_user.id}}, {{group.id}})" href="#"></a>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
-      <div class="col-lg-12">
-        <table>
-            <thead>
-                <tr>
-                    <th class="text-center">UserName</th>
-                    <th class="text-center">Name</th>
-                    <th class="text-center">Spends</th>
-                    <th class="text-center">Role</th>
-                    <th class="text-center">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="text-center" width="200px">
-                    <td>Cell 1</td>
-                    <td>Cell 2</td>
-                    <td>Cell 3</td>
-                    <td>Cell 4</td>
-                    <td>
-                        <a class="button inlineIcon edit" href="#"></a>
-                        <a class="button inlineIcon delete" onclick="showDeleteConfirmation()" href="#"></a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-     </div>
-    </br>
+        </br>
+    {% endfor %}
 </div>
 
 
@@ -159,7 +168,7 @@
                 <!-- End Member Form -->
             </div>
             <div class="modal-footer justify-content-end">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -169,28 +178,48 @@
 {% endblock body %}
 
 {% block script %}
+<script src="{% static 'user/js/group.js' %}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    });
-</script>
-<script>
-    function showDeleteConfirmation() {
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+    
+        return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+
+    function showDeleteConfirmation(user_id, group_id) {
         // Use window.confirm to create a confirmation dialog
         var isConfirmed = window.confirm("Are you sure you want to delete?");
 
         // Check the result of the confirmation
         if (isConfirmed) {
-            // If confirmed, perform the delete operation
-            alert("Delete confirmed. Implement your delete logic here.");
-        } else {
-            // If canceled, do nothing or provide feedback
-            alert("Delete canceled.");
+            fetch('{% url "user_group" %}', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({"user_id": user_id, "group_id": group_id})
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove the corresponding element from the DOM
+                    var elementToUpdate = document.getElementById(`user_group_${user_id}_${group_id}`);
+                    if (elementToUpdate) {
+                        elementToUpdate.innerHTML = '<td colspan="5">The user is removed from the group</td>';
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('DELETE Response:', data);
+            })
+            .catch(error => {
+                console.error('DELETE Error:', error);
+            });
         }
     }
 </script>
-
 {% endblock script %}
