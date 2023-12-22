@@ -14,29 +14,30 @@
       </button>
       
       <!-- Modal -->
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 1050;">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-              <!-- Form inside the modal -->
-              <h4 class="text-black modal-form-title">Group Creation Form</h4>
-              <form>
-                <div class="mb-3">
-                  <label for="groupName" class="form-label">Group Name</label>
-                  <input type="text" class="form-control" id="groupName" placeholder="Enter group name">
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-dark" id="createGroupBtn">Create</button>
+      <form method="post">
+        {% csrf_token %}
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="z-index: 1050;">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-center">
+                <!-- Form inside the modal -->
+                <h4 class="text-black modal-form-title mb-2">Group Creation Form</h4>
+                  <div class="mb-3">
+                    <input type="text" class="form-control" id="groupName" name="groupName" placeholder="Enter group name" required>
+                  </div>
+               
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-dark" id="createGroupBtn" role="button">Create</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </form>
 </div>
 {% endblock body %}
 

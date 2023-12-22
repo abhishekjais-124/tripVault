@@ -1,6 +1,9 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from django.shortcuts import render, redirect
 from django.views import View
@@ -8,8 +11,10 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
+
 from .forms import CustomerRegistrationForm
 from user import utils
+from user import models
 
 
 # Create your views here.
@@ -29,13 +34,6 @@ class CustomerRegistrationView(APIView):
 @method_decorator(login_required(login_url='/user/login/'), name='dispatch')
 class UserProfile(APIView):
     def get(self, request):
-        # user_uid = request.query_params.get("user_uid", None)
-        # if not user_uid:
-        #     return Response(
-        #         {"error": "Missing user uid"},
-        #         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        #     )
-        # user = utils.get_user_by_uid(user_uid)
         user = request.user.user
         if not user:
             return Response(
@@ -78,20 +76,34 @@ class GroupView(APIView):
             return Response(
                 {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
-        return render(request, "user/group_table.html", {"user": user})
-        
-        return render(request, "user/group.html", {"user": user})
-        
+        group_ids = utils.get_user_groups(user)
+        if not group_ids:
+            return render(request, "user/group.html", {"user": user})
+        group_user_mapping = utils.create_group_user_mapping(list(set(group_ids))).values()
+        return render(request, "user/group_table.html", {"user": user, "group_user_mapping": group_user_mapping})
 
-    # def post(self, request):
-    #     # Extract data from the request
-    #     uid = request.POST.get('uid')
-    #     name = request.POST.get('name')
-    #     is_active = request.POST.get('is_active')
-    #     created_by = request.POST.get('created_by')
-    #     users_count = request.POST.get('users_count')
+    def post(self, request):
+        user = request.user.user
+        name = request.POST.get('groupName')
+        utils.create_user_group(name, user)
+        return redirect("group")
+    
 
-    #     # Use the utility function to fetch and set data
-    #     fetch_and_set_data(uid, name, is_active, created_by, users_count)
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+class UserGroupView(APIView):
 
-    #     return JsonResponse({'message': 'Data successfully saved'})
+    def delete(self, request):
+        request_data = request.data
+        user_id = request_data.get('user_id', None)
+        if not user_id:
+            return Response(
+                {"error": "UserId Not Found!"}, status=status.HTTP_404_NOT_FOUND
+            )
+        group_id = request_data.get('group_id', None)
+        if not group_id:
+            return Response(
+                {"error": "GroupId Not Found!"}, status=status.HTTP_404_NOT_FOUND
+            )
+        models.UserGroupMapping.objects.filter(user_id=user_id, group_id=group_id).update(is_active=False)
+        return Response({'message': 'DELETE request processed successfully'})

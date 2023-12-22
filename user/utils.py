@@ -1,4 +1,7 @@
+from collections import defaultdict
+
 from user import models
+from user import constants
 from common import utils as common_utils
 
 
@@ -16,3 +19,23 @@ def validate(full_name, email, phone_number):
     if phone_number and not common_utils.validate_phone_number(phone_number):
         return False, "Phone number is not valid."
     return True, ""
+
+
+def create_user_group(name, user):
+    group = models.Group.objects.create(name=name, created_by=user.username)
+    user_group_mapping = models.UserGroupMapping.objects.create(user=user, group=group, role=constants.ADMIN)
+    print("Group created succesfully.")
+    return group, user_group_mapping
+
+
+def get_user_groups(user):
+    return list(models.UserGroupMapping.objects.filter(user=user, is_active=True, group__is_active=True).order_by('-id').values_list('group_id'))
+
+
+def create_group_user_mapping(group_ids):
+    mapping = defaultdict(lambda:   [[], ""])
+    user_groups = list(models.UserGroupMapping.objects.select_related('user', 'group').filter(group_id__in=group_ids, is_active=True))
+    for user_group in user_groups:
+        mapping[user_group.group.id][0].append([user_group.user, user_group.role])
+        mapping[user_group.group.id][1] = user_group.group
+    return dict(mapping)
