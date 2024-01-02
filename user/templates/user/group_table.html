@@ -28,7 +28,7 @@
                       <h4 class="text-black modal-form-title mb-2">Group Creation Form</h4>
                       <form>
                         <div class="mb-3">
-                          <input type="text" class="form-control" id="groupName" name = "groupName" placeholder="Enter group name" required>
+                          <input type="text" class="form-control" id="groupName" name = "groupName" maxlength="30" placeholder="Enter group name" required>
                         </div>
                       </form>
                     </div>
@@ -103,9 +103,7 @@
             </div>
             <div class="modal-body">
                 <!-- Member Form -->
-                <form method="post" action="/your-submit-url">
-                    <!-- CSRF Token -->
-                    {% csrf_token %}
+                <div>
 
                     <!-- Dropdown and Search Box -->
                     <div class="mb-3 d-flex align-items-center">
@@ -140,10 +138,11 @@
                         </div>
                     </div>
                     <!-- Search Result (Cards) -->
-                    <div class="container">
-                        <div class="row" style="overflow-y: auto; max-height: 360px;">
+                    <div id="searchResults" class="container">
+
+                         <div class="row" style="overflow-y: auto; max-height: 360px;">
                             <!-- Sample Result Card (Adjust as needed) -->
-                            <div class="card mb-4 col-md-8" style="max-width: 300px; height: 120px;margin-left:50px;">
+                            {% comment %} <div class="card mb-4 col-md-8" style="max-width: 300px; height: 120px;margin-left:50px;">
                             <div class="row g-0">
                                 <div class="col-md-6">
                                     <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="img-fluid rounded-circle mt-2" alt="..." style="width: 100px; height: 100px;margin-left:21px;">
@@ -158,13 +157,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
+                        
+                        <h4 class="text-black text-center">No Results Found.</h4>
                             <!-- Repeat the card structure based on the number of search results -->                                                                                        
                     </div>
                             
                     </div>
                     <!-- End Search Result -->
-                </form>
+                </div>
                 <!-- End Member Form -->
             </div>
             <div class="modal-footer justify-content-end">
@@ -221,5 +222,134 @@
             });
         }
     }
+
+    function search() {
+        var searchType = document.getElementById('searchType').value;
+        var searchTerm = document.getElementById('searchTerm').value;
+        console.log(searchType);
+        console.log(searchTerm);
+        var url = 'search/?type=' + searchType + '&term=' + searchTerm;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.results);
+                // Update the search results
+                updateResults(data.results);
+            })
+            .catch(error => {
+                console.error('Search Error:', error);
+            });
+    }
+
+    function updateResults(results) {
+        var resultsContainer = document.getElementById('searchResults');
+        resultsContainer.innerHTML = '';
+    
+        if (results.length > 0) {
+            var row = document.createElement('div');
+            row.className = 'row';
+    
+            results.forEach(result => {
+                // Create HTML elements for each search result
+                var card = document.createElement('div');
+                card.className = 'card mb-4 col-md-8';
+                card.style = 'max-width: 300px; height: 120px;margin-left:50px;';
+    
+                var innerRow = document.createElement('div');
+                innerRow.className = 'row g-0';
+    
+                var col1 = document.createElement('div');
+                col1.className = 'col-md-6';
+    
+                var img = document.createElement('img');
+                if (result.icon) {
+                    img.src = result.icon;
+                } else {
+                    img.src = ""
+                }
+                img.className = 'img-fluid rounded-circle mt-2';
+                img.alt = '...';
+                img.style = 'width: 100px; height: 100px;margin-left:21px;';
+    
+                col1.appendChild(img);
+    
+                var col2 = document.createElement('div');
+                col2.className = 'col-md-6';
+    
+                var cardBody = document.createElement('div');
+                cardBody.className = 'card-body text-black';
+    
+                var title = document.createElement('h5');
+                title.className = 'card-title mb-1';
+                title.style = 'font-size: 13px;';
+                title.innerHTML = '<b>' + result.name + '</b>';
+    
+                var idParagraph = document.createElement('p');
+                idParagraph.className = 'card-text mb-1';
+                idParagraph.style = 'font-size: 10px;';
+                idParagraph.innerHTML = '<b>ID:</b> ' + result.uid;
+    
+                var usernameParagraph = document.createElement('p');
+                usernameParagraph.className = 'card-text mb-1';
+                usernameParagraph.style = 'font-size: 11px;';
+                usernameParagraph.innerHTML = '<b>Username:</b> ' + result.username;
+    
+                var button = document.createElement('button');
+                button.className = 'btn btn-sm btn-success';
+                button.innerHTML = 'Request';
+                button.addEventListener('click', function () {
+                    makeRequest(result.uid, button);
+                });
+
+    
+                cardBody.appendChild(title);
+                cardBody.appendChild(idParagraph);
+                cardBody.appendChild(usernameParagraph);
+                cardBody.appendChild(button);
+    
+                col2.appendChild(cardBody);
+                innerRow.appendChild(col1);
+                innerRow.appendChild(col2);
+                card.appendChild(innerRow);
+    
+                row.appendChild(card);
+            });
+    
+            resultsContainer.appendChild(row);
+        } else {
+            // Display a message if no results are found
+            resultsContainer.innerHTML = ' <h4 class="text-black text-center">No Results Found.</h4>';
+        }
+    }
+
+    function makeRequest(useruId, button) {
+        var requestUrl = 'request/' + useruId + '/';
+    
+        fetch(requestUrl, {
+            method: 'POST',  // Change the method to 'POST'
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({"user_id": useruId}),
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Update the button text to "Requested" without page refresh
+                    button.innerHTML = 'Requested';
+                    // Disable the button to prevent further clicks
+                    button.disabled = true;
+                }
+                // return response.json();
+            })
+            .then(data => {
+                console.log('POST Response:', data);
+            })
+            .catch(error => {
+                console.error('POST Error:', error);
+            });
+    }
+    
+    
 </script>
 {% endblock script %}

@@ -10,6 +10,7 @@ from django.views import View
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 from .forms import CustomerRegistrationForm
@@ -31,7 +32,7 @@ class CustomerRegistrationView(APIView):
         return render(request, "user/customerregistration.html", {"form": form})
 
 
-@method_decorator(login_required(login_url='/user/login/'), name='dispatch')
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
 class UserProfile(APIView):
     def get(self, request):
         user = request.user.user
@@ -42,15 +43,15 @@ class UserProfile(APIView):
         return render(request, "user/user_profile.html", {"user": user})
 
     def post(self, request):
-        full_name = request.POST.get('fullName').strip()
-        email = request.POST.get('eMail').strip()
-        phone_number = request.POST.get('phone').strip()
+        full_name = request.POST.get("fullName").strip()
+        email = request.POST.get("eMail").strip()
+        phone_number = request.POST.get("phone").strip()
 
         user_instance = request.user.user
 
         valid, msg = utils.validate(full_name, email, phone_number)
         if not valid:
-            messages.add_message(request, messages.ERROR, msg, extra_tags='danger')
+            messages.add_message(request, messages.ERROR, msg, extra_tags="danger")
             return render(request, "user/user_profile.html", {"user": user_instance})
 
         # Update user details
@@ -63,12 +64,12 @@ class UserProfile(APIView):
         user_instance.save()
         user_instance.auth_user.save()
 
-        messages.success(request, 'User details updated successfully.')
+        messages.success(request, "User details updated successfully.")
 
         return render(request, "user/user_profile.html", {"user": user_instance})
-    
 
-@method_decorator(login_required(login_url='/user/login/'), name='dispatch')
+
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
 class GroupView(APIView):
     def get(self, request):
         user = request.user.user
@@ -79,31 +80,69 @@ class GroupView(APIView):
         group_ids = utils.get_user_groups(user)
         if not group_ids:
             return render(request, "user/group.html", {"user": user})
-        group_user_mapping = utils.create_group_user_mapping(list(set(group_ids))).values()
-        return render(request, "user/group_table.html", {"user": user, "group_user_mapping": group_user_mapping})
+        group_user_mapping = utils.create_group_user_mapping(
+            list(set(group_ids))
+        ).values()
+        return render(
+            request,
+            "user/group_table.html",
+            {"user": user, "group_user_mapping": group_user_mapping},
+        )
 
     def post(self, request):
         user = request.user.user
-        name = request.POST.get('groupName')
+        name = request.POST.get("groupName")
+        if not name:
+            return redirect("group")
         utils.create_user_group(name, user)
         return redirect("group")
-    
+
 
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 @permission_classes([IsAuthenticated])
 class UserGroupView(APIView):
-
     def delete(self, request):
         request_data = request.data
-        user_id = request_data.get('user_id', None)
+        user_id = request_data.get("user_id", None)
         if not user_id:
             return Response(
                 {"error": "UserId Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
-        group_id = request_data.get('group_id', None)
+        group_id = request_data.get("group_id", None)
         if not group_id:
             return Response(
                 {"error": "GroupId Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
-        models.UserGroupMapping.objects.filter(user_id=user_id, group_id=group_id).update(is_active=False)
-        return Response({'message': 'DELETE request processed successfully'})
+        models.UserGroupMapping.objects.filter(
+            user_id=user_id, group_id=group_id
+        ).update(is_active=False)
+        return Response({"message": "DELETE request processed successfully"})
+
+
+class SearchUser(APIView):
+    def get(self, request):
+        search_type = request.GET.get("type", "id")
+        search_term = request.GET.get("term", "").strip()
+        user_id = request.user.user.id
+        if search_term and search_type == "id":
+            results = models.User.objects.filter(uid=search_term).exclude(id=user_id)
+        elif search_term and search_type == "username":
+            results = models.User.objects.filter(username=search_term).exclude(id=user_id)
+        elif search_term and search_type == "name":
+            results = models.User.objects.filter(name__icontains=search_term).exclude(id=user_id)
+        else:
+            results = []
+        data = [
+            {"username": user.username, "uid": user.uid, "name": user.name, "icon": user.icon}
+            for user in results
+        ]
+
+        return JsonResponse({"results": data})
+
+
+class RequestUserView(View):
+    def post(self, request, user_uid):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'User not authenticated'}, status=401)
+        print(user_uid)
+        return JsonResponse({'success': True})

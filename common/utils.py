@@ -10,3 +10,7 @@ def validate_phone_number(phone_number):
 
 def validate_email(email):
     return re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email) is not None
+
+def random_avatar():
+    num = random.randint(1,7)
+    return f"https://bootdey.com/img/Content/avatar/avatar{num}.png"
