@@ -56,7 +56,7 @@
                 <h4 class="text-white" data-bs-toggle="tooltip" data-bs-placement="right" title="Group created by {{group.created_by}}">{{group.name}}</h4>
             </div>
             <div class="">
-                <a class="button inlineIcon new text-white add-member-button" href="#" data-bs-toggle="modal" data-bs-target="#memberModal">Add member</a>
+                <a class="button inlineIcon new text-white add-member-button" href="#" data-bs-toggle="modal" data-bs-target="#memberModal" onclick="openMemberModal('{{ group.id }}')">Add member</a>
             </div>
         </div>
         <div class="col-lg-12">
@@ -83,6 +83,8 @@
                                         <a class="button inlineIcon edit" href="#"></a>
                                         <a class="button inlineIcon delete" onclick="showDeleteConfirmation({{group_user.id}}, {{group.id}})" href="#"></a>
                                     </td>
+                                {% else %}
+                                <td></td>
                                 {% endif %}
                             </tr>
                         {% endwith %}
@@ -116,6 +118,7 @@
                                 <option value="name">Name</option>
                             </select>
                         </div>
+                        <input type="hidden" id="groupModalInput" name="groupModalInput">
                         <!-- Search Box -->
                         <div class="flex-grow-1">
                             <label for="searchTerm" class="form-label text-black">&nbsp;</label>
@@ -177,8 +180,21 @@
 {% endblock body %}
 
 {% block script %}
+
 <script src="{% static 'user/js/group.js' %}"></script>
 <script>
+    function openMemberModal(groupId) {
+        // resetting modal
+        var resultsContainer = document.getElementById('searchResults');
+        resultsContainer.innerHTML = ' <h4 class="text-black text-center">No Results Found.</h4>';
+        var searchTermElement = document.getElementById('searchTerm');
+        searchTermElement.value = '';  // Set the value to an empty string
+
+        document.getElementById('groupModalInput').value = groupId;
+        var memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+        memberModal.show();
+    }
+    
     function getCookie(name) {
         const cookieValue = document.cookie
             .split('; ')
@@ -224,22 +240,29 @@
     function search() {
         var searchType = document.getElementById('searchType').value;
         var searchTerm = document.getElementById('searchTerm').value;
-        console.log(searchType);
-        console.log(searchTerm);
-        var url = 'search/?type=' + searchType + '&term=' + searchTerm;
+        var selectedRole = "member";
+        var radioButtons = document.getElementsByName('role');
+        for (var i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].checked) {
+                selectedRole = radioButtons[i].value;
+                break;
+            }
+        }
+        var groupId = document.getElementById('groupModalInput').value;
+        var url = 'search/?type=' + searchType + '&term=' + searchTerm  + '&group=' + groupId;
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 console.log(data.results);
                 // Update the search results
-                updateResults(data.results);
+                updateResults(data.results, selectedRole, groupId);
             })
             .catch(error => {
                 console.error('Search Error:', error);
             });
     }
 
-    function updateResults(results) {
+    function updateResults(results, selectedRole, groupId) {
         var resultsContainer = document.getElementById('searchResults');
         resultsContainer.innerHTML = '';
     
@@ -294,12 +317,16 @@
     
                 var button = document.createElement('button');
                 button.className = 'btn btn-sm btn-success';
-                button.innerHTML = 'Request';
-                button.addEventListener('click', function () {
-                    makeRequest(result.uid, button);
-                });
-
-    
+                if (result.isRequested){
+                    button.innerHTML = 'Requested';
+                    button.disabled = true;
+                } else {
+                    button.innerHTML = 'Request';
+                    button.addEventListener('click', function () {
+                        makeRequest(result.uid, button, selectedRole, groupId);
+                    });
+                }
+        
                 cardBody.appendChild(title);
                 cardBody.appendChild(idParagraph);
                 cardBody.appendChild(usernameParagraph);
@@ -320,7 +347,7 @@
         }
     }
 
-    function makeRequest(useruId, button) {
+    function makeRequest(useruId, button, selectedRole, groupId) {
         var requestUrl = 'request/' + useruId + '/';
     
         fetch(requestUrl, {
@@ -329,7 +356,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken'),
             },
-            body: JSON.stringify({"user_id": useruId}),
+            body: JSON.stringify({"user_uid": useruId, "role": selectedRole, "groupId": groupId}),
         })
             .then(response => {
                 if (response.ok) {
