@@ -1,3 +1,5 @@
+import json
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -16,6 +18,7 @@ from django.http import JsonResponse
 from .forms import CustomerRegistrationForm
 from user import utils
 from user import models
+from user import constants
 
 
 # Create your views here.
@@ -123,26 +126,35 @@ class SearchUser(APIView):
     def get(self, request):
         search_type = request.GET.get("type", "id")
         search_term = request.GET.get("term", "").strip()
-        user_id = request.user.user.id
+        group_id = request.GET.get("group", "")
+        user_ids = list(models.UserGroupMapping.objects.filter(group_id=group_id, is_active=True).values_list('user_id', flat=True))
+        sender = request.user.user
         if search_term and search_type == "id":
-            results = models.User.objects.filter(uid=search_term).exclude(id=user_id)
+            results = models.User.objects.filter(uid=search_term).exclude(id__in=user_ids)
         elif search_term and search_type == "username":
-            results = models.User.objects.filter(username=search_term).exclude(id=user_id)
+            results = models.User.objects.filter(username=search_term).exclude(id__in=user_ids)
         elif search_term and search_type == "name":
-            results = models.User.objects.filter(name__icontains=search_term).exclude(id=user_id)
+            results = models.User.objects.filter(name__icontains=search_term).exclude(id__in=user_ids)
         else:
             results = []
+        user_ids_list = [user.id for user in results]
+        requests_data = set(models.UserGroupRequests.objects.filter(sender=sender, receiver_id__in=user_ids_list, group_id=group_id, status=constants.PENDING).values_list('receiver_id', flat=True))
         data = [
-            {"username": user.username, "uid": user.uid, "name": user.name, "icon": user.icon}
+            {"username": user.username, "uid": user.uid, "name": user.name, "icon": user.icon, "isRequested": user.id in requests_data}
             for user in results
         ]
 
-        return JsonResponse({"results": data})
+        return Response({"results": data})
 
 
-class RequestUserView(View):
+class RequestUserView(APIView):
     def post(self, request, user_uid):
-        if not request.user.is_authenticated:
-            return JsonResponse({'error': 'User not authenticated'}, status=401)
-        print(user_uid)
-        return JsonResponse({'success': True})
+        sender = request.user.user
+        role = request.data.get('role', None)
+        groupId = request.data.get('groupId', None)
+        print(groupId, role)
+        receiver = utils.get_user_by_uid(user_uid)
+        if models.UserGroupRequests.objects.filter(sender=sender, receiver=receiver, group_id=groupId, status__in=[constants.PENDING, constants.ACCEPTED]).exists():
+            return Response({'success': False})
+        utils.create_user_request(sender, receiver, groupId, role)
+        return Response({'success': True})
