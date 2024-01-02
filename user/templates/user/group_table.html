@@ -9,6 +9,7 @@
   {% endblock newbody %}
 {% block body %}
     <div class="container container-f">
+        <h1 class="text-center top-title"> My Groups </h1>
         <div class="col-lg-12">
             <button type="button" class="btn button-1 primary new" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Create Group
@@ -28,7 +29,7 @@
                       <h4 class="text-black modal-form-title mb-2">Group Creation Form</h4>
                       <form>
                         <div class="mb-3">
-                          <input type="text" class="form-control" id="groupName" name = "groupName" placeholder="Enter group name" required>
+                          <input type="text" class="form-control" maxlength="30" id="groupName" name = "groupName" placeholder="Enter group name" required>
                         </div>
                       </form>
                     </div>
@@ -98,15 +99,11 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title text-black" id="memberModalLabel"><b>Add Member</b></h5>
+                <h5 class="modal-title text-black" id="memberModalLabel" ><b>Add Member</b></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Member Form -->
-                <form method="post" action="/your-submit-url">
-                    <!-- CSRF Token -->
-                    {% csrf_token %}
-
                     <!-- Dropdown and Search Box -->
                     <div class="mb-3 d-flex align-items-center">
                         <!-- Dropdown -->
@@ -153,8 +150,7 @@
                                         <h5 class="card-title mb-1" style="font-size: 14px;"><b>User 1</b></h5>
                                         <p class="card-text mb-1" style="font-size: 12px;"><b>ID:</b> 123</p>
                                         <p class="card-text mb-1" style="font-size: 12px;"><b>Username:</b> user123</p>
-                                        <!-- Adjusted button size -->
-                                        <button type="submit" class="btn btn-sm btn-primary">Request</button>
+                                        <button class="btn btn-sm btn-primary" onclick="requestUser(this)">Request</button>
                                     </div>
                                 </div>
                             </div>
@@ -163,9 +159,6 @@
                     </div>
                             
                     </div>
-                    <!-- End Search Result -->
-                </form>
-                <!-- End Member Form -->
             </div>
             <div class="modal-footer justify-content-end">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -221,5 +214,14 @@
             });
         }
     }
+    
+    function requestUser(button) {
+        setTimeout(function () {
+            button.textContent = 'Requested';
+            button.disabled = true;
+        }, 1000);
+        
+    }
 </script>
 {% endblock script %}
+

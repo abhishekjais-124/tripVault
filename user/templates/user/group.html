@@ -8,7 +8,7 @@
 
 {% block body %}
 <div class="text-center">
-    <h1>CREATE YOUR FIRST GROUP HERE</h1>
+    <h1 id = "group-top-title">CREATE YOUR FIRST GROUP HERE</h1>
     <button type="button" class="btn button-1 primary new" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Create Group
       </button>
@@ -26,7 +26,7 @@
                 <!-- Form inside the modal -->
                 <h4 class="text-black modal-form-title mb-2">Group Creation Form</h4>
                   <div class="mb-3">
-                    <input type="text" class="form-control" id="groupName" name="groupName" placeholder="Enter group name" required>
+                    <input type="text" class="form-control" maxlength="30" id="groupName" name="groupName" placeholder="Enter group name" required>
                   </div>
                
               </div>
