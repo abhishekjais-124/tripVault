@@ -1,17 +1,10 @@
 body {
-    height: 90vh;
     background: url('https://images.pexels.com/photos/1000445/pexels-photo-1000445.jpeg') center/cover no-repeat;
-    background-attachment: fixed; /* Make the background image fixed */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #fff; /* Text color */
-    font-family: 'Times New Roman', serif;
+    background-attachment: fixed; /* Make the background image fixed */ 
 }
 
 
-h1 {
+#group-top-title {
     font-size: 6em;
     margin-bottom: 100px;
 }
@@ -19,11 +12,11 @@ h1 {
 .container-f {
     top: 50%;
     position: absolute;
-    margin-top: auto;
-    left: 50%;
+    left: 49%;
+    overflow-y: auto;
     transform: translate(-50%, -50%);
-    min-height: 60%; /* Set a minimum height to allow the container to expand from the bottom */
-    max-width: 1700px; /* Adjust the width as needed */
+    max-height: 84%;; /* Set a minimum height to allow the container to expand from the bottom */
+    max-width: 1600px; /* Adjust the width as needed */
 }
 
   table {
@@ -91,5 +84,10 @@ h1 {
 }
 
 .add-member-button{
-  margin-right: 75px;
+  margin-right: 0px;
+}
+
+.top-title{
+  color: #fff;
+  margin-right: 0px;
 }

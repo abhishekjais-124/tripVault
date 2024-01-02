@@ -39,3 +39,9 @@ def create_group_user_mapping(group_ids):
         mapping[user_group.group.id][0].append([user_group.user, user_group.role])
         mapping[user_group.group.id][1] = user_group.group
     return dict(mapping)
+
+
+def create_user_request(sender, reciever, group_id, role):
+    request = models.UserGroupRequests.objects.create(sender=sender, receiver=reciever, group_id=group_id, role_requested=role)
+    print("Request created succesfully.")
+    return request

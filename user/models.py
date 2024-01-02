@@ -57,3 +57,16 @@ class UserGroupMapping(BaseModel):
     def __str__(self):
         return f"{self.user.username} - {self.group.name}"
 
+
+class UserGroupRequests(BaseModel):
+    sender = models.ForeignKey("User", on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey("User", on_delete=models.CASCADE, related_name="receiver")
+    group = models.ForeignKey("Group", on_delete=models.CASCADE)
+    role_requested = models.CharField(
+        max_length=10, choices=constants.ROLE_CHOICES, default="Member"
+    )
+    status = models.IntegerField(choices=constants.REQUEST_CHOICES, default=constants.PENDING)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.group.name}"
+
