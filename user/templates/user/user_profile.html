@@ -20,7 +20,7 @@
                 <div class="user-profile">
                     <div class="user-avatar">
                         {% if user.email %}
-                            {% with url=user.name|lower|img_from_name %}
+                            {% with url=user.icon %}
                                 <img src="{{ url }}" alt="{{ user.username }}">
                             {% endwith %}
                         {% else %}

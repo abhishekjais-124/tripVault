@@ -10,10 +10,11 @@ class User(BaseModel):
     auth_user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
     uid = models.CharField(max_length=10, unique=True, db_index=True)
     username = models.CharField(max_length=30, unique=True, db_index=True)
-    name = models.CharField(max_length=30)
-    phone_number = models.CharField(max_length=15)
+    name = models.CharField(max_length=30, null=True)
+    phone_number = models.CharField(max_length=15, null=True)
     email = models.EmailField(max_length=254)
     is_active = models.BooleanField(default=True)
+    icon = models.CharField(max_length=100, null=True)
 
     def save(self, *args, **kwargs):
         if not self.uid:
@@ -21,12 +22,14 @@ class User(BaseModel):
             while User.objects.filter(uid=uid).exists():
                 uid = common_utils.create_random_uid()
             self.uid = uid
+        if not self.icon:
+            self.icon = common_utils.random_avatar()
         return super().save(*args, **kwargs)
 
 
 class Group(BaseModel):
     uid = models.CharField(max_length=10, unique=True, db_index=True)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, null=True)
     is_active = models.BooleanField(default=True)
     created_by = models.CharField(max_length=30)
     users_count = models.PositiveIntegerField(default=1)
