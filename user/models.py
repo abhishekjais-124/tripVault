@@ -67,6 +67,3 @@ class UserGroupRequests(BaseModel):
     )
     status = models.IntegerField(choices=constants.REQUEST_CHOICES, default=constants.PENDING)
 
-    def __str__(self):
-        return f"{self.user.username} - {self.group.name}"
-

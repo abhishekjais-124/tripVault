@@ -12,4 +12,6 @@ urlpatterns = [
     path('groups/search/',views.SearchUser.as_view(), name='search'),  # for the registration
     path('groups/', views.GroupView.as_view(), name='group'),
     path('user_group/', views.UserGroupView.as_view(), name='user_group'),
+    path('accept/', views.AcceptUserView.as_view(), name='accept-request'),
+    path('decline/', views.DeclineUserView.as_view(), name='decline-request'),
 ]
