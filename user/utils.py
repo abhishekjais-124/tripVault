@@ -23,25 +23,49 @@ def validate(full_name, email, phone_number):
 
 def create_user_group(name, user):
     group = models.Group.objects.create(name=name, created_by=user.username)
-    user_group_mapping = models.UserGroupMapping.objects.create(user=user, group=group, role=constants.ADMIN)
+    user_group_mapping = models.UserGroupMapping.objects.create(
+        user=user, group=group, role=constants.ADMIN
+    )
     print("Group created succesfully.")
     return group, user_group_mapping
 
 
 def get_user_groups(user):
-    return list(models.UserGroupMapping.objects.filter(user=user, is_active=True, group__is_active=True).order_by('-id').values_list('group_id'))
+    return list(
+        models.UserGroupMapping.objects.filter(
+            user=user, is_active=True, group__is_active=True
+        )
+        .order_by("-id")
+        .values_list("group_id")
+    )
 
 
-def create_group_user_mapping(group_ids):
-    mapping = defaultdict(lambda:   [[], ""])
-    user_groups = list(models.UserGroupMapping.objects.select_related('user', 'group').filter(group_id__in=group_ids, is_active=True))
+def create_group_user_mapping(group_ids, user):
+    mapping = defaultdict(lambda: [[], "", False])
+    user_groups = list(
+        models.UserGroupMapping.objects.select_related("user", "group").filter(
+            group_id__in=group_ids, is_active=True
+        )
+    )
     for user_group in user_groups:
-        mapping[user_group.group.id][0].append([user_group.user, user_group.role])
+        mapping[user_group.group.id][0].append(
+            [user_group.user, user_group.role.capitalize()]
+        )
         mapping[user_group.group.id][1] = user_group.group
+        if user.id == user_group.user.id and user_group.role == constants.ADMIN:
+            mapping[user_group.group.id][2] = True
     return dict(mapping)
 
 
 def create_user_request(sender, reciever, group_id, role):
-    request = models.UserGroupRequests.objects.create(sender=sender, receiver=reciever, group_id=group_id, role_requested=role)
+    request = models.UserGroupRequests.objects.create(
+        sender=sender, receiver=reciever, group_id=group_id, role_requested=role
+    )
     print("Request created succesfully.")
     return request
+
+
+def get_user_group_pending_request(user):
+    return models.UserGroupRequests.objects.filter(
+        receiver=user, status=constants.PENDING
+    ).last()

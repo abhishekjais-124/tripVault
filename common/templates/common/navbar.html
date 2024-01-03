@@ -26,7 +26,7 @@
         <div class="collapse navbar-collapse" id="navbarExample01">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item active">
-              <a class="nav-link navbar-brand" onmouseover="showDiv()" onmouseout="hideDiv()" aria-current="page" href="#intro">TripVault</a>
+              <a class="nav-link navbar-brand" onmouseover="showDiv()" onmouseout="hideDiv()" aria-current="page" href="{% url 'home' %}">TripVault</a>
             </li>
             {% if request.user.is_authenticated %}
             <li class="nav-item mt-1">
@@ -35,6 +35,14 @@
                  href="{% url 'group' %}"
                  rel="nofollow"
                  >Groups</a
+                >
+            </li>
+            <li class="nav-item mt-1">
+              <a
+                 class="nav-link"
+                 href="{% url 'userprofile' %}"
+                 rel="nofollow"
+                 >Profile</a
                 >
             </li>
             {% endif %}
