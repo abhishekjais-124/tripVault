@@ -1,0 +1,98 @@
+{% extends 'user/base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% block title %} Home {% endblock title %}
+
+{% block style %} 
+
+{% endblock style %}
+
+{% block body %}
+<div class="toast align-items-center position-absolute top-0 end-0" data-bs-delay="20000" role="alert" aria-live="assertive" aria-atomic="true" style="margin:70px 20px;" id="myToast">
+    <div class="d-flex">
+        <div class="toast-body">
+            {% if request_data %}
+            <p style="font-size: 16px; margin: 10px 0;">
+                <span style="font-weight: bold; color: #3498db;">{{ request_data.sender }}</span> has requested to add you to the group <span style="font-weight: bold; color: #3498db;">{{ request_data.group }}</span>.
+            </p>
+            {% endif %}
+            <div class="mt-2 pt-2 border-top">
+                <button type="button" class="btn btn-success btn-sm" onclick="AcceptRequest('{{ request_data.sender_uid }}', '{{ request_data.group_id }}')" data-bs-dismiss="toast">Accept</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="DeclineRequest('{{ request_data.sender_uid }}', '{{ request_data.group_id }}')" data-bs-dismiss="toast">Decline</button>
+              </div>
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+
+{% endblock body %}
+{% block script %}
+    {% if request_data %}
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var myToast = new bootstrap.Toast(document.getElementById('myToast'));
+            myToast.show();
+            console.log("Toast shown!");
+        });
+        </script>
+    {% endif %}
+    <script>
+        function getCookie(name) {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith(name + '='))
+                ?.split('=')[1];
+        
+            return cookieValue ? decodeURIComponent(cookieValue) : null;
+        }
+    
+        function AcceptRequest(sender_uid, group_id) {
+
+            fetch('{% url "accept-request" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
+            })
+            .then(response => {
+                if (response.ok) {
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('POST Response:', data);
+            })
+            .catch(error => {
+                console.error('POST Error:', error);
+            });
+
+        }
+
+        
+        function DeclineRequest(sender_uid, group_id) {
+
+            fetch('{% url "decline-request" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
+            })
+            .then(response => {
+                if (response.ok) {
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('POST Response:', data);
+            })
+            .catch(error => {
+                console.error('POST Error:', error);
+            });
+
+        }
+    </script>
+{% endblock script %}

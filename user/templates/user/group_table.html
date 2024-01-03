@@ -49,7 +49,7 @@
   
 
   
-    {% for user_list, group in group_user_mapping %}
+    {% for user_list, group, isGroupAdmin in group_user_mapping %}
         </br>
         <div class="d-flex justify-content-between">
             <div class="">
@@ -78,13 +78,19 @@
                                 <td>{{group_user.name}}</td>
                                 <td>0</td>
                                 <td>{{group_user_list.1}}</td>
-                                {% if group_user_list.1 == 'Admin' %}
+                                {% if isGroupAdmin %}
                                     <td>
                                         <a class="button inlineIcon edit" href="#"></a>
                                         <a class="button inlineIcon delete" onclick="showDeleteConfirmation({{group_user.id}}, {{group.id}})" href="#"></a>
                                     </td>
                                 {% else %}
-                                <td></td>
+                                    {% if group_user.uid == user.uid %}
+                                        <td>
+                                            <a class="button inlineIcon delete" onclick="showDeleteConfirmation({{group_user.id}}, {{group.id}})" href="#"></a>
+                                        </td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
                                 {% endif %}
                             </tr>
                         {% endwith %}
@@ -113,9 +119,9 @@
                         <div class="me-2">
                             <label for="searchType" class="form-label text-black-50"><b>Search User</b></label>
                             <select class="form-select" id="searchType" name="searchType">
-                                <option value="id" selected>ID</option>
+                                <option value="id">ID</option>
                                 <option value="username">Username</option>
-                                <option value="name">Name</option>
+                                <option value="name" selected>Name</option>
                             </select>
                         </div>
                         <input type="hidden" id="groupModalInput" name="groupModalInput">
