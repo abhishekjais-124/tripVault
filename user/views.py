@@ -43,7 +43,18 @@ class UserProfile(APIView):
             return Response(
                 {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
-        return render(request, "user/user_profile.html", {"user": user})
+        dummy_requests = [
+            {'id': 1, 'requested_by': 'User1', 'group_name': 'GroupA', 'time': '2024-01-01 12:00:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
+            # Add more dummy entries as needed
+        ]
+        return render(request, "user/user_profile.html", {"user": user, 'requests': dummy_requests})
 
     def post(self, request):
         full_name = request.POST.get("fullName").strip()

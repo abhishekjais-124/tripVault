@@ -55,3 +55,29 @@
 .profile{
     margin-top: 200px;
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tbody {
+    max-height: 200px; /* Set the max-height for tbody */
+    overflow-y: auto; /* Enable vertical scrolling */
+    display: block;   /* Make tbody a block-level container */
+}
+
+.requests-table {
+    margin-top: 20px;
+}
