@@ -1,0 +1,30 @@
+
+<div class = "container mt-5" style="max-width:1200px;">
+    <h4 class="text-black-50 text-center">Requests</h4>
+    <div class="requests-table">
+        <table class="table table-sm">
+            <thead class="table-dark">
+                <tr class="text-center">
+                    <th>Requested by</th>
+                    <th>Group name</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                    <tr class="text-center">
+                        <td>{{ request.requested_by }}</td>
+                        <td>{{ request.group_name }}</td>
+                        <td>{{ request.time }}</td>
+                        <td>
+                            <button type="button" class="btn btn-success" onclick="acceptRequest({{ request.id }})">Accept</button>
+                            <button type="button" class="btn btn-danger" onclick="declineRequest({{ request.id }})">Decline</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+</div>

@@ -46,7 +46,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                             <div class="form-group">
                                 <label for="fullName">Full Name</label>
-                                <input type="text" class="form-control" id="fullName" name="fullName" value="{{ user.name }}">
+                                <input type="text" class="form-control" id="fullName" name="fullName" value="{% if user.name is not none %}{{ user.name }}{% endif %}">
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
@@ -60,7 +60,7 @@
                                 <label for="phone">Phone</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">+91</span>
-                                    <input type="text" class="form-control" maxlength="10" pattern="[0-9]{10}" id="phone" name="phone" value="{{ user.phone_number }}" style="margin-top:1px;">
+                                    <input type="text" class="form-control" maxlength="10" pattern="[0-9]{10}" id="phone" name="phone" value="{% if user.phone_number is not none %}{{ user.phone_number }}{% endif %}" style="margin-top:1px;">
                                 </div>                                
                             </div>
                         </div>
@@ -79,6 +79,7 @@
     </div>
     </div>
     </div>
+   {% include 'user/requests.html' %}
 {% endblock body %}
 {% block script %}
 <script>

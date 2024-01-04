@@ -5,12 +5,13 @@ body {
 
 
 #group-top-title {
+    margin-top: 200px;
     font-size: 6em;
     margin-bottom: 100px;
 }
 
 .container-f {
-    top: 40%;
+    top: 35%;
     position: absolute;
     left: 49%;
     overflow-y: auto;
