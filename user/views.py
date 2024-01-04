@@ -14,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-
+from common import utils as common_utils
 from .forms import CustomerRegistrationForm
 from user import utils
 from user import models
@@ -43,18 +43,20 @@ class UserProfile(APIView):
             return Response(
                 {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
-        dummy_requests = [
-            {'id': 1, 'requested_by': 'User1', 'group_name': 'GroupA', 'time': '2024-01-01 12:00:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            {'id': 2, 'requested_by': 'User2', 'group_name': 'GroupB', 'time': '2024-01-02 14:30:00'},
-            # Add more dummy entries as needed
-        ]
-        return render(request, "user/user_profile.html", {"user": user, 'requests': dummy_requests})
+        requests = []
+        pending_requests = utils.get_user_group_all_pending_request(user)
+        for req in pending_requests:
+            r = {
+                'id': req.id,
+                'role': req.role_requested.capitalize(),
+                'requested_by': req.sender.username,
+                'group_name': req.group.name,
+                'time': common_utils.format_time_difference(req.created_at),
+                'sender_uid': req.sender.uid,
+                'group_id': req.group.id
+            }
+            requests.append(r.copy())
+        return render(request, "user/user_profile.html", {"user": user, 'requests': requests})
 
     def post(self, request):
         full_name = request.POST.get("fullName").strip()
@@ -221,9 +223,19 @@ class AcceptUserView(APIView):
         if request:
             request.status = constants.ACCEPTED
             request.save()
-            models.UserGroupMapping.objects.create(
-                user=sender, group_id=group_id, role=request.role_requested
-            )
+            user_group_obj = models.UserGroupMapping.objects.filter(user=sender, group_id=group_id)
+            if user_group_obj:
+                if user_group_obj.is_active:
+                    return Response(
+                        {"error": "User is already in the group"}, status=status.HTTP_400_BAD_REQUEST
+                    )
+                else:
+                    user_group_obj.is_active = True
+                    user_group_obj.save()
+            else:
+                models.UserGroupMapping.objects.create(
+                    user=sender, group_id=group_id, role=request.role_requested
+                )
         return Response({"message": "POST request processed successfully"})
 
 
