@@ -56,6 +56,9 @@ class UserGroupMapping(BaseModel):
 
     def __str__(self):
         return f"{self.user.username} - {self.group.name}"
+    
+    class Meta:
+        unique_together = ('user', 'group')
 
 
 class UserGroupRequests(BaseModel):

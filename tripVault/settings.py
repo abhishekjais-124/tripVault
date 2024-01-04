@@ -76,7 +76,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/user/profile/'
+LOGIN_REDIRECT_URL = '/'
 
 LANGUAGE_CODE = 'en-us'
 
