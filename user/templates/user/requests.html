@@ -1,30 +1,94 @@
-
-<div class = "container mt-5" style="max-width:1200px;">
+<div class="container mt-5" style="max-width:1200px;">
     <h4 class="text-black-50 text-center">Requests</h4>
     <div class="requests-table">
-        <table class="table table-sm">
-            <thead class="table-dark">
-                <tr class="text-center">
-                    <th>Requested by</th>
-                    <th>Group name</th>
-                    <th>Time</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for request in requests %}
+        <div class="table-responsive">
+            <table class="table table-sm" {% if not requests %} style="opacity: 0.2;"{% endif %}>
+                <thead class="table-dark">
                     <tr class="text-center">
-                        <td>{{ request.requested_by }}</td>
-                        <td>{{ request.group_name }}</td>
-                        <td>{{ request.time }}</td>
-                        <td>
-                            <button type="button" class="btn btn-success" onclick="acceptRequest({{ request.id }})">Accept</button>
-                            <button type="button" class="btn btn-danger" onclick="declineRequest({{ request.id }})">Decline</button>
-                        </td>
+                        <th class="text-center">Requested by</th>
+                        <th class="text-center">Requested role</th>
+                        <th class="text-center">Group name</th>
+                        <th class="text-center">Time</th>
+                        <th class="text-center">Action</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                        <tr id="row_{{ request.id }}" class="text-center">
+                            <td class="text-center">{{ request.requested_by }}</td>
+                            <td class="text-center">{{ request.role }}</td>
+                            <td class="text-center">{{ request.group_name }}</td>
+                            <td class="text-center">{{ request.time }}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-success" onclick="AcceptRequest('{{ request.id }}', '{{ request.sender_uid }}', '{{ request.group_id }}')">Accept</button>
+                                <button type="button" class="btn btn-danger" onclick="DeclineRequest('{{ request.id }}', '{{ request.sender_uid }}', '{{ request.group_id }}')">Decline</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    
 </div>
+
+<script>
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+    
+        return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+
+    function AcceptRequest(rowId, sender_uid, group_id) {
+
+        fetch('{% url "accept-request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('row_' + rowId).innerHTML = '<td colspan="5" class="text-center" style="background-color: #28a745; color: #fff;">Accepted</td>';
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('POST Response:', data);
+        })
+        .catch(error => {
+            console.error('POST Error:', error);
+        });
+
+    }
+
+    
+    function DeclineRequest(rowId, sender_uid, group_id) {
+
+        fetch('{% url "decline-request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('row_' + rowId).innerHTML = '<td colspan="5" class="text-center" style="background-color: #dc3545; color: #fff;">Declined</td>';
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('POST Response:', data);
+        })
+        .catch(error => {
+            console.error('POST Error:', error);
+        });
+
+    }
+</script>

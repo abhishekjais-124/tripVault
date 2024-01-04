@@ -69,3 +69,9 @@ def get_user_group_pending_request(user):
     return models.UserGroupRequests.objects.filter(
         receiver=user, status=constants.PENDING
     ).last()
+
+
+def get_user_group_all_pending_request(user):
+    return list(models.UserGroupRequests.objects.filter(
+        receiver=user, status=constants.PENDING
+    ))
