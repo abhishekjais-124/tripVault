@@ -52,7 +52,7 @@ def create_group_user_mapping(group_ids, user):
             [user_group.user, user_group.role.capitalize()]
         )
         mapping[user_group.group.id][1] = user_group.group
-        if user.id == user_group.user.id and user_group.role == constants.ADMIN:
+        if user.id == user_group.user_id and user_group.role == constants.ADMIN:
             mapping[user_group.group.id][2] = True
     return dict(mapping)
 

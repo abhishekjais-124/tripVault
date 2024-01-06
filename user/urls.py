@@ -14,4 +14,5 @@ urlpatterns = [
     path('user_group/', views.UserGroupView.as_view(), name='user_group'),
     path('accept/', views.AcceptUserView.as_view(), name='accept-request'),
     path('decline/', views.DeclineUserView.as_view(), name='decline-request'),
+    path('update_user_role/', views.UpdateUserRole.as_view(), name='update-user-role'),
 ]

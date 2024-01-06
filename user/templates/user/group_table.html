@@ -48,6 +48,31 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
   
 
+<div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit User Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editRoleForm">
+                    <label for="newRole" class="form-label">New Role:</label>
+                    <select id="newRole" name="newRole" class="form-select">
+                        <option value="Admin">Admin</option>
+                        <option value="Member">Member</option>
+                    </select>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitEditRoleForm()" data-bs-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
   
     {% for user_list, group, isGroupAdmin in group_user_mapping %}
         </br>
@@ -56,7 +81,7 @@
                 <h4 class="text-white" data-bs-toggle="tooltip" data-bs-placement="right" title="Group created by {{group.created_by}}">{{group.name}}</h4>
             </div>
             <div class="">
-                <a class="button inlineIcon new text-white add-member-button" href="#" data-bs-toggle="modal" data-bs-target="#memberModal" onclick="openMemberModal('{{ group.id }}')">Add member</a>
+                <a class="button inlineIcon new text-white add-member-button" href="#" data-bs-toggle="modal" data-bs-target="#memberModal" onclick="openMemberModal('{{ group.id }}', '{{ isGroupAdmin }}')">Add member</a>
             </div>
         </div>
         <div class="col-lg-12">
@@ -80,7 +105,8 @@
                                 <td>{{group_user_list.1}}</td>
                                 {% if isGroupAdmin %}
                                     <td>
-                                        <a class="button inlineIcon edit" href="#"></a>
+                                        <!-- Update the edit button in your template -->
+                                        <a class="button inlineIcon edit" href="#" data-bs-toggle="modal" data-bs-target="#editRoleModal" onclick="setModalData({{ group_user.id }}, {{ group.id }})"></a>
                                         <a class="button inlineIcon delete" onclick="showDeleteConfirmation({{group_user.id}}, {{group.id}})" href="#"></a>
                                     </td>
                                 {% else %}
@@ -111,6 +137,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div id="errorMessageContainer" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+                    <strong>You can't add admins to this group.</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
                 <!-- Member Form -->
                 <div>
                     <!-- Dropdown and Search Box -->
@@ -125,6 +156,7 @@
                             </select>
                         </div>
                         <input type="hidden" id="groupModalInput" name="groupModalInput">
+                        <input type="hidden" id="isGroupAdminInput" name="isGroupAdminInput">
                         <!-- Search Box -->
                         <div class="flex-grow-1">
                             <label for="searchTerm" class="form-label text-black">&nbsp;</label>
@@ -138,7 +170,7 @@
                     <div class="mb-3">
                         <label class="form-label text-black-50"><b>Select role:</b></label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="role" id="adminRole" value="admin" {% if not isGroupAdmin %}disabled{% endif %}>
+                            <input class="form-check-input" type="radio" name="role" id="adminRole" value="admin">
                             <label class="form-check-label text-black" for="adminRole">Admin</label>
                         </div>
                         <div class="form-check">
@@ -189,7 +221,7 @@
 
 <script src="{% static 'user/js/group.js' %}"></script>
 <script>
-    function openMemberModal(groupId) {
+    function openMemberModal(groupId, isGroupAdmin) {
         // resetting modal
         var resultsContainer = document.getElementById('searchResults');
         resultsContainer.innerHTML = ' <h4 class="text-black text-center">No Results Found.</h4>';
@@ -197,6 +229,7 @@
         searchTermElement.value = '';  // Set the value to an empty string
 
         document.getElementById('groupModalInput').value = groupId;
+        document.getElementById('isGroupAdminInput').value = isGroupAdmin;
         var memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
         memberModal.show();
     }
@@ -246,29 +279,22 @@
     function search() {
         var searchType = document.getElementById('searchType').value;
         var searchTerm = document.getElementById('searchTerm').value;
-        var selectedRole = "member";
-        var radioButtons = document.getElementsByName('role');
-        for (var i = 0; i < radioButtons.length; i++) {
-            if (radioButtons[i].checked) {
-                selectedRole = radioButtons[i].value;
-                break;
-            }
-        }
         var groupId = document.getElementById('groupModalInput').value;
+        var isGroupAdmin = document.getElementById('isGroupAdminInput').value;
         var url = 'search/?type=' + searchType + '&term=' + searchTerm  + '&group=' + groupId;
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 console.log(data.results);
                 // Update the search results
-                updateResults(data.results, selectedRole, groupId);
+                updateResults(data.results, groupId, isGroupAdmin);
             })
             .catch(error => {
                 console.error('Search Error:', error);
             });
     }
 
-    function updateResults(results, selectedRole, groupId) {
+    function updateResults(results, groupId, isGroupAdmin) {
         var resultsContainer = document.getElementById('searchResults');
         resultsContainer.innerHTML = '';
     
@@ -327,10 +353,24 @@
                     button.innerHTML = 'Requested';
                     button.disabled = true;
                 } else {
+                    var selectedRole = null;
+                    var radioButtons = document.getElementsByName('role');
+                    for (var i = 0; i < radioButtons.length; i++) {
+                        if (radioButtons[i].checked) {
+                            selectedRole = radioButtons[i].value;
+                            break;
+                        }
+                    }
                     button.innerHTML = 'Request';
-                    button.addEventListener('click', function () {
-                        makeRequest(result.uid, button, selectedRole, groupId);
-                    });
+                    if (selectedRole){
+                        if (isGroupAdmin == "False" && selectedRole=='admin'){
+                            button.disabled = true;
+                        } else {
+                            button.addEventListener('click', function () {
+                                makeRequest(result.uid, button, selectedRole, groupId);
+                            });
+                        }
+                    }
                 }
         
                 cardBody.appendChild(title);
@@ -355,6 +395,19 @@
 
     function makeRequest(useruId, button, selectedRole, groupId) {
         var requestUrl = 'request/' + useruId + '/';
+        var final = null;
+        var radioButtons = document.getElementsByName('role');
+        for (var i = 0; i < radioButtons.length; i++) {
+            if (radioButtons[i].checked) {
+                final = radioButtons[i].value;
+                break;
+            }
+        }
+        if (selectedRole != final && final == 'admin'){
+            document.getElementById('errorMessageContainer').style.display = 'block';
+            console.log("POST Response: You can't add admins to this group");
+            return;
+        }
     
         fetch(requestUrl, {
             method: 'POST',  // Change the method to 'POST'
@@ -380,6 +433,41 @@
                 console.error('POST Error:', error);
             });
     }
+    // Add this to your JavaScript file or inline script
+    function setModalData(userId, groupId) {
+        // Set the current user and group in the form for later use
+        document.getElementById('editRoleForm').setAttribute('data-user-id', userId);
+        document.getElementById('editRoleForm').setAttribute('data-group-id', groupId);
+    }
+
+    function submitEditRoleForm() {
+        const userId = document.getElementById('editRoleForm').getAttribute('data-user-id');
+        const groupId = document.getElementById('editRoleForm').getAttribute('data-group-id');
+        const newRole = document.getElementById('newRole').value;
+
+        fetch('{% url "update-user-role" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({"user_id": userId, "group_id": groupId, "new_role": newRole})
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('POST Response:', data);
+        })
+        .catch(error => {
+            console.error('POST Error:', error);
+        });
+
+    }
+
     
 </script>
 {% endblock script %}
