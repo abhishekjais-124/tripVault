@@ -262,3 +262,18 @@ class DeclineUserView(APIView):
             request.status = constants.DECLINED
             request.save()
         return Response({"message": "POST request processed successfully"})
+
+
+@permission_classes([IsAuthenticated])
+class UpdateUserRole(APIView):
+    def post(self, request):
+        request_data = request.data
+        user_id = request_data.get("user_id", None)
+        group_id =request_data.get("group_id", None)
+        new_role = request_data.get("new_role", None)
+        mapping = models.UserGroupMapping.objects.filter(user_id=user_id, group_id=group_id, is_active=True).last()
+        if mapping:
+            role = constants.ADMIN if new_role == 'Admin' else constants.MEMBER
+            mapping.role = role
+            mapping.save()
+        return Response({"message": "POST request processed successfully"})
