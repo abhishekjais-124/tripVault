@@ -2,36 +2,89 @@
 {% load static %}
 {% block title %} User Registration {% endblock title %}
 
-{% block style %} 
-<link rel="stylesheet" href="{% static 'user/css/login.css' %}">
-{% endblock style %}
-
 {% block body %}
-    <div class="bg-img" id="backgroundImage">
-        <div class="content">
-            <header>User Registration</header>
-            <form method="post">
+<div class="min-h-screen flex items-center justify-center pt-20 px-4">
+    <div class="w-full max-w-md">
+        <!-- Welcome Card -->
+        <div class="glass rounded-2xl p-8 mb-8 text-center">
+            <div class="w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Join TripVault</h1>
+            <p class="text-gray-400 mb-6">Start planning amazing trips with friends and family</p>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="glass rounded-2xl p-8">
+            <form method="post" class="space-y-5">
                 {% csrf_token %}
+                
                 {% for field in form %}
-                    <div class="form-field">
-                        <label id="formLabel" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        <label class="text-warning">{{ field.errors }}</label>
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+                            {{ field.label }}
+                        </label>
+                        <div class="relative">
+                            {% if field.field.widget.input_type == 'password' %}
+                                <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 pointer-events-none"></i>
+                            {% elif field.name == 'username' %}
+                                <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 pointer-events-none"></i>
+                            {% elif field.name == 'email' %}
+                                <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400 pointer-events-none"></i>
+                            {% endif %}
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-red-400 text-sm mt-1 space-y-1">
+                                    {% for error in field.errors %}
+                                        <div><i class="fas fa-exclamation-circle mr-1"></i> {{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 {% endfor %}
-                <button type="submit" class="button-89 mt-3" role="button">Register</button>
+
+                <button type="submit" class="w-full btn-gradient text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    <i class="fas fa-user-check mr-2"></i> Create Account
+                </button>
             </form>
-            <div class="text-center fw-bold mt-4">
-                <small id = "welcomeText">
-                    Already Registerd?
-                    <a href="{% url 'login' %}" class="text-primary">Login Here</a>
-                </small>
+
+            <!-- Divider -->
+            <div class="flex items-center my-6">
+                <div class="flex-1 border-t border-gray-700"></div>
+                <div class="px-3 text-gray-500 text-sm">OR</div>
+                <div class="flex-1 border-t border-gray-700"></div>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center">
+                <p class="text-gray-400 text-sm">
+                    Already have an account?
+                    <a href="{% url 'login' %}" class="gradient-text font-semibold hover:underline">
+                        Sign in here
+                    </a>
+                </p>
             </div>
         </div>
-    </div>
-{% endblock body %}
 
-{% block script %}
-<script> const staticUrl = "{% static 'user/images/' %}";</script>
-<script src="{% static 'user/js/login.js' %}"></script>
-{% endblock script %}
+        <!-- Footer -->
+        <div class="text-center mt-8">
+            <p class="text-gray-500 text-xs">
+                <i class="fas fa-lock mr-1"></i> By registering, you agree to our Terms of Service and Privacy Policy
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        @apply w-full bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 pl-10 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all;
+    }
+
+    input::placeholder {
+        color: rgba(107, 114, 128, 0.6);
+    }
+</style>
+{% endblock body %}

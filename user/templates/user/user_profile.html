@@ -3,99 +3,184 @@
 {% load static %}
 {% block title %} Profile {% endblock title %}
 
-{% block style %} 
-<link rel="stylesheet" href="{% static 'user/css/profile.css' %}">
-{% endblock style %}
-
 {% block body %}
-<div class="container profile">
-    {% block messages %}
-        {{ block.super }}
-    {% endblock messages %}
-    <div class="row gutters">
-    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
-    <div class="card h-100">
-        <div class="card-body">
-            <div class="account-settings">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        {% if user.email %}
-                            {% with url=user.icon %}
-                                <img src="{{ url }}" alt="{{ user.username }}">
-                            {% endwith %}
-                        {% else %}
-                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="{{ user.username }}">
+<div class="min-h-screen pt-20 pb-12">
+    <div class="max-w-6xl mx-auto px-4">
+        {% block messages %}
+            {{ block.super }}
+        {% endblock messages %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <!-- Profile Card -->
+            <div class="lg:col-span-1">
+                <div class="glass rounded-2xl p-8 text-center">
+                    <!-- Avatar -->
+                    <div class="mb-6">
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-to-r from-cyan-400 to-blue-500 p-1">
+                            <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                                {% if user.icon %}
+                                    <img src="{{ user.icon }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <i class="fas fa-user text-white text-5xl"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Info -->
+                    <h2 class="text-2xl font-bold text-white mb-2">{{ user.username }}</h2>
+                    <p class="text-gray-400 mb-1">
+                        <i class="fas fa-hashtag mr-1"></i> ID: <span class="text-cyan-400">{{ user.uid }}</span>
+                    </p>
+                    
+                    <!-- Stats -->
+                    <div class="mt-8 pt-8 border-t border-gray-700 space-y-4">
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">Email</p>
+                            <p class="text-white text-sm break-all">{{ user.email }}</p>
+                        </div>
+                        {% if user.phone_number %}
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">Phone</p>
+                            <p class="text-white text-sm">+91 {{ user.phone_number }}</p>
+                        </div>
                         {% endif %}
                     </div>
-                    <h5 class="user-name">{{user.username}}</h5>
-                    <h6 class="user-email">ID: {{user.uid}}</h6>
                 </div>
+            </div>
+
+            <!-- View/Edit Profile Information -->
+            <div class="lg:col-span-2">
+                <form method="post" id="updateForm" action="{% url 'userprofile' %}">
+                    {% csrf_token %}
+
+                    <!-- Personal Information -->
+                    <div class="glass rounded-2xl p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-white flex items-center">
+                                <i class="fas fa-user-edit mr-3 text-cyan-400"></i> Personal Information
+                            </h3>
+                            <button type="button" id="editButton" onclick="toggleEditMode()" class="glass text-gray-300 hover:text-cyan-400 px-4 py-2 rounded-lg transition-all flex items-center space-x-2">
+                                <i class="fas fa-pencil-alt"></i>
+                                <span>Edit</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-5">
+                            <!-- Full Name -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                                    <i class="fas fa-user mr-2"></i> Full Name
+                                </label>
+                                <div id="fullNameView" class="view-mode text-white text-lg px-4 py-3 rounded-lg bg-white/5 border border-gray-600">
+                                    {% if user.name %}{{ user.name }}{% else %}<span class="text-gray-500">Not set</span>{% endif %}
+                                </div>
+                                <input type="text" id="fullName" name="fullName" 
+                                    value="{% if user.name %}{{ user.name }}{% endif %}"
+                                    class="edit-mode hidden w-full bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                                    placeholder="Enter your full name">
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                                    <i class="fas fa-envelope mr-2"></i> Email
+                                </label>
+                                <div id="emailView" class="view-mode text-white text-lg px-4 py-3 rounded-lg bg-white/5 border border-gray-600">
+                                    {{ user.email }}
+                                </div>
+                                <input type="email" id="eMail" name="eMail" 
+                                    value="{{ user.email }}"
+                                    class="edit-mode hidden w-full bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                                    placeholder="Enter your email">
+                            </div>
+
+                            <!-- Phone -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                                    <i class="fas fa-phone mr-2"></i> Phone Number
+                                </label>
+                                <div id="phoneView" class="view-mode text-white text-lg px-4 py-3 rounded-lg bg-white/5 border border-gray-600">
+                                    {% if user.phone_number %}+91 {{ user.phone_number }}{% else %}<span class="text-gray-500">Not set</span>{% endif %}
+                                </div>
+                                <div class="edit-mode hidden flex gap-2">
+                                    <div class="flex items-center px-4 py-3 rounded-lg bg-white/5 border border-gray-600">
+                                        <span class="text-gray-400 text-sm">+91</span>
+                                    </div>
+                                    <input type="text" id="phone" name="phone" 
+                                        value="{% if user.phone_number %}{{ user.phone_number }}{% endif %}"
+                                        maxlength="10" pattern="[0-9]{10}"
+                                        class="flex-1 bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                                        placeholder="Enter 10-digit phone number">
+                                </div>
+                                <p class="edit-mode hidden text-xs text-gray-500 mt-1">Enter a 10-digit Indian mobile number</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-8 flex gap-3">
+                            <a href="{% url 'group' %}" class="flex-1 glass text-gray-300 font-bold py-3 rounded-lg text-center hover:bg-white/10 transition-all">
+                                <i class="fas fa-arrow-left mr-2"></i> Back to Groups
+                            </a>
+                            <button type="button" id="cancelButton" onclick="cancelEdit()" class="edit-mode hidden flex-1 glass text-gray-300 font-bold py-3 rounded-lg hover:bg-white/10 transition-all">
+                                <i class="fas fa-times mr-2"></i> Cancel
+                            </button>
+                            <button type="submit" onclick="disableButton(event)" id="updateButton" class="edit-mode hidden flex-1 btn-gradient text-white font-bold py-3 rounded-lg transition-all transform hover:scale-105">
+                                <i class="fas fa-save mr-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
+
+        <!-- Requests Section -->
+        {% include 'user/requests.html' %}
     </div>
-    </div>
-    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
-        <form method="post" id="updateForm" action="{% url 'userprofile' %}">
-            {% csrf_token %}
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="row gutters">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <h6 class="mb-2 text-black-50">Personal Details</h6>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label for="fullName">Full Name</label>
-                                <input type="text" class="form-control" id="fullName" name="fullName" value="{% if user.name is not none %}{{ user.name }}{% endif %}">
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label for="eMail">Email</label>
-                                <input type="email" class="form-control" id="eMail" name="eMail" value="{{ user.email }}">
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div class="form-group">
-                                <label for="phone">Phone</label>
-                                <div class="input-group">
-                                    <span class="input-group-text" id="basic-addon1">+91</span>
-                                    <input type="text" class="form-control" maxlength="10" pattern="[0-9]{10}" id="phone" name="phone" value="{% if user.phone_number is not none %}{{ user.phone_number }}{% endif %}" style="margin-top:1px;">
-                                </div>                                
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row gutters">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4">
-                            <div class="text-right">
-                                <button id="updateButton" type="submit" onclick="disableButton()" class="btn btn-primary">Update</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-        
-    </div>
-    </div>
-    </div>
-   {% include 'user/requests.html' %}
+</div>
+
 {% endblock body %}
 {% block script %}
 <script>
-    function disableButton() {
+    function toggleEditMode() {
+        // Hide view mode elements
+        const viewElements = document.querySelectorAll('.view-mode');
+        viewElements.forEach(el => el.classList.add('hidden'));
+        
+        // Show edit mode elements
+        const editElements = document.querySelectorAll('.edit-mode');
+        editElements.forEach(el => el.classList.remove('hidden'));
+        
+        // Hide edit button
+        document.getElementById('editButton').classList.add('hidden');
+    }
+
+    function cancelEdit() {
+        // Show view mode elements
+        const viewElements = document.querySelectorAll('.view-mode');
+        viewElements.forEach(el => el.classList.remove('hidden'));
+        
+        // Hide edit mode elements
+        const editElements = document.querySelectorAll('.edit-mode');
+        editElements.forEach(el => el.classList.add('hidden'));
+        
+        // Show edit button
+        document.getElementById('editButton').classList.remove('hidden');
+        
+        // Reset form to original values
+        document.getElementById('updateForm').reset();
+    }
+
+    function disableButton(event) {
+        event.preventDefault();
         var button = document.getElementById("updateButton");
         button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
 
-        // Re-enable the button after 1000 milliseconds (1 second)
-        setTimeout(function() {
-            button.disabled = false;
-        }, 1000);
-
-        // Submit the form after the delay
+        // Submit the form after a brief delay
         setTimeout(function() {
             document.getElementById("updateForm").submit();
-        }, 1000);
+        }, 500);
     }
 </script>
 {% endblock script %}

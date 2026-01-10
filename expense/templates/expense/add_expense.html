@@ -1,0 +1,180 @@
+{% extends "trip/base.html" %}
+{% load static %}
+
+{% block title %}Add Expense - {{ group.name }}{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8 px-4">
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-8">
+            <a href="{% url 'group_expenses' group_id=group.id %}" class="text-cyan-400 hover:text-cyan-300 inline-flex items-center space-x-2 mb-4">
+                <i class="fas fa-arrow-left"></i><span>Back to Expenses</span>
+            </a>
+            <h1 class="text-3xl font-bold text-white">Add Expense</h1>
+            <p class="text-slate-400">Group: <span class="font-semibold text-cyan-300">{{ group.name }}</span></p>
+        </div>
+
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl shadow-xl p-6">
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="p-3 rounded-lg {% if message.tags %}bg-{{ message.tags }}-900 text-{{ message.tags }}-200{% else %}bg-blue-900 text-blue-200{% endif %}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-1">Title</label>
+                        <input name="title" type="text" required placeholder="e.g. Dinner at Jaipur" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">Amount Paid</label>
+                            <input name="amount" type="number" step="0.01" min="0.01" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" />
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-300 mb-1">Date</label>
+                            <input name="date" id="date" type="date" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-1">Paid By</label>
+                        <select name="paid_by" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50">
+                            <option value="{{ user.id }}" selected>You ({{ user.username }})</option>
+                            {% for member in group_members %}
+                                {% if member.user.id != user.id %}
+                                    <option value="{{ member.user.id }}">{{ member.user.username }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-1">Category</label>
+                        <select name="category" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50">
+                            {% for value, label in categories %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-1">Description (Optional)</label>
+                        <textarea name="description" rows="3" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" placeholder="Notes for this expense..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-slate-300 mb-1">Attach Receipt (Optional)</label>
+                        <input type="file" name="receipt" accept="image/*,.pdf" class="w-full text-slate-200 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" />
+                        <p class="text-xs text-slate-500 mt-1">Images or PDF.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <p class="text-sm font-semibold text-slate-200 flex items-center gap-2"><i class="fas fa-users text-cyan-400"></i>Split Between</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {% for member in group_members %}
+                            <label class="flex items-center gap-3 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3">
+                                <input type="checkbox" name="split_member" value="{{ member.user.id }}" class="h-4 w-4 text-cyan-500 border-slate-600 rounded" checked>
+                                <span class="text-slate-200">{{ member.user.username }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <p class="text-xs text-slate-500">Uncheck anyone not included in this expense.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <p class="text-sm font-semibold text-slate-200 flex items-center gap-2"><i class="fas a-code-branch text-cyan-400"></i>Split Type</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <label class="flex items-start gap-3 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3">
+                            <input type="radio" name="split_type" value="equal" class="mt-1 h-4 w-4 text-cyan-500" checked onclick="toggleSplit('equal')">
+                            <div>
+                                <p class="text-slate-200 font-semibold">Equal</p>
+                                <p class="text-xs text-slate-500">Divide equally among selected members</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3">
+                            <input type="radio" name="split_type" value="custom" class="mt-1 h-4 w-4 text-cyan-500" onclick="toggleSplit('custom')">
+                            <div>
+                                <p class="text-slate-200 font-semibold">Custom Amount</p>
+                                <p class="text-xs text-slate-500">Specify amount per member</p>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 bg-slate-900 border border-slate-700 rounded-lg px-4 py-3">
+                            <input type="radio" name="split_type" value="percentage" class="mt-1 h-4 w-4 text-cyan-500" onclick="toggleSplit('percentage')">
+                            <div>
+                                <p class="text-slate-200 font-semibold">Percentage</p>
+                                <p class="text-xs text-slate-500">Assign percentages (total ~100%)</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="customSplit" class="hidden space-y-3">
+                    <p class="text-sm font-semibold text-slate-200">Custom Amounts</p>
+                    {% for member in group_members %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                        <div class="flex items-center gap-3">
+                            <img src="{{ member.user.icon }}" alt="{{ member.user.username }}" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="text-slate-200 font-semibold">{{ member.user.username }}</p>
+                                <p class="text-xs text-slate-500">Member</p>
+                            </div>
+                        </div>
+                        <input type="number" step="0.01" min="0" name="split_amount_{{ member.user.id }}" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" />
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div id="percentageSplit" class="hidden space-y-3">
+                    <p class="text-sm font-semibold text-slate-200">Percentage Split (total ~100%)</p>
+                    {% for member in group_members %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                        <div class="flex items-center gap-3">
+                            <img src="{{ member.user.icon }}" alt="{{ member.user.username }}" class="w-10 h-10 rounded-full">
+                            <div>
+                                <p class="text-slate-200 font-semibold">{{ member.user.username }}</p>
+                                <p class="text-xs text-slate-500">Member</p>
+                            </div>
+                        </div>
+                        <input type="number" step="0.01" min="0" name="split_percent_{{ member.user.id }}" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50" />
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-3 rounded-lg shadow-lg transition">Add Expense</button>
+                    <a href="{% url 'group_expenses' group_id=group.id %}" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 rounded-lg text-center transition">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const customDiv = document.getElementById('customSplit');
+    const percentDiv = document.getElementById('percentageSplit');
+
+    function toggleSplit(type) {
+        if (type === 'custom') {
+            customDiv.classList.remove('hidden');
+            percentDiv.classList.add('hidden');
+        } else if (type === 'percentage') {
+            percentDiv.classList.remove('hidden');
+            customDiv.classList.add('hidden');
+        } else {
+            customDiv.classList.add('hidden');
+            percentDiv.classList.add('hidden');
+        }
+    }
+
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+    }
+</script>
+{% endblock %}

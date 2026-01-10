@@ -1,0 +1,227 @@
+{% extends 'user/base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% block title %} Activities {% endblock title %}
+
+{% block body %}
+<div class="min-h-screen pt-20 pb-12">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold gradient-text mb-2">Activities</h1>
+                    <p class="text-gray-400">Your group activities & invitations</p>
+                </div>
+                <div class="flex items-center space-x-2 glass px-4 py-2 rounded-lg">
+                    <i class="fas fa-bell text-cyan-400"></i>
+                    <span class="text-white font-semibold">{{ requests|length }}</span>
+                    <span class="text-gray-400 text-sm">activities</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities List -->
+        {% if requests %}
+        <div class="space-y-4">
+            {% for request in requests %}
+                {% if request.type == 'group_request' %}
+                <!-- Group Request Notification -->
+                <div id="notification_{{ request.id }}" class="glass rounded-2xl p-6 hover:bg-white/10 transition-all">
+                    <div class="flex items-start justify-between gap-4">
+                        <!-- User Info -->
+                        <div class="flex items-start space-x-4 flex-1">
+                            <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                {% if request.sender_icon %}
+                                    <img src="{{ request.sender_icon }}" alt="{{ request.requested_by }}" class="w-full h-full rounded-full object-cover">
+                                {% else %}
+                                    <i class="fas fa-user text-white text-xl"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <h3 class="text-white font-bold">{{ request.sender_name }}</h3>
+                                    <span class="text-gray-500 text-sm">@{{ request.requested_by }}</span>
+                                </div>
+                                
+                                <p class="text-gray-300 mb-2">
+                                    invited you to join the group 
+                                    <span class="text-cyan-400 font-semibold">"{{ request.group_name }}"</span>
+                                    as
+                                    <span class="px-2 py-1 rounded text-xs font-semibold {% if request.role == 'Admin' %}bg-red-500/20 text-red-400{% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                                        {{ request.role }}
+                                    </span>
+                                </p>
+                                
+                                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                                    <i class="fas fa-clock"></i>
+                                    <span>{{ request.time }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2 flex-shrink-0">
+                            <button 
+                                onclick="handleRequest('{{ request.id }}', '{{ request.sender_uid }}', '{{ request.group_id }}', 'accept')"
+                                id="acceptBtn_{{ request.id }}"
+                                class="px-4 py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-all font-semibold flex items-center space-x-2">
+                                <i class="fas fa-check"></i>
+                                <span>Accept</span>
+                            </button>
+                            <button 
+                                onclick="handleRequest('{{ request.id }}', '{{ request.sender_uid }}', '{{ request.group_id }}', 'decline')"
+                                id="declineBtn_{{ request.id }}"
+                                class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all font-semibold flex items-center space-x-2">
+                                <i class="fas fa-times"></i>
+                                <span>Decline</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Activity Notification -->
+                <div id="notification_{{ request.id }}" class="glass rounded-2xl p-6 hover:bg-white/10 transition-all border-l-4 {% if request.notification_type == 'expense_added' %}border-green-500{% elif request.notification_type == 'expense_deleted' %}border-red-500{% else %}border-blue-500{% endif %}">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start space-x-4 flex-1">
+                            <div class="w-12 h-12 bg-gradient-to-r {% if request.notification_type == 'expense_added' %}from-green-400 to-emerald-500{% elif request.notification_type == 'expense_deleted' %}from-red-400 to-pink-500{% else %}from-blue-400 to-cyan-500{% endif %} rounded-full flex items-center justify-center flex-shrink-0">
+                                {% if request.notification_type == 'expense_added' %}
+                                    <i class="fas fa-plus text-white text-lg"></i>
+                                {% elif request.notification_type == 'expense_deleted' %}
+                                    <i class="fas fa-trash text-white text-lg"></i>
+                                {% else %}
+                                    <i class="fas fa-bell text-white text-lg"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-1">
+                                <h3 class="text-white font-bold mb-1">{{ request.title }}</h3>
+                                <p class="text-gray-300 text-sm mb-2">{{ request.message }}</p>
+                                
+                                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                                    <i class="fas fa-clock"></i>
+                                    <span>{{ request.time }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% if not request.is_read %}
+                        <div class="flex-shrink-0">
+                            <div class="w-3 h-3 rounded-full {% if request.notification_type == 'expense_added' %}bg-green-400{% elif request.notification_type == 'expense_deleted' %}bg-red-400{% else %}bg-blue-400{% endif %}"></div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="glass rounded-2xl p-12 text-center">
+            <div class="w-24 h-24 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 opacity-50">
+                <i class="fas fa-bell-slash text-white text-5xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">No Activities</h2>
+            <p class="text-gray-400 mb-8 max-w-md mx-auto">
+                No pending group invitations or expense activities at the moment.
+            </p>
+            <a href="{% url 'group' %}" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg inline-block transition-all transform hover:scale-105">
+                <i class="fas fa-users mr-2"></i> Browse Groups
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<script>
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+        return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+
+    function handleRequest(notificationId, senderUid, groupId, action) {
+        const notification = document.getElementById(`notification_${notificationId}`);
+        const acceptBtn = document.getElementById(`acceptBtn_${notificationId}`);
+        const declineBtn = document.getElementById(`declineBtn_${notificationId}`);
+        
+        // Disable buttons
+        acceptBtn.disabled = true;
+        declineBtn.disabled = true;
+        acceptBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        declineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        const url = action === 'accept' ? '{% url "accept-request" %}' : '{% url "decline-request" %}';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                sender_uid: senderUid,
+                group_id: groupId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (action === 'accept') {
+                // Show accepted state
+                notification.innerHTML = `
+                    <div class="flex items-center justify-center space-x-3 py-4">
+                        <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-400 text-xl"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-green-400 font-bold text-lg">Invitation Accepted!</p>
+                            <p class="text-gray-400 text-sm">You've been added to the group</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Show declined state
+                notification.innerHTML = `
+                    <div class="flex items-center justify-center space-x-3 py-4">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-times text-red-400 text-xl"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-red-400 font-bold text-lg">Invitation Declined</p>
+                            <p class="text-gray-400 text-sm">Request has been removed</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Fade out after 2 seconds
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                    
+                    // Check if no more notifications
+                    const notifications = document.querySelectorAll('[id^="notification_"]');
+                    if (notifications.length === 0) {
+                        location.reload();
+                    }
+                }, 500);
+            }, 2000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            acceptBtn.disabled = false;
+            declineBtn.disabled = false;
+            acceptBtn.innerHTML = '<i class="fas fa-check"></i> <span>Accept</span>';
+            declineBtn.innerHTML = '<i class="fas fa-times"></i> <span>Decline</span>';
+            alert('Error processing request. Please try again.');
+        });
+    }
+</script>
+{% endblock script %}

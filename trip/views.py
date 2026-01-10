@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
 from user import utils as user_utils
+from group_request import utils as group_request_utils
 from common.redis_client import redis_client
 from user import constants as user_constants
 
@@ -20,7 +21,7 @@ class HomeView(APIView):
                 {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
         request_data = {}
-        pending_requests = user_utils.get_user_group_pending_request(user)
+        pending_requests = group_request_utils.get_user_group_pending_request(user)
         if pending_requests:
             request_data = {
                 "sender": pending_requests.sender.username,

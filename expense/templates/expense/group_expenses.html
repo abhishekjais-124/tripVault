@@ -1,0 +1,437 @@
+{% extends "trip/base.html" %}
+{% load static %}
+
+{% block title %}{{ group.name }} - Expenses{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8 px-4 pt-28">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header with Balance -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl shadow-xl p-8 text-white">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h1 class="text-4xl font-bold mb-2">{{ group.name }}</h1>
+                        <p class="text-cyan-100">Trip Expense Tracker</p>
+                    </div>
+                    <a href="{% url 'add_expense' group_id=group.id %}" class="bg-white text-cyan-600 px-6 py-3 rounded-lg font-semibold hover:bg-cyan-50 transition-colors flex items-center space-x-2 shadow-lg">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Expense</span>
+                    </a>
+                </div>
+                
+                <!-- Balance Display -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur">
+                        <p class="text-cyan-100 text-sm mb-2">YOUR BALANCE</p>
+                        <p class="text-3xl font-bold">
+                            {% if user_is_debtor %}
+                                <span class="text-red-300">-₹{{ overall_balance|floatformat:2 }}</span>
+                            {% else %}
+                                <span class="text-green-300">+₹{{ overall_balance|floatformat:2 }}</span>
+                            {% endif %}
+                        </p>
+                        <p class="text-xs text-cyan-100 mt-2">
+                            {% if user_is_debtor %}
+                                You owe money
+                            {% else %}
+                                You are owed money
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur">
+                        <p class="text-cyan-100 text-sm mb-2">TOTAL EXPENSES</p>
+                        <p class="text-3xl font-bold text-white">₹{{ total_expenses|floatformat:2 }}</p>
+                        <p class="text-xs text-cyan-100 mt-2">Group total</p>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur">
+                        <p class="text-cyan-100 text-sm mb-2">TOTAL EXPENSES</p>
+                        <p class="text-3xl font-bold text-white">{{ expenses|length }}</p>
+                        <p class="text-xs text-cyan-100 mt-2">Transaction count</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
+            {% if expenses %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-slate-700 border-b border-slate-600">
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Date</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Title</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Category</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Paid By</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-cyan-300">Amount Paid</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-cyan-300">Your Share</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700" id="expenseTableBody">
+                            {% for expense in expenses %}
+                                <tr class="hover:bg-slate-700 transition-colors expense-row cursor-pointer" data-expense-id="{{ expense.id }}" data-expense-paid-by="{{ expense.is_paid_by_user }}" onclick="window.location.href='{% url 'expense_detail' expense.id %}'">
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm">
+                                            <p class="font-medium text-white">{{ expense.date|date:"M d" }}</p>
+                                            <p class="text-xs text-slate-400">{{ expense.date|date:"Y" }}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <p class="font-semibold text-white">{{ expense.title }}</p>
+                                            {% if expense.description %}
+                                                <p class="text-xs text-slate-400">{{ expense.description }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-block px-3 py-1 text-xs font-medium rounded-full
+                                            {% if expense.category == 'Food' %}bg-orange-900 text-orange-300
+                                            {% elif expense.category == 'Transport' %}bg-purple-900 text-purple-300
+                                            {% elif expense.category == 'Accommodation' %}bg-pink-900 text-pink-300
+                                            {% elif expense.category == 'Activity' %}bg-indigo-900 text-indigo-300
+                                            {% elif expense.category == 'Shopping' %}bg-rose-900 text-rose-300
+                                            {% else %}bg-slate-600 text-slate-300
+                                            {% endif %}
+                                        ">
+                                            {{ expense.category }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="{{ expense.paid_by.icon }}" alt="{{ expense.paid_by.name }}" class="w-6 h-6 rounded-full">
+                                            <span class="text-sm text-white">{{ expense.paid_by.username }}</span>
+                                            {% if expense.is_paid_by_user %}
+                                                <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">(You)</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <p class="font-semibold text-white">₹{{ expense.amount|floatformat:2 }}</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        {% if expense.amount_owed %}
+                                            {% if expense.is_paid_by_user %}
+                                                <span class="font-semibold text-green-400">+₹{{ expense.amount_owed|floatformat:2 }}</span>
+                                            {% else %}
+                                                <span class="font-semibold text-red-400">-₹{{ expense.amount_owed|floatformat:2 }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-slate-400">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-12 text-center">
+                    <i class="fas fa-inbox text-6xl text-slate-600 mb-4 block"></i>
+                    <p class="text-slate-400 text-lg mb-6">No expenses yet in this group</p>
+                    <a href="{% url 'add_expense' group_id=group.id %}" class="inline-block bg-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-cyan-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add the first expense
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-8">
+            <a href="{% url 'group' %}" class="inline-block text-cyan-400 hover:text-cyan-300 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Groups
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="fixed top-4 right-4 z-50">
+        {% for message in messages %}
+            <div class="mb-4 p-4 rounded-lg shadow-lg {% if message.tags %}bg-{{ message.tags }}-500{% else %}bg-blue-500{% endif %} text-white">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('[class*="bg-"][class*="-500"]').forEach(el => {
+                el.style.animation = 'fadeOut 0.5s ease-out forwards';
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 4000);
+    </script>
+    <style>
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+    </style>
+{% endif %}
+
+<!-- Confirmation Modal -->
+<div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 rounded-xl shadow-2xl p-8 max-w-sm w-full border border-slate-700">
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 bg-red-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash text-red-300 text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Delete Expense?</h2>
+            <p class="text-slate-300">
+                Are you sure you want to delete <span id="expenseTitleModal" class="font-semibold text-cyan-300"></span>? This action cannot be undone.
+            </p>
+        </div>
+        
+        <div class="flex gap-3">
+            <button 
+                onclick="closeDeleteModal()"
+                class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg transition-colors">
+                Cancel
+            </button>
+            <button 
+                onclick="confirmDelete()"
+                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                <i class="fas fa-check"></i>
+                <span>Delete</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SWIPE_THRESHOLD = 50; // minimum distance to trigger swipe
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let currentSwipedRow = null;
+    let pendingDeleteExpenseId = null;
+
+    // Get CSRF token
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+        return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+
+    // Initialize expense rows with swipe detection
+    function initializeExpenseRows() {
+        const rows = document.querySelectorAll('.expense-row');
+        rows.forEach(row => {
+            row.addEventListener('touchstart', handleTouchStart, false);
+            row.addEventListener('touchend', handleTouchEnd, false);
+            row.addEventListener('click', handleRowClick, false);
+        });
+    }
+
+    function handleTouchStart(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        // Close any previously swiped row
+        if (currentSwipedRow && currentSwipedRow !== e.currentTarget) {
+            resetRowSwipe(currentSwipedRow);
+        }
+    }
+
+    function handleTouchEnd(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe(e.currentTarget);
+    }
+
+    function handleSwipe(row) {
+        const distance = touchStartX - touchEndX;
+        
+        // Swipe left (negative distance means left swipe)
+        if (distance > SWIPE_THRESHOLD) {
+            showDeleteAction(row);
+        } else if (distance < -SWIPE_THRESHOLD) {
+            // Swipe right
+            resetRowSwipe(row);
+        }
+    }
+
+    function showDeleteAction(row) {
+        const expenseId = row.dataset.expenseId;
+        const isPaidByUser = row.dataset.expensePaydBy === 'True' || row.dataset.expensePaydBy === 'true';
+        
+        if (!isPaidByUser) return;
+
+        // Reset previous row if any
+        if (currentSwipedRow && currentSwipedRow !== row) {
+            resetRowSwipe(currentSwipedRow);
+        }
+
+        currentSwipedRow = row;
+        row.classList.add('bg-slate-900');
+        row.style.transform = 'translateX(-80px)';
+        row.style.transition = 'transform 0.3s ease';
+
+        // Create delete button if not exists
+        if (!row.querySelector('.delete-action-btn')) {
+            const deleteBtn = document.createElement('div');
+            deleteBtn.className = 'delete-action-btn absolute right-0 top-0 h-full bg-red-600 flex items-center px-6 cursor-pointer hover:bg-red-700 transition-colors';
+            deleteBtn.innerHTML = '<i class="fas fa-trash text-white text-xl"></i>';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                openDeleteModal(expenseId, row);
+            };
+            
+            row.style.position = 'relative';
+            row.style.overflow = 'hidden';
+            row.appendChild(deleteBtn);
+        }
+    }
+
+    function resetRowSwipe(row) {
+        if (row) {
+            row.classList.remove('bg-slate-900');
+            row.style.transform = 'translateX(0)';
+            const deleteBtn = row.querySelector('.delete-action-btn');
+            if (deleteBtn) {
+                deleteBtn.remove();
+            }
+            currentSwipedRow = null;
+        }
+    }
+
+    function handleRowClick(e) {
+        const row = e.currentTarget;
+        // Don't reset on delete button click
+        if (!e.target.closest('.delete-action-btn')) {
+            // Clicking elsewhere resets swipe
+            if (currentSwipedRow && currentSwipedRow !== row) {
+                resetRowSwipe(currentSwipedRow);
+            }
+        }
+    }
+
+    function openDeleteModal(expenseId, row) {
+        pendingDeleteExpenseId = expenseId;
+        const expenseTitle = row.querySelector('.font-semibold.text-white').textContent.trim();
+        document.getElementById('expenseTitleModal').textContent = expenseTitle;
+        document.getElementById('deleteConfirmModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteConfirmModal').classList.add('hidden');
+        pendingDeleteExpenseId = null;
+        resetRowSwipe(currentSwipedRow);
+    }
+
+    function confirmDelete() {
+        if (!pendingDeleteExpenseId) return;
+
+        const expenseId = pendingDeleteExpenseId;
+        const deleteBtn = document.querySelector('#deleteConfirmModal button:last-child');
+        
+        // Show loading state
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        // Make AJAX request
+        fetch(`/expense/expense/${expenseId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Delete failed');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Find and remove the row
+                const row = document.querySelector(`[data-expense-id="${expenseId}"]`);
+                if (row) {
+                    row.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => {
+                        row.remove();
+                        updateBalances();
+                        addNotification(`Expense deleted successfully`, 'success');
+                        closeDeleteModal();
+                    }, 300);
+                }
+            } else {
+                throw new Error(data.error || 'Delete failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            addNotification(`Error deleting expense: ${error.message}`, 'error');
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="fas fa-check"></i> <span>Delete</span>';
+        });
+    }
+
+    function updateBalances() {
+        // Recalculate and update balances
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                // Parse new HTML and extract balance values
+                const parser = new DOMParser();
+                const newDoc = parser.parseFromString(html, 'text/html');
+                
+                // Update balance cards
+                const balanceCards = document.querySelectorAll('.bg-white.bg-opacity-10.rounded-lg.p-4');
+                const newBalanceCards = newDoc.querySelectorAll('.bg-white.bg-opacity-10.rounded-lg.p-4');
+                
+                if (balanceCards.length > 0 && newBalanceCards.length > 0) {
+                    balanceCards[0].innerHTML = newBalanceCards[0].innerHTML;
+                    balanceCards[1].innerHTML = newBalanceCards[1].innerHTML;
+                    balanceCards[2].innerHTML = newBalanceCards[2].innerHTML;
+                }
+            })
+            .catch(err => console.error('Error updating balances:', err));
+    }
+
+    function addNotification(message, type = 'info') {
+        const notifContainer = document.createElement('div');
+        notifContainer.className = 'fixed top-4 right-4 z-50';
+        
+        const notif = document.createElement('div');
+        notif.className = `mb-4 p-4 rounded-lg shadow-lg bg-${
+            type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue'
+        }-500 text-white`;
+        notif.textContent = message;
+        
+        notifContainer.appendChild(notif);
+        document.body.appendChild(notifContainer);
+        
+        setTimeout(() => {
+            notif.style.animation = 'fadeOut 0.5s ease-out forwards';
+            setTimeout(() => notifContainer.remove(), 500);
+        }, 4000);
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initializeExpenseRows);
+</script>
+
+<style>
+    @keyframes slideOut {
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+    
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+</style>
+{% endblock %}

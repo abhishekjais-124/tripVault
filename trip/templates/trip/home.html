@@ -3,96 +3,223 @@
 {% load static %}
 {% block title %} Home {% endblock title %}
 
-{% block style %} 
-
-{% endblock style %}
-
 {% block body %}
-<div class="toast align-items-center position-absolute top-0 end-0" data-bs-delay="20000" role="alert" aria-live="assertive" aria-atomic="true" style="margin:70px 20px;" id="myToast">
-    <div class="d-flex">
-        <div class="toast-body">
-            {% if request_data %}
-            <p style="font-size: 16px; margin: 10px 0;">
-                <span style="font-weight: bold; color: #3498db;">{{ request_data.sender }}</span> has requested to add you to the group <span style="font-weight: bold; color: #3498db;">{{ request_data.group }}</span>.
-            </p>
-            {% endif %}
-            <div class="mt-2 pt-2 border-top">
-                <button type="button" class="btn btn-success btn-sm" onclick="AcceptRequest('{{ request_data.sender_uid }}', '{{ request_data.group_id }}')" data-bs-dismiss="toast">Accept</button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="DeclineRequest('{{ request_data.sender_uid }}', '{{ request_data.group_id }}')" data-bs-dismiss="toast">Decline</button>
-              </div>
+<div class="min-h-screen pt-20">
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <!-- Left Content -->
+            <div class="text-center md:text-left">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    <span class="gradient-text">Plan. Explore. Remember.</span>
+                </h1>
+                <p class="text-xl text-gray-400 mb-8">
+                    Organize group trips effortlessly. Share itineraries, budgets, and memories with your travel companions.
+                </p>
+                {% if request.user.is_authenticated %}
+                <div class="flex gap-4 flex-col sm:flex-row">
+                    <a href="{% url 'group' %}" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-users mr-2"></i> Manage Groups
+                    </a>
+                    <a href="{% url 'userprofile' %}" class="glass text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 hover:bg-white/10">
+                        <i class="fas fa-user-circle mr-2"></i> My Profile
+                    </a>
+                </div>
+                {% else %}
+                <div class="flex gap-4 flex-col sm:flex-row">
+                    <a href="{% url 'customerregistration' %}" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-user-plus mr-2"></i> Get Started
+                    </a>
+                    <a href="{% url 'login' %}" class="glass text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 hover:bg-white/10">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Illustration -->
+            <div class="flex justify-center">
+                <div class="relative w-64 h-64 md:w-80 md:h-80">
+                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl transform rotate-6 opacity-20 blur-2xl"></div>
+                    <div class="relative glass rounded-2xl p-8 flex items-center justify-center">
+                        <i class="fas fa-map text-8xl gradient-text opacity-80"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
-  </div>
 
-{% endblock body %}
-{% block script %}
+    <!-- Features Section -->
+    <div class="max-w-7xl mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center gradient-text mb-12">Why Choose TripVault?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="glass rounded-2xl p-8 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-users text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Group Management</h3>
+                <p class="text-gray-400">
+                    Create and manage multiple trip groups. Invite friends and collaborate seamlessly on travel plans.
+                </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="glass rounded-2xl p-8 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-calendar text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Smart Itineraries</h3>
+                <p class="text-gray-400">
+                    Plan your trip day-by-day with detailed itineraries. Share schedules with your group in real-time.
+                </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="glass rounded-2xl p-8 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Secure & Private</h3>
+                <p class="text-gray-400">
+                    Your data is protected with enterprise-grade encryption. Only approved members can access your trips.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Notification -->
     {% if request_data %}
-        <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var myToast = new bootstrap.Toast(document.getElementById('myToast'));
-            myToast.show();
-            console.log("Toast shown!");
-        });
-        </script>
+    <div class="fixed bottom-4 right-4 glass rounded-2xl p-6 max-w-sm border border-cyan-400/30 shadow-2xl z-40 animate-slide-in">
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-plus text-white"></i>
+                </div>
+                <div>
+                    <p class="text-white font-semibold text-sm">New Request</p>
+                    <p class="text-gray-400 text-xs">{{ request_data.sender }}</p>
+                </div>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <p class="text-gray-300 text-sm mb-4">
+            wants to add you to <span class="text-cyan-400 font-semibold">{{ request_data.group }}</span>
+        </p>
+        <div class="flex gap-3">
+            <button onclick="AcceptRequest('{{ request_data.sender_uid }}', '{{ request_data.group_id }}')" class="flex-1 btn-gradient text-white font-semibold py-2 rounded-lg text-sm transition-all transform hover:scale-105">
+                <i class="fas fa-check mr-1"></i> Accept
+            </button>
+            <button onclick="DeclineRequest('{{ request_data.sender_uid }}', '{{ request_data.group_id }}')" class="flex-1 glass text-gray-300 font-semibold py-2 rounded-lg text-sm hover:bg-red-500/10 transition-all">
+                <i class="fas fa-times mr-1"></i> Decline
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
     {% endif %}
-    <script>
-        function getCookie(name) {
-            const cookieValue = document.cookie
-                .split('; ')
-                .find(row => row.startsWith(name + '='))
-                ?.split('=')[1];
-        
-            return cookieValue ? decodeURIComponent(cookieValue) : null;
-        }
-    
-        function AcceptRequest(sender_uid, group_id) {
 
-            fetch('{% url "accept-request" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
-            })
-            .then(response => {
-                if (response.ok) {
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('POST Response:', data);
-            })
-            .catch(error => {
-                console.error('POST Error:', error);
-            });
+    <!-- Footer -->
+    <div class="max-w-7xl mx-auto px-4 py-12 mt-12 border-t border-gray-800">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-white font-bold mb-4">Product</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Features</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Pricing</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Security</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Company</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">About</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Blog</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Legal</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Privacy</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Terms</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Cookies</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Follow</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Twitter</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Facebook</a></li>
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Instagram</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2026 TripVault. All rights reserved.</p>
+        </div>
+    </div>
+</div>
 
-        }
+{% block script %}
+<script>
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+        return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
 
-        
-        function DeclineRequest(sender_uid, group_id) {
+    function AcceptRequest(sender_uid, group_id) {
+        fetch('{% url "accept-request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('POST Response:', data);
+            location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
-            fetch('{% url "decline-request" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
-            })
-            .then(response => {
-                if (response.ok) {
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('POST Response:', data);
-            })
-            .catch(error => {
-                console.error('POST Error:', error);
-            });
-
-        }
-    </script>
+    function DeclineRequest(sender_uid, group_id) {
+        fetch('{% url "decline-request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({"sender_uid": sender_uid, "group_id": group_id})
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('POST Response:', data);
+            location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 {% endblock script %}
+{% endblock body %}
