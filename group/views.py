@@ -12,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from group import utils as group_utils
 from group import models as group_models
 from user import constants
+from expense import utils as expense_utils
+from decimal import Decimal
 
 
 @method_decorator(login_required(login_url="/user/login/"), name="dispatch")
@@ -26,22 +28,29 @@ class GroupView(APIView):
             )
         group_ids = group_utils.get_user_groups(user)
         if not group_ids:
-            return render(request, "user/group.html", {"user": user})
+            return render(request, "user/group.html", {"user": user, "overall_balance": Decimal("0"), "overall_is_debtor": False})
         group_user_mapping = group_utils.create_group_user_mapping(
             list(set(group_ids)), user
         ).values()
+
+        # Compute overall balance across all groups for this user
+        overall_balance = Decimal("0")
+        for grp in group_models.Group.objects.filter(id__in=list(set(group_ids)), is_active=True):
+            overall_balance += expense_utils.get_group_balance(grp, user)
+        overall_is_debtor = overall_balance < 0
         return render(
             request,
             "user/group_table.html",
-            {"user": user, "group_user_mapping": group_user_mapping},
+            {"user": user, "group_user_mapping": group_user_mapping, "overall_balance": overall_balance, "overall_is_debtor": overall_is_debtor},
         )
 
     def post(self, request):
         user = request.user.user
         name = request.POST.get("groupName")
+        description = request.POST.get("groupDescription", "").strip()
         if not name:
             return redirect("group")
-        group_utils.create_user_group(name, user)
+        group_utils.create_user_group(name, user, description or None)
         return redirect("group")
 
 

@@ -149,8 +149,16 @@
                 <div class="bg-slate-800/80 border border-slate-700 rounded-xl shadow-xl p-6">
                     <h3 class="text-sm font-semibold text-slate-300 mb-3">ADDITIONAL INFO</h3>
                     <div class="space-y-2 text-xs text-slate-400">
-                        <p><span class="text-slate-300">Created:</span> {{ expense.created_at|date:"M d, Y H:i" }}</p>
-                        <p><span class="text-slate-300">Updated:</span> {{ expense.updated_at|date:"M d, Y H:i" }}</p>
+                        <p>
+                            <span class="text-slate-300">Created:</span>
+                            {{ expense.created_at|date:"M d, Y H:i" }}
+                            <span class="text-slate-500">({{ expense.created_at|timesince }} ago)</span>
+                        </p>
+                        <p>
+                            <span class="text-slate-300">Updated:</span>
+                            {{ expense.updated_at|date:"M d, Y H:i" }}
+                            <span class="text-slate-500">({{ expense.updated_at|timesince }} ago)</span>
+                        </p>
                     </div>
                 </div>
             </div>

@@ -1,11 +1,12 @@
 from django.urls import path
-from user.auth_views import CustomerRegistrationView, UserProfileView, NotificationsView
+from user.auth_views import CustomerRegistrationView, UserProfileView, NotificationsView, FriendsView, FriendDetailView, MarkAllNotificationsReadView
 from group.views import GroupView, UserGroupView
 from group_request.views import (
     SearchUserView, 
     RequestUserView, 
     AcceptUserRequestView, 
     DeclineUserRequestView, 
+    DismissUserRequestView,
     GetPendingRequestsView
 )
 from django.contrib.auth import views as auth_views
@@ -20,6 +21,9 @@ urlpatterns = [
     # User profile routes
     path('profile/', UserProfileView.as_view(), name='userprofile'),
     path('notifications/', NotificationsView.as_view(), name='notifications'),
+    path('notifications/mark-all-read/', MarkAllNotificationsReadView.as_view(), name='mark-all-read'),
+    path('friends/', FriendsView.as_view(), name='friends'),
+    path('friends/<str:friend_uid>/', FriendDetailView.as_view(), name='friend_detail'),
     
     # Group management routes
     path('groups/', GroupView.as_view(), name='group'),
@@ -31,4 +35,5 @@ urlpatterns = [
     path('groups/pending-requests/', GetPendingRequestsView.as_view(), name='pending-requests'),
     path('accept/', AcceptUserRequestView.as_view(), name='accept-request'),
     path('decline/', DeclineUserRequestView.as_view(), name='decline-request'),
+    path('dismiss/', DismissUserRequestView.as_view(), name='dismiss-request'),
 ]

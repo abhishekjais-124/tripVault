@@ -10,6 +10,20 @@
             <div>
                 <h1 class="text-4xl font-bold gradient-text mb-2">My Groups</h1>
                 <p class="text-gray-400">Manage your travel groups</p>
+                {% if overall_balance is not None %}
+                <div class="mt-3 inline-flex items-center space-x-3 glass px-4 py-2 rounded-lg">
+                    <i class="fas fa-scale-balanced text-cyan-400"></i>
+                    {% if overall_balance == 0 %}
+                        <span class="text-white font-semibold">Balanced</span>
+                    {% elif overall_is_debtor %}
+                        <span class="text-gray-300">Overall:</span>
+                        <span class="text-red-400 font-bold">You owe ₹{{ overall_balance|floatformat:2|cut:"-" }}</span>
+                    {% else %}
+                        <span class="text-gray-300">Overall:</span>
+                        <span class="text-green-400 font-bold">You are owed ₹{{ overall_balance|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
             <button onclick="openCreateGroupModal()" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105">
                 <i class="fas fa-plus mr-2"></i> Create Group
@@ -42,7 +56,7 @@
                             <i class="fas fa-receipt"></i>
                             <span>Expenses</span>
                         </a>
-                        <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}')" class="flex items-center space-x-2 px-4 py-2 btn-gradient text-white rounded-lg hover:shadow-lg transition-all">
+                        <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}', {% if isGroupAdmin %}true{% else %}false{% endif %})" class="flex items-center space-x-2 px-4 py-2 btn-gradient text-white rounded-lg hover:shadow-lg transition-all">
                             <i class="fas fa-user-plus"></i>
                             <span>Add Member</span>
                         </button>
@@ -103,7 +117,7 @@
                     </table>
 
                     <!-- Group Stats -->
-                    <div class="p-6 border-t border-gray-700 flex gap-6">
+                    <div class="p-6 border-t border-gray-700 grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <div>
                             <p class="text-gray-400 text-sm">Members</p>
                             <p class="text-2xl font-bold text-white">{{ user_list|length }}</p>
@@ -111,6 +125,10 @@
                         <div>
                             <p class="text-gray-400 text-sm">Role</p>
                             <p class="text-cyan-400 font-semibold">{{ isGroupAdmin|yesno:'Admin,Member' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-sm">Description</p>
+                            <p class="text-gray-300 truncate">{{ group.description|default:'—' }}</p>
                         </div>
                     </div>
                 </div>
@@ -140,6 +158,13 @@
                 </label>
                 <input type="text" id="groupName" name="groupName" maxlength="30" placeholder="Enter group name" required
                     class="w-full bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all">
+            </div>
+            <div>
+                <label for="groupDescription" class="block text-sm font-semibold text-gray-300 mb-2">
+                    Description <span class="text-gray-500 font-normal">(optional)</span>
+                </label>
+                <textarea id="groupDescription" name="groupDescription" rows="3" maxlength="300" placeholder="Add a short description (optional)"
+                    class="w-full bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"></textarea>
             </div>
 
             <div class="flex gap-3 pt-4">
@@ -201,11 +226,11 @@
                         <i class="fas fa-user-tag mr-2"></i> Select Role
                     </label>
                     <div class="space-y-2">
-                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-white/5 transition-colors">
+                        <label id="adminRoleLabel" class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-white/5 transition-colors">
                             <input type="radio" name="role" value="admin" id="adminRole" class="w-4 h-4 cursor-pointer">
                             <span class="text-gray-300">Admin</span>
                         </label>
-                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-white/5 transition-colors">
+                        <label id="memberRoleLabel" class="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-white/5 transition-colors">
                             <input type="radio" name="role" value="member" id="memberRole" checked class="w-4 h-4 cursor-pointer">
                             <span class="text-gray-300">Member</span>
                         </label>
@@ -276,11 +301,38 @@
         document.getElementById('createGroupModal').classList.add('hidden');
     }
 
-    function openMemberModal(groupId) {
+    let currentGroupIsAdmin = false;
+
+    function setRoleSelectionState(isAdmin) {
+        const adminRadio = document.getElementById('adminRole');
+        const adminLabel = document.getElementById('adminRoleLabel');
+        const memberRadio = document.getElementById('memberRole');
+        const memberLabel = document.getElementById('memberRoleLabel');
+
+        if (!adminRadio || !memberRadio) return;
+
+        if (isAdmin) {
+            adminRadio.disabled = false;
+            adminLabel.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            adminRadio.checked = false;
+            adminRadio.disabled = true;
+            adminLabel.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Always default to member selection
+        memberRadio.checked = true;
+        memberRadio.disabled = false;
+        memberLabel.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    function openMemberModal(groupId, isAdmin = false) {
+        currentGroupIsAdmin = isAdmin;
         document.getElementById('groupModalInput').value = groupId;
         document.getElementById('searchResults').innerHTML = '<p class="text-center text-gray-400 py-8"><i class="fas fa-search mr-2"></i> Start typing to search for users</p>';
         document.getElementById('searchTerm').value = '';
         document.getElementById('memberModal').classList.remove('hidden');
+        setRoleSelectionState(isAdmin);
         
         // Load pending requests
         loadPendingRequests(groupId);
@@ -411,6 +463,21 @@
                     // Display results
                     let html = '';
                     data.results.forEach(user => {
+                        const isMember = !!user.isMember;
+                        const memberRole = user.memberRole || 'Member';
+                        const statusPill = isMember
+                            ? `<span class="px-3 py-2 rounded-lg text-sm font-semibold bg-green-500/15 text-green-300 border border-green-500/30">In group • ${memberRole}</span>`
+                            : (user.isRequested
+                                ? `<button disabled id="requestBtn_${user.uid}" class="glass text-gray-500 cursor-not-allowed px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                                        <i class="fas fa-check mr-1"></i> Requested
+                                   </button>`
+                                : `<button 
+                                        onclick="requestUser('${user.uid}')" 
+                                        id="requestBtn_${user.uid}"
+                                        class="btn-gradient text-white hover:shadow-lg px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                                        <i class="fas fa-user-plus mr-1"></i> Request
+                                   </button>`);
+
                         html += `
                             <div class="glass rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition-all">
                                 <div class="flex items-center space-x-3">
@@ -424,18 +491,10 @@
                                         <p class="text-white font-semibold">${user.username}</p>
                                         <p class="text-gray-400 text-sm">${user.name || 'No name set'}</p>
                                         <p class="text-cyan-400 text-xs">ID: ${user.uid}</p>
+                                        ${isMember ? `<p class="text-green-400 text-xs mt-1">Already ${memberRole}</p>` : ''}
                                     </div>
                                 </div>
-                                <button 
-                                    onclick="requestUser('${user.uid}')" 
-                                    id="requestBtn_${user.uid}"
-                                    class="${user.isRequested ? 'glass text-gray-500 cursor-not-allowed' : 'btn-gradient text-white hover:shadow-lg'} px-4 py-2 rounded-lg text-sm font-semibold transition-all"
-                                    ${user.isRequested ? 'disabled' : ''}>
-                                    ${user.isRequested ? 
-                                        '<i class="fas fa-check mr-1"></i> Requested' : 
-                                        '<i class="fas fa-user-plus mr-1"></i> Request'
-                                    }
-                                </button>
+                                ${statusPill}
                             </div>
                         `;
                     });
@@ -478,6 +537,11 @@
                 selectedRole = role.value;
                 break;
             }
+        }
+
+        // Force member role for non-admin inviters
+        if (!currentGroupIsAdmin || selectedRole.toLowerCase() !== 'admin') {
+            selectedRole = 'member';
         }
 
         const button = document.getElementById(`requestBtn_${userUid}`);

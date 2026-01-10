@@ -13,11 +13,6 @@
                     <h1 class="text-4xl font-bold gradient-text mb-2">Activities</h1>
                     <p class="text-gray-400">Your group activities & invitations</p>
                 </div>
-                <div class="flex items-center space-x-2 glass px-4 py-2 rounded-lg">
-                    <i class="fas fa-bell text-cyan-400"></i>
-                    <span class="text-white font-semibold">{{ requests|length }}</span>
-                    <span class="text-gray-400 text-sm">activities</span>
-                </div>
             </div>
         </div>
 
@@ -27,27 +22,41 @@
             {% for request in requests %}
                 {% if request.type == 'group_request' %}
                 <!-- Group Request Notification -->
-                <div id="notification_{{ request.id }}" class="glass rounded-2xl p-6 hover:bg-white/10 transition-all">
+                <div id="notification_{{ request.id }}" class="glass rounded-3xl p-6 transition-all border border-cyan-500/20 hover:border-cyan-400/40 shadow-xl hover:shadow-2xl">
+                    <!-- Header row -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-11 h-11 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center ring-1 ring-white/10">
+                                <i class="fas fa-user-plus text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-extrabold tracking-wide">New Request</h3>
+                                <p class="text-gray-400 text-sm">@{{ request.requested_by }}</p>
+                            </div>
+                        </div>
+                        <!-- Dismiss button removed for Activity page requests -->
+                    </div>
+
                     <div class="flex items-start justify-between gap-4">
                         <!-- User Info -->
                         <div class="flex items-start space-x-4 flex-1">
-                            <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-white/10">
                                 {% if request.sender_icon %}
                                     <img src="{{ request.sender_icon }}" alt="{{ request.requested_by }}" class="w-full h-full rounded-full object-cover">
                                 {% else %}
-                                    <i class="fas fa-user text-white text-xl"></i>
+                                    <i class="fas fa-user text-white text-lg"></i>
                                 {% endif %}
                             </div>
                             
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2 mb-1">
                                     <h3 class="text-white font-bold">{{ request.sender_name }}</h3>
-                                    <span class="text-gray-500 text-sm">@{{ request.requested_by }}</span>
+                                    <span class="text-gray-500 text-sm hidden md:inline">@{{ request.requested_by }}</span>
                                 </div>
                                 
                                 <p class="text-gray-300 mb-2">
-                                    invited you to join the group 
-                                    <span class="text-cyan-400 font-semibold">"{{ request.group_name }}"</span>
+                                    wants to add you to 
+                                    <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
                                     as
                                     <span class="px-2 py-1 rounded text-xs font-semibold {% if request.role == 'Admin' %}bg-red-500/20 text-red-400{% else %}bg-blue-500/20 text-blue-400{% endif %}">
                                         {{ request.role }}
@@ -62,20 +71,20 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex gap-2 flex-shrink-0">
+                        <div class="flex gap-3 flex-shrink-0">
                             <button 
                                 onclick="handleRequest('{{ request.id }}', '{{ request.sender_uid }}', '{{ request.group_id }}', 'accept')"
                                 id="acceptBtn_{{ request.id }}"
-                                class="px-4 py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-all font-semibold flex items-center space-x-2">
+                                class="px-6 py-3 rounded-xl text-white transition-all font-semibold flex items-center space-x-2 btn-gradient shadow-lg hover:shadow-xl">
                                 <i class="fas fa-check"></i>
-                                <span>Accept</span>
+                                <span class="tracking-wide">Accept</span>
                             </button>
                             <button 
                                 onclick="handleRequest('{{ request.id }}', '{{ request.sender_uid }}', '{{ request.group_id }}', 'decline')"
                                 id="declineBtn_{{ request.id }}"
-                                class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all font-semibold flex items-center space-x-2">
+                                class="px-6 py-3 rounded-xl bg-white/5 text-gray-200 hover:bg-white/10 transition-all font-semibold flex items-center space-x-2 border border-white/10">
                                 <i class="fas fa-times"></i>
-                                <span>Decline</span>
+                                <span class="tracking-wide">Decline</span>
                             </button>
                         </div>
                     </div>
@@ -165,6 +174,22 @@
                 'X-CSRFToken': getCookie('csrftoken'),
             },
             body: JSON.stringify({
+
+        function markAllRead() {
+            fetch('{% url "mark-all-read" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reload to refresh unread badges and navbar count
+                location.reload();
+            })
+            .catch(err => console.error('Mark-all-read error:', err));
+        }
                 sender_uid: senderUid,
                 group_id: groupId
             })
@@ -222,6 +247,27 @@
             declineBtn.innerHTML = '<i class="fas fa-times"></i> <span>Decline</span>';
             alert('Error processing request. Please try again.');
         });
+    }
+
+    function dismissRequest(notificationId, senderUid, groupId) {
+        const notification = document.getElementById(`notification_${notificationId}`);
+        fetch('{% url "dismiss-request" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ sender_uid: senderUid, group_id: groupId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            notification.style.transition = 'opacity 0.3s';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        })
+        .catch(err => console.error('Dismiss error:', err));
     }
 </script>
 {% endblock script %}

@@ -103,8 +103,16 @@ class NotificationsView(View):
         from group_request import utils as group_request_utils
         from common.models import Notification
         
+        # Mark all existing activity notifications as read when landing here
+        Notification.objects.filter(user=user, is_read=False).update(is_read=True)
+
         # Get all pending requests for the current user
         pending_requests = group_request_utils.get_user_group_all_pending_request(user)
+        # Mark them as seen so navbar superscript hides until a new one arrives
+        from group_request import models as group_request_models
+        group_request_models.UserGroupRequest.objects.filter(
+            id__in=[req.id for req in pending_requests]
+        ).update(is_seen=True)
         requests = []
         for req in pending_requests:
             r = {
@@ -118,11 +126,12 @@ class NotificationsView(View):
                 'time': common_utils.format_time_difference(req.created_at),
                 'sender_uid': req.sender.uid,
                 'type': 'group_request',
+                'created_at': req.created_at,
             }
             requests.append(r.copy())
         
         # Get expense notifications
-        expense_notifications = Notification.objects.filter(user=user).select_related('user')[:50]
+        expense_notifications = Notification.objects.filter(user=user).select_related('user').order_by('-created_at')[:50]
         for notif in expense_notifications:
             r = {
                 'id': notif.id,
@@ -132,10 +141,173 @@ class NotificationsView(View):
                 'time': common_utils.format_time_difference(notif.created_at),
                 'type': 'activity',
                 'is_read': notif.is_read,
+                'created_at': notif.created_at,
             }
             requests.append(r)
         
         # Sort all notifications by date (most recent first)
-        requests.sort(key=lambda x: x.get('time', ''), reverse=True)
+        requests.sort(key=lambda x: x.get('created_at'), reverse=True)
         
         return render(request, "user/notifications.html", {"user": user, 'requests': requests})
+
+
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+class MarkAllNotificationsReadView(APIView):
+    """Mark all activity notifications as read for the current user."""
+
+    def post(self, request):
+        user = request.user.user
+        if not user:
+            return Response({"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND)
+
+        from common.models import Notification
+
+        Notification.objects.filter(user=user, is_read=False).update(is_read=True)
+        return Response({"success": True})
+
+
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+class FriendsView(View):
+    """List friends (users who share groups with you) with balances."""
+
+    def get(self, request):
+        user = request.user.user
+        if not user:
+            return redirect('login')
+
+        from decimal import Decimal
+        from group.models import Group, UserGroupMapping
+        from group import utils as group_utils
+        from expense import utils as expense_utils
+
+        # All active groups for current user
+        group_ids = set(group_utils.get_user_groups(user))
+
+        # Build friend mapping: friend_id -> set of shared group_ids
+        friend_groups = {}
+        if group_ids:
+            mappings = UserGroupMapping.objects.filter(
+                group_id__in=group_ids,
+                is_active=True
+            ).select_related('user', 'group')
+
+            for m in mappings:
+                other = m.user
+                if other.id == user.id:
+                    continue
+                if other.id not in friend_groups:
+                    friend_groups[other.id] = {
+                        'user': other,
+                        'groups': set()
+                    }
+                friend_groups[other.id]['groups'].add(m.group_id)
+
+        # Compute per-friend aggregated balance across shared groups
+        friends = []
+        overall_balance = Decimal('0')
+        groups_cache = {}
+        for gid in group_ids:
+            # Cache group instances for later lookups
+            try:
+                groups_cache[gid] = groups_cache.get(gid) or Group.objects.get(id=gid)
+            except Group.DoesNotExist:
+                continue
+            # Sum overall user balance across groups (credit positive, debt negative)
+            overall_balance += expense_utils.get_group_balance(groups_cache[gid], user)
+
+        for fid, info in friend_groups.items():
+            other_user = info['user']
+            balance_sum = Decimal('0')
+            for gid in info['groups']:
+                group = groups_cache.get(gid)
+                if not group:
+                    try:
+                        group = Group.objects.get(id=gid)
+                        groups_cache[gid] = group
+                    except Group.DoesNotExist:
+                        continue
+                # Pairwise balance in this group
+                pair_balances = expense_utils.get_user_balance_with_others(group, user)
+                fb = pair_balances.get(fid, {}).get('balance', Decimal('0'))
+                balance_sum += fb
+
+            friends.append({
+                'uid': other_user.uid,
+                'username': other_user.username,
+                'name': other_user.name or other_user.username,
+                'icon': other_user.icon,
+                'groups_count': len(info['groups']),
+                'balance': balance_sum,
+                'is_debtor': balance_sum < 0,
+            })
+
+        # Optional: sort by magnitude of balance, then name
+        friends.sort(key=lambda f: (abs(f['balance']), f['name'].lower()), reverse=True)
+
+        context = {
+            'user': user,
+            'friends': friends,
+            'overall_balance': overall_balance,
+            'overall_is_debtor': overall_balance < 0,
+        }
+        return render(request, "user/friends.html", context)
+
+
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+class FriendDetailView(View):
+    """Show detailed, per-group expenses between you and a friend."""
+
+    def get(self, request, friend_uid):
+        user = request.user.user
+        if not user:
+            return redirect('login')
+
+        from decimal import Decimal
+        from django.shortcuts import get_object_or_404
+        from group.models import Group, UserGroupMapping
+        from group import utils as group_utils
+        from expense import utils as expense_utils
+        from user.models import User as AppUser
+
+        friend = get_object_or_404(AppUser, uid=friend_uid)
+
+        # Determine shared groups
+        user_group_ids = set(group_utils.get_user_groups(user))
+        friend_group_ids = set(
+            UserGroupMapping.objects.filter(user=friend, is_active=True).values_list('group_id', flat=True)
+        )
+        shared_group_ids = list(user_group_ids.intersection(friend_group_ids))
+
+        groups = []
+        overall_balance = Decimal('0')
+        for gid in shared_group_ids:
+            try:
+                group = Group.objects.get(id=gid)
+            except Group.DoesNotExist:
+                continue
+
+            # Pairwise net balance for this group
+            pair_balances = expense_utils.get_user_balance_with_others(group, user)
+            net = pair_balances.get(friend.id, {}).get('balance', Decimal('0'))
+            overall_balance += net
+
+            groups.append({
+                'group': group,
+                'net': net,
+                'is_debtor': net < 0,
+            })
+
+        context = {
+            'user': user,
+            'friend': {
+                'uid': friend.uid,
+                'username': friend.username,
+                'name': friend.name or friend.username,
+                'icon': friend.icon,
+            },
+            'groups': groups,
+            'overall_balance': overall_balance,
+            'overall_is_debtor': overall_balance < 0,
+        }
+
+        return render(request, "user/friend_detail.html", context)

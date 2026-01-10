@@ -13,6 +13,10 @@ class UserGroupRequest(BaseModel):
         max_length=10, choices=constants.ROLE_CHOICES, default="Member"
     )
     status = models.IntegerField(choices=constants.REQUEST_CHOICES, default=constants.PENDING)
+    # When true, the receiver dismissed the request notification
+    is_dismissed = models.BooleanField(default=False)
+    # Tracks if the receiver has opened the activities page and seen this request
+    is_seen = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Group Request"

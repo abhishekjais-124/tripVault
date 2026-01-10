@@ -63,6 +63,8 @@ class GroupExpensesView(APIView):
                 'description': expense.description,
                 'is_paid_by_user': expense.paid_by.id == user.id,
                 'is_owed_by_user': amount_owed and amount_owed > 0,
+                'created_at': expense.created_at,
+                'updated_at': expense.updated_at,
             })
         
         context = {
@@ -368,6 +370,8 @@ class ExpenseDetailView(APIView):
                 'group': group,
                 'is_paid_by_user': expense.paid_by.id == user.id,
                 'user_amount_owed': float(user_split.amount_owed) if user_split else 0,
+                'created_at': expense.created_at,
+                'updated_at': expense.updated_at,
             },
             'all_splits': all_splits,
         }

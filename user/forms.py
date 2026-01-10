@@ -7,13 +7,13 @@ from django.core.exceptions import ValidationError
 
 class CustomerRegistrationForm(UserCreationForm):
     username = UsernameField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'autofocus': True}))
+        attrs={'class': 'registration-input', 'autofocus': True, 'placeholder': 'Choose a username'}))
     password1 = forms.CharField(
-        label='Password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        label='Password', widget=forms.PasswordInput(attrs={'class': 'registration-input', 'placeholder': 'Enter a strong password'}))
     password2 = forms.CharField(
-        label='Confirm Password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        label='Confirm Password', widget=forms.PasswordInput(attrs={'class': 'registration-input', 'placeholder': 'Confirm your password'}))
     email = forms.CharField(required=True, widget=forms.EmailInput(
-        attrs={'class': 'form-control'}))
+        attrs={'class': 'registration-input', 'placeholder': 'Enter your email'}))
 
     class Meta:
         model = User
@@ -29,9 +29,9 @@ class CustomerRegistrationForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'autofocus': True}))
+        attrs={'class': 'login-input', 'autofocus': True, 'placeholder': 'Enter your username'}))
     password = forms.CharField(label=_('Password'), strip=False, widget=forms.PasswordInput(
-        attrs={'class': 'form-control', 'autocomplete': 'current-password'}))
+        attrs={'class': 'login-input', 'autocomplete': 'current-password', 'placeholder': 'Enter your password'}))
 
     def clean(self):
         cleaned_data = super().clean()

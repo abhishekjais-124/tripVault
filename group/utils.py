@@ -5,9 +5,9 @@ from user import constants
 from user.models import User
 
 
-def create_user_group(name, user):
+def create_user_group(name, user, description=None):
     """Create a new group and add the user as admin."""
-    group = group_models.Group.objects.create(name=name, created_by=user.username)
+    group = group_models.Group.objects.create(name=name, description=description, created_by=user.username)
     user_group_mapping = group_models.UserGroupMapping.objects.create(
         user=user, group=group, role=constants.ADMIN
     )
@@ -22,7 +22,7 @@ def get_user_groups(user):
             user=user, is_active=True, group__is_active=True
         )
         .order_by("-id")
-        .values_list("group_id")
+        .values_list("group_id", flat=True)
     )
 
 

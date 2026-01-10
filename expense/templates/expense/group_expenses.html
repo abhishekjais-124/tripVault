@@ -26,7 +26,7 @@
                         <p class="text-cyan-100 text-sm mb-2">YOUR BALANCE</p>
                         <p class="text-3xl font-bold">
                             {% if user_is_debtor %}
-                                <span class="text-red-300">-₹{{ overall_balance|floatformat:2 }}</span>
+                                <span class="text-red-300">-₹{{ overall_balance|floatformat:2|cut:"-" }}</span>
                             {% else %}
                                 <span class="text-green-300">+₹{{ overall_balance|floatformat:2 }}</span>
                             {% endif %}
@@ -85,6 +85,9 @@
                                             {% if expense.description %}
                                                 <p class="text-xs text-slate-400">{{ expense.description }}</p>
                                             {% endif %}
+                                            <p class="text-[11px] text-slate-500 mt-1">
+                                                Created {{ expense.created_at|date:"M d, Y H:i" }} • Updated {{ expense.updated_at|date:"M d, Y H:i" }}
+                                            </p>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">

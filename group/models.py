@@ -8,6 +8,7 @@ from user import constants
 class Group(BaseModel):
     uid = models.CharField(max_length=10, unique=True, db_index=True)
     name = models.CharField(max_length=30, null=True)
+    description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_by = models.CharField(max_length=30)
     users_count = models.PositiveIntegerField(default=1)

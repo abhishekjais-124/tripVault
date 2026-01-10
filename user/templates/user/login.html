@@ -15,30 +15,30 @@
         </div>
 
         <!-- Login Form -->
-        <div class="glass rounded-2xl p-8">
+        <div class="glass rounded-3xl p-10 shadow-2xl border border-gray-700/50">
             {% if form.non_field_errors %}
-            <div class="glass rounded-lg p-4 mb-6 border-l-4 border-red-500 text-red-100">
+            <div class="glass rounded-xl p-4 mb-6 border-l-4 border-red-500 text-red-100">
                 <strong>{{ form.non_field_errors.as_text }}</strong>
             </div>
             {% endif %}
 
-            <form method="post" class="space-y-5">
+            <form method="post" class="space-y-6">
                 {% csrf_token %}
                 
                 {% for field in form %}
-                    <div>
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-300 mb-2">
+                    <div class="space-y-3">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-200 uppercase tracking-wide">
                             {{ field.label }}
                         </label>
                         <div class="relative">
                             {% if field.field.widget.input_type == 'password' %}
-                                <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400"></i>
+                                <i class="fas fa-lock absolute left-5 top-1/2 transform -translate-y-1/2 text-cyan-400 z-10 pointer-events-none"></i>
                             {% else %}
-                                <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-cyan-400"></i>
+                                <i class="fas fa-user absolute left-5 top-1/2 transform -translate-y-1/2 text-cyan-400 z-10 pointer-events-none"></i>
                             {% endif %}
                             {{ field }}
                             {% if field.errors %}
-                                <div class="text-red-400 text-sm mt-1">
+                                <div class="text-red-400 text-sm mt-2">
                                     {{ field.errors }}
                                 </div>
                             {% endif %}
@@ -46,23 +46,23 @@
                     </div>
                 {% endfor %}
 
-                <button type="submit" class="w-full btn-gradient text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95">
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:via-blue-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:shadow-2xl active:scale-95 text-lg">
                     <i class="fas fa-sign-in-alt mr-2"></i> Sign In
                 </button>
             </form>
 
             <!-- Divider -->
-            <div class="flex items-center my-6">
-                <div class="flex-1 border-t border-gray-700"></div>
-                <div class="px-3 text-gray-500 text-sm">OR</div>
-                <div class="flex-1 border-t border-gray-700"></div>
+            <div class="flex items-center my-8">
+                <div class="flex-1 border-t border-gray-600"></div>
+                <div class="px-4 text-gray-500 text-sm font-medium">OR</div>
+                <div class="flex-1 border-t border-gray-600"></div>
             </div>
 
             <!-- Register Link -->
             <div class="text-center">
-                <p class="text-gray-400 text-sm">
+                <p class="text-gray-400">
                     Don't have an account?
-                    <a href="{% url 'customerregistration' %}" class="gradient-text font-semibold hover:underline">
+                    <a href="{% url 'customerregistration' %}" class="gradient-text font-bold hover:underline transition-all">
                         Create one now
                     </a>
                 </p>
@@ -79,14 +79,47 @@
 </div>
 
 <style>
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-        @apply w-full bg-white/5 border border-gray-600 text-white placeholder-gray-500 rounded-lg px-4 py-3 pl-10 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all;
+    /* Reset all form control styling */
+    .login-input {
+        width: 100% !important;
+        background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
+        border: 1px solid rgba(107, 114, 128, 0.5) !important;
+        color: white !important;
+        border-radius: 0.75rem !important;
+        padding: 1rem 1.5rem 1rem 3.5rem !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     }
 
-    input::placeholder {
-        color: rgba(107, 114, 128, 0.6);
+    .login-input:hover {
+        border-color: rgba(107, 114, 128, 0.7) !important;
+    }
+
+    .login-input:focus {
+        outline: none !important;
+        border-color: #06b6d4 !important;
+        box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3), 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .login-input::placeholder {
+        color: rgba(156, 163, 175, 0.7) !important;
+    }
+
+    /* Hide any default password toggle icons from browsers */
+    .login-input[type="password"]::-ms-reveal,
+    .login-input[type="password"]::-ms-clear {
+        display: none !important;
+    }
+
+    .login-input[type="password"]::-webkit-contacts-auto-fill-button,
+    .login-input[type="password"]::-webkit-credentials-auto-fill-button {
+        visibility: hidden !important;
+        display: none !important;
+        pointer-events: none !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
     }
 </style>
 {% endblock body %}
