@@ -8,7 +8,7 @@ importlib_metadata==8.7.1
 Markdown==3.5.1
 natsort==8.4.0
 packaging==25.0
-Pillow==10.1.0
+pillow==11.3.0
 python-dotenv==1.2.1
 pytz==2023.3.post1
 redis==5.0.1
