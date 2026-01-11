@@ -213,7 +213,7 @@
     }
 
     function confirmDelete() {
-        const expenseId = {{ expense.id }};
+        const expenseId = {{ expense.id|safe }};
         const deleteBtn = document.querySelector('#deleteConfirmModal button:last-child');
         
         // Show loading state

@@ -174,22 +174,6 @@
                 'X-CSRFToken': getCookie('csrftoken'),
             },
             body: JSON.stringify({
-
-        function markAllRead() {
-            fetch('{% url "mark-all-read" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Reload to refresh unread badges and navbar count
-                location.reload();
-            })
-            .catch(err => console.error('Mark-all-read error:', err));
-        }
                 sender_uid: senderUid,
                 group_id: groupId
             })
@@ -268,6 +252,22 @@
             }, 300);
         })
         .catch(err => console.error('Dismiss error:', err));
+    }
+
+    function markAllRead() {
+        fetch('{% url "mark-all-read" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reload to refresh unread badges and navbar count
+            location.reload();
+        })
+        .catch(err => console.error('Mark-all-read error:', err));
     }
 </script>
 {% endblock script %}
