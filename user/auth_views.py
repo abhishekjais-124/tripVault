@@ -8,11 +8,19 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
 from .forms import CustomerRegistrationForm
 from user import utils
 from user import models
 from common import utils as common_utils
+
+# Load environment variables from .env.local
+env_path = Path(__file__).resolve().parent.parent / '.env.local'
+load_dotenv(env_path)
 
 
 class CustomerRegistrationView(APIView):
@@ -317,7 +325,12 @@ class SupportView(View):
     """Display support page with contact form."""
 
     def get(self, request):
-        return render(request, "user/support.html")
+        context = {
+            'emailjs_public_key': os.getenv('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY', ''),
+            'emailjs_service_id': os.getenv('NEXT_PUBLIC_EMAILJS_SERVICE_ID', 'service_1'),
+            'emailjs_template_id': os.getenv('NEXT_PUBLIC_EMAILJS_TEMPLATE_ID', 'template_lccopu4'),
+        }
+        return render(request, "user/support.html", context)
 
 
 class SendContactEmailView(APIView):

@@ -202,14 +202,13 @@
 <!-- emailJS Script -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
-    // Initialize EmailJS with your Public Key
-    // Get this from EmailJS dashboard (Account -> API Keys)
-    const EMAILJS_PUBLIC_KEY = 'ipbbRHR-bjOJVm2aC';
+    // Initialize EmailJS with Public Key from environment
+    const EMAILJS_PUBLIC_KEY = '{{ emailjs_public_key }}';
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
-    // Centralize EmailJS IDs for easy updates
-    const EMAILJS_SERVICE_ID = 'service_1';
-    const EMAILJS_TEMPLATE_ID = 'template_lccopu4';
+    // Centralize EmailJS IDs from environment
+    const EMAILJS_SERVICE_ID = '{{ emailjs_service_id }}';
+    const EMAILJS_TEMPLATE_ID = '{{ emailjs_template_id }}';
 
     // FAQ Toggle Function
     function toggleFAQ(button) {
