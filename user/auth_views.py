@@ -148,6 +148,9 @@ class NotificationsView(View):
         # Get expense notifications
         expense_notifications = Notification.objects.filter(user=user).select_related('user').order_by('-created_at')[:50]
         for notif in expense_notifications:
+            # Extract metadata
+            metadata = notif.metadata or {}
+            
             r = {
                 'id': notif.id,
                 'title': notif.title,
@@ -157,6 +160,9 @@ class NotificationsView(View):
                 'type': 'activity',
                 'is_read': notif.is_read,
                 'created_at': notif.created_at,
+                'added_by': metadata.get('added_by', 'Unknown'),
+                'expense_title': metadata.get('expense_title', ''),
+                'amount': metadata.get('amount', ''),
             }
             requests.append(r)
         
