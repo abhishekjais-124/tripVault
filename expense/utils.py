@@ -138,9 +138,20 @@ def get_group_balance(group, user):
         expense__group=group,
         user=user
     ).aggregate(total=Sum('amount_owed'))['total'] or Decimal('0')
+
+    # Settlements reduce what you owe and increase what you are owed
+    settlements_paid = Settlement.objects.filter(
+        group=group,
+        from_user=user
+    ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+
+    settlements_received = Settlement.objects.filter(
+        group=group,
+        to_user=user
+    ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
     
     # Balance: positive means user is owed money
-    balance = paid_total - owed_total
+    balance = paid_total - owed_total - settlements_paid + settlements_received
     return balance
 
 
@@ -191,23 +202,24 @@ def get_user_balance_with_others(group, user):
             paid_by=other_user,
             splits__user=user
         ).aggregate(total=Sum('splits__amount_owed'))['total'] or Decimal('0')
-        
-        # Other user paid for user
-        other_user_paid = Expense.objects.filter(
+
+        # Settlements between the pair
+        settlements_user_to_other = Settlement.objects.filter(
             group=group,
-            paid_by=other_user
+            from_user=user,
+            to_user=other_user
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
+
+        settlements_other_to_user = Settlement.objects.filter(
+            group=group,
+            from_user=other_user,
+            to_user=user
         ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
         
-        # User paid for other user
-        user_paid = Expense.objects.filter(
-            group=group,
-            paid_by=user
-        ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
-        
-        # Calculate simple balance
+        # Calculate simple balance including settlements
         # Positive: user is owed money
         # Negative: user owes money
-        balance = paid_for_other - paid_by_other
+        balance = paid_for_other - paid_by_other - settlements_user_to_other + settlements_other_to_user
         
         if balance != 0:
             balances[other_user.id] = {

@@ -9,10 +9,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from group.models import Group, UserGroupMapping
 from expense import utils as expense_utils
 from expense.models import Expense, ExpenseSplit
+from expense.models import Settlement
 
 
 @method_decorator(login_required(login_url="/user/login/"), name="dispatch")
@@ -74,6 +76,7 @@ class GroupExpensesView(APIView):
             'overall_balance': overall_balance,
             'total_expenses': total_group_expenses,
             'user_is_debtor': overall_balance < 0,
+            'group_members': UserGroupMapping.objects.filter(group=group, is_active=True).select_related('user'),
         }
         
         return render(request, 'expense/group_expenses.html', context)
@@ -327,6 +330,63 @@ class DeleteExpenseView(APIView):
             )
         
         messages.success(request, f"Expense '{expense_title}' deleted successfully!")
+        return redirect('group_expenses', group_id=group_id)
+
+
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+class AddSettlementView(APIView):
+    """Record a settlement payment between two group members."""
+
+    def post(self, request, group_id):
+        user = request.user.user
+        if not user:
+            return Response({"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND)
+
+        group = get_object_or_404(Group, id=group_id, is_active=True)
+
+        # Ensure current user is in the group
+        if not UserGroupMapping.objects.filter(user=user, group=group, is_active=True).exists():
+            return Response({"error": "You are not a member of this group"}, status=status.HTTP_403_FORBIDDEN)
+
+        to_user_id = request.POST.get('to_user')
+        amount_raw = request.POST.get('amount', '').strip()
+
+        # Validate inputs
+        if not to_user_id or not amount_raw:
+            messages.error(request, "Please select a member and enter an amount.")
+            return redirect('group_expenses', group_id=group_id)
+
+        if str(to_user_id) == str(user.id):
+            messages.error(request, "You cannot settle with yourself.")
+            return redirect('group_expenses', group_id=group_id)
+
+        from decimal import Decimal, InvalidOperation
+        try:
+            amount = Decimal(amount_raw)
+            if amount <= 0:
+                raise InvalidOperation("Amount must be positive")
+        except (InvalidOperation, TypeError):
+            messages.error(request, "Invalid amount.")
+            return redirect('group_expenses', group_id=group_id)
+
+        to_user_mapping = UserGroupMapping.objects.filter(group=group, user_id=to_user_id, is_active=True).select_related('user').first()
+        if not to_user_mapping:
+            messages.error(request, "Selected member is not in this group.")
+            return redirect('group_expenses', group_id=group_id)
+
+        try:
+            Settlement.objects.create(
+                group=group,
+                from_user=user,
+                to_user=to_user_mapping.user,
+                amount=amount,
+            )
+            messages.success(request, f"Settlement of ₹{amount} recorded to @{to_user_mapping.user.username}.")
+        except Exception:
+            import logging
+            logging.getLogger(__name__).error("Failed to create settlement", exc_info=True)
+            messages.error(request, "Could not record settlement. Please try again.")
+
         return redirect('group_expenses', group_id=group_id)
 
 
