@@ -1,0 +1,5 @@
+[2026-01-11 12:52:16,039] ERROR expense.views: Failed to create 'expense_added' notifications
+Traceback (most recent call last):
+  File "/Users/aj/tripVault/expense/views.py", line 248, in post
+    "expense_id": expense.id
+NameError: name 'expense' is not defined

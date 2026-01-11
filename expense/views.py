@@ -208,7 +208,7 @@ class AddExpenseView(APIView):
 
         # Create expense
         try:
-            expense_utils.create_expense(
+            expense = expense_utils.create_expense(
                 group=group,
                 paid_by=paid_by_user,
                 title=title,
