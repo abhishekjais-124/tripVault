@@ -1,5 +1,5 @@
 from django.urls import path
-from user.auth_views import CustomerRegistrationView, UserProfileView, NotificationsView, FriendsView, FriendDetailView, MarkAllNotificationsReadView
+from user.auth_views import CustomerRegistrationView, UserProfileView, NotificationsView, FriendsView, FriendDetailView, MarkAllNotificationsReadView, SupportView, SendContactEmailView
 from group.views import GroupView, UserGroupView
 from group_request.views import (
     SearchUserView, 
@@ -24,6 +24,8 @@ urlpatterns = [
     path('notifications/mark-all-read/', MarkAllNotificationsReadView.as_view(), name='mark-all-read'),
     path('friends/', FriendsView.as_view(), name='friends'),
     path('friends/<str:friend_uid>/', FriendDetailView.as_view(), name='friend_detail'),
+    path('support/', SupportView.as_view(), name='support'),
+    path('support/send-email/', SendContactEmailView.as_view(), name='send-contact-email'),
     
     # Group management routes
     path('groups/', GroupView.as_view(), name='group'),

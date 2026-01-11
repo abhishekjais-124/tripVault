@@ -48,7 +48,7 @@
                 </a>
                 {% endif %}
                 
-                <a href="#" class="text-gray-300 hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1">
+                <a href="{% url 'support' %}" class="text-gray-300 hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1">
                     <i class="fas fa-headset"></i>
                     <span>Support</span>
                 </a>
@@ -117,6 +117,7 @@
                 {% endif %}
             </a>
             <a href="{% url 'userprofile' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 rounded">Profile</a>
+            <a href="{% url 'support' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 rounded">Support</a>
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <button type="submit" class="w-full text-left px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded">Logout</button>

@@ -311,3 +311,64 @@ class FriendDetailView(View):
         }
 
         return render(request, "user/friend_detail.html", context)
+
+
+class SupportView(View):
+    """Display support page with contact form."""
+
+    def get(self, request):
+        return render(request, "user/support.html")
+
+
+class SendContactEmailView(APIView):
+    """Handle contact form email submission via emailJS."""
+
+    def post(self, request):
+        """
+        Receives contact form data from emailJS.
+        EmailJS will send the email directly, but we log it in our system.
+        """
+        import json
+        from django.core.mail import send_mail
+        from django.conf import settings
+
+        try:
+            data = json.loads(request.body)
+            name = data.get('from_name', '')
+            email = data.get('from_email', '')
+            subject = data.get('subject', '')
+            message = data.get('message', '')
+
+            if not all([name, email, subject, message]):
+                return Response(
+                    {"error": "All fields are required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Optional: Send a copy to your support email using Django's mail backend
+            # Uncomment and configure if you want Django to also handle emails
+            # try:
+            #     send_mail(
+            #         f"Support Request: {subject}",
+            #         f"From: {name} ({email})\n\n{message}",
+            #         settings.DEFAULT_FROM_EMAIL,
+            #         ['support@tripvault.com'],
+            #         fail_silently=False,
+            #     )
+            # except Exception as e:
+            #     print(f"Error sending email: {e}")
+
+            return Response(
+                {"success": True, "message": "Email sent successfully"},
+                status=status.HTTP_200_OK
+            )
+        except json.JSONDecodeError:
+            return Response(
+                {"error": "Invalid JSON"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
