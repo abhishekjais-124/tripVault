@@ -106,7 +106,13 @@
                             </div>
                             <div>
                                 <h3 class="text-white font-extrabold tracking-wide">{{ request.title }}</h3>
-                                <p class="text-gray-400 text-sm">@{{ request.added_by }}</p>
+                                <p class="text-gray-400 text-sm">
+                                    {% if request.added_by == user.username %}
+                                        You
+                                    {% else %}
+                                        @{{ request.added_by }}
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>
