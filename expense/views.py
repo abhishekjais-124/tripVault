@@ -42,6 +42,7 @@ class GroupExpensesView(APIView):
         
         # Get expenses
         expenses = expense_utils.get_group_expenses(group)
+        settlements = Settlement.objects.filter(group=group).select_related('from_user', 'to_user').order_by('-created_at')
         
         # Calculate balances
         overall_balance = expense_utils.get_group_balance(group, user)
@@ -67,12 +68,40 @@ class GroupExpensesView(APIView):
                 'is_owed_by_user': amount_owed and amount_owed > 0,
                 'created_at': expense.created_at,
                 'updated_at': expense.updated_at,
+                'type': 'expense',
             })
-        
+
+        settlement_items = []
+        from decimal import Decimal
+        for s in settlements:
+            user_delta = Decimal('0')
+            if s.from_user_id == user.id:
+                user_delta = -s.amount
+            elif s.to_user_id == user.id:
+                user_delta = s.amount
+
+            settlement_items.append({
+                'id': s.id,
+                'title': f"Settlement to @{s.to_user.username}" if s.from_user_id == user.id else f"Settlement from @{s.from_user.username}",
+                'paid_by': s.from_user,
+                'amount': s.amount,
+                'amount_owed': user_delta,
+                'date': s.created_at.date(),
+                'category': 'Settlement',
+                'description': '',
+                'is_paid_by_user': s.from_user_id == user.id,
+                'is_owed_by_user': user_delta > 0,
+                'created_at': s.created_at,
+                'updated_at': s.updated_at,
+                'type': 'settlement',
+            })
+
+        items = sorted(formatted_expenses + settlement_items, key=lambda x: x['created_at'], reverse=True)
+
         context = {
             'user': user,
             'group': group,
-            'expenses': formatted_expenses,
+            'items': items,
             'overall_balance': overall_balance,
             'total_expenses': total_group_expenses,
             'user_is_debtor': overall_balance < 0,
@@ -380,6 +409,24 @@ class AddSettlementView(APIView):
                 from_user=user,
                 to_user=to_user_mapping.user,
                 amount=amount,
+            )
+            # Notify both parties
+            from common.models import Notification
+            notification_message_payer = f"You paid ₹{amount} to @{to_user_mapping.user.username} (settlement)"
+            notification_message_payee = f"@{user.username} paid you ₹{amount} (settlement)"
+            Notification.objects.create(
+                user=user,
+                title="Settlement Recorded",
+                message=notification_message_payer,
+                notification_type="other",
+                metadata={"amount": str(amount), "to_user": to_user_mapping.user.username, "group_name": group.name}
+            )
+            Notification.objects.create(
+                user=to_user_mapping.user,
+                title="Settlement Received",
+                message=notification_message_payee,
+                notification_type="other",
+                metadata={"amount": str(amount), "from_user": user.username, "group_name": group.name}
             )
             messages.success(request, f"Settlement of ₹{amount} recorded to @{to_user_mapping.user.username}.")
         except Exception:

@@ -65,7 +65,7 @@
 
         <!-- Expenses Table -->
         <div class="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
-            {% if expenses %}
+            {% if items %}
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
@@ -79,59 +79,69 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-700" id="expenseTableBody">
-                            {% for expense in expenses %}
-                                <tr class="hover:bg-slate-700 transition-colors expense-row cursor-pointer" 
-                                    data-expense-id="{{ expense.id }}" 
-                                    data-expense-paid-by="{{ expense.is_paid_by_user }}" 
-                                    data-expense-url="{% url 'expense_detail' expense.id %}">
+                            {% for item in items %}
+                                <tr class="hover:bg-slate-700 transition-colors {% if item.type == 'expense' %}expense-row cursor-pointer{% else %}cursor-default{% endif %}" 
+                                    {% if item.type == 'expense' %}
+                                    data-expense-id="{{ item.id }}" 
+                                    data-expense-paid-by="{{ item.is_paid_by_user }}" 
+                                    data-expense-url="{% url 'expense_detail' item.id %}"
+                                    {% endif %}>
                                     <td class="px-6 py-4">
                                         <div class="text-sm">
-                                            <p class="font-medium text-white">{{ expense.date|date:"M d" }}</p>
-                                            <p class="text-xs text-slate-400">{{ expense.date|date:"Y" }}</p>
+                                            <p class="font-medium text-white">{{ item.date|date:"M d" }}</p>
+                                            <p class="text-xs text-slate-400">{{ item.date|date:"Y" }}</p>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div>
-                                            <p class="font-semibold text-white">{{ expense.title }}</p>
-                                            {% if expense.description %}
-                                                <p class="text-xs text-slate-400">{{ expense.description }}</p>
+                                            <p class="font-semibold text-white">{{ item.title }}</p>
+                                            {% if item.description %}
+                                                <p class="text-xs text-slate-400">{{ item.description }}</p>
                                             {% endif %}
-                                            <p class="text-[11px] text-slate-500 mt-1">
-                                                Created {{ expense.created_at|date:"M d, Y H:i" }} • Updated {{ expense.updated_at|date:"M d, Y H:i" }}
-                                            </p>
+                                            {% if item.type == 'expense' %}
+                                                <p class="text-[11px] text-slate-500 mt-1">
+                                                    Created {{ item.created_at|date:"M d, Y H:i" }} • Updated {{ item.updated_at|date:"M d, Y H:i" }}
+                                                </p>
+                                            {% else %}
+                                                <p class="text-[11px] text-slate-500 mt-1">Recorded {{ item.created_at|date:"M d, Y H:i" }}</p>
+                                            {% endif %}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-block px-3 py-1 text-xs font-medium rounded-full
-                                            {% if expense.category == 'Food' %}bg-orange-900 text-orange-300
-                                            {% elif expense.category == 'Transport' %}bg-purple-900 text-purple-300
-                                            {% elif expense.category == 'Accommodation' %}bg-pink-900 text-pink-300
-                                            {% elif expense.category == 'Activity' %}bg-indigo-900 text-indigo-300
-                                            {% elif expense.category == 'Shopping' %}bg-rose-900 text-rose-300
-                                            {% else %}bg-slate-600 text-slate-300
-                                            {% endif %}
-                                        ">
-                                            {{ expense.category }}
-                                        </span>
+                                        {% if item.type == 'settlement' %}
+                                            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-emerald-900 text-emerald-300">Settlement</span>
+                                        {% else %}
+                                            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full
+                                                {% if item.category == 'Food' %}bg-orange-900 text-orange-300
+                                                {% elif item.category == 'Transport' %}bg-purple-900 text-purple-300
+                                                {% elif item.category == 'Accommodation' %}bg-pink-900 text-pink-300
+                                                {% elif item.category == 'Activity' %}bg-indigo-900 text-indigo-300
+                                                {% elif item.category == 'Shopping' %}bg-rose-900 text-rose-300
+                                                {% else %}bg-slate-600 text-slate-300
+                                                {% endif %}
+                                            ">
+                                                {{ item.category }}
+                                            </span>
+                                        {% endif %}
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center space-x-2">
-                                            <img src="{{ expense.paid_by.icon }}" alt="{{ expense.paid_by.name }}" class="w-6 h-6 rounded-full">
-                                            <span class="text-sm text-white">{{ expense.paid_by.username }}</span>
-                                            {% if expense.is_paid_by_user %}
+                                            <img src="{{ item.paid_by.icon }}" alt="{{ item.paid_by.name }}" class="w-6 h-6 rounded-full">
+                                            <span class="text-sm text-white">{{ item.paid_by.username }}</span>
+                                            {% if item.is_paid_by_user %}
                                                 <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">(You)</span>
                                             {% endif %}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <p class="font-semibold text-white">₹{{ expense.amount|floatformat:2 }}</p>
+                                        <p class="font-semibold text-white">₹{{ item.amount|floatformat:2 }}</p>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        {% if expense.amount_owed %}
-                                            {% if expense.is_paid_by_user %}
-                                                <span class="font-semibold text-green-400">+₹{{ expense.amount_owed|floatformat:2 }}</span>
-                                            {% else %}
-                                                <span class="font-semibold text-red-400">-₹{{ expense.amount_owed|floatformat:2 }}</span>
+                                        {% if item.amount_owed %}
+                                            {% if item.amount_owed > 0 %}
+                                                <span class="font-semibold text-green-400">+₹{{ item.amount_owed|floatformat:2 }}</span>
+                                            {% elif item.amount_owed < 0 %}
+                                                <span class="font-semibold text-red-400">-₹{{ item.amount_owed|floatformat:2|cut:'-' }}</span>
                                             {% endif %}
                                         {% else %}
                                             <span class="text-slate-400">N/A</span>
