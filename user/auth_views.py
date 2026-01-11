@@ -435,7 +435,7 @@ class ForgotPasswordView(View):
                 'email_data': json.dumps(email_data),
                 'emailjs_public_key': os.getenv('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY', ''),
                 'emailjs_service_id': os.getenv('NEXT_PUBLIC_EMAILJS_SERVICE_ID', 'service_1'),
-                'emailjs_template_id': 'template_password_reset'
+                'emailjs_template_id': 'template_xgzzcja'
             })
             
         except User.DoesNotExist:
