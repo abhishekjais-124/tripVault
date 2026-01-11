@@ -16,7 +16,7 @@ from expense import utils as expense_utils
 from decimal import Decimal
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class GroupView(APIView):
     """Handle group listing and creation."""
     

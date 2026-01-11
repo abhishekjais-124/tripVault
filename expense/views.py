@@ -17,7 +17,7 @@ from expense.models import Expense, ExpenseSplit
 from expense.models import Settlement
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class GroupExpensesView(APIView):
     """Display all expenses for a group with balance information"""
     
@@ -153,7 +153,7 @@ class GroupExpensesView(APIView):
         return render(request, 'expense/group_expenses.html', context)
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class AddExpenseView(APIView):
     """Add a new expense to a group"""
     
@@ -337,7 +337,7 @@ class AddExpenseView(APIView):
             return redirect('group_expenses', group_id=group_id)
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class DeleteExpenseView(APIView):
     """Delete an expense (only by person who created it)"""
     
@@ -404,7 +404,7 @@ class DeleteExpenseView(APIView):
         return redirect('group_expenses', group_id=group_id)
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class AddSettlementView(APIView):
     """Record a settlement payment between two group members."""
 
@@ -479,7 +479,7 @@ class AddSettlementView(APIView):
         return redirect('group_expenses', group_id=group_id)
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class ExpenseDetailView(APIView):
     """Display detailed information about a single expense"""
     

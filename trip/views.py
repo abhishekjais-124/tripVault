@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
+from django.http import HttpResponse
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,7 +14,7 @@ from common.redis_client import redis_client
 from user import constants as user_constants
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class HomeView(APIView):
     def get(self, request):
         user = request.user.user
@@ -42,8 +44,23 @@ class HomeView(APIView):
         )
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class TripPlannerView(APIView):
     def get(self, request):
         user = getattr(request.user, "user", None)
         return render(request, "trip/plan_dashboard.html", {"user": user})
+
+
+class ManifestView(TemplateView):
+    template_name = 'trip/manifest.json'
+    content_type = 'application/json'
+
+
+class ServiceWorkerView(TemplateView):
+    template_name = 'serviceworker.js'
+    content_type = 'application/javascript'
+
+    def get(self, request, *args, **kwargs):
+        with open('trip/static/serviceworker.js', 'r') as f:
+            content = f.read()
+        return HttpResponse(content, content_type=self.content_type)

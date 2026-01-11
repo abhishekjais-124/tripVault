@@ -11,4 +11,7 @@ urlpatterns = [
 	path('api/trip/<int:trip_id>/', api_views.get_trip, name='api-get-trip'),
 	path('api/trip/<int:trip_id>/update/', api_views.update_trip, name='api-update-trip'),
 	path('api/trip/<int:trip_id>/delete/', api_views.delete_trip, name='api-delete-trip'),
+	# PWA support
+	path('manifest.json', views.ManifestView.as_view(), name='manifest'),
+	path('serviceworker.js', views.ServiceWorkerView.as_view(), name='serviceworker'),
 ]

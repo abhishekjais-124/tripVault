@@ -5,6 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TripVault | {% block title %} {% endblock title %} </title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/tripvault/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TripVault">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -34,7 +43,7 @@
         .glass-dark {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 0.05);
         }
         
         .gradient-text {
@@ -103,6 +112,22 @@
     {% endif %}
     {% endblock messages %}
     {% endblock body %}
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/tripvault/serviceworker.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registered: ', registration);
+                    })
+                    .catch((error) => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+    
     {% block script %} {% endblock script %}
 </body>
 </html>

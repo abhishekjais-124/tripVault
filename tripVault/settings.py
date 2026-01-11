@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!3g4l^fnf%(%#-wgkzz!qmikm-a)s=idrjh1sh76hox94p$n-6'
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aj124.com', 'www.aj124.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -75,7 +75,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/tripvault/'
+LOGIN_URL = '/tripvault/user/login/'
 
 LANGUAGE_CODE = 'en-us'
 
@@ -85,7 +86,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+# Static files configuration
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Additional locations of static files
+STATICFILES_DIRS = [
+    BASE_DIR / 'trip' / 'static',
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

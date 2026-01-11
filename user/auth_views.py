@@ -51,7 +51,7 @@ class CustomerRegistrationView(APIView):
         return render(request, "user/customerregistration.html", {"form": form})
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class UserProfileView(APIView):
     """Handle user profile viewing and updates."""
     
@@ -106,7 +106,7 @@ class UserProfileView(APIView):
         return render(request, "user/user_profile.html", {"user": user_instance})
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class NotificationsView(View):
     """Display user notifications for pending group requests and expense activities."""
     
@@ -200,7 +200,7 @@ class NotificationsView(View):
         return render(request, "user/notifications.html", {"user": user, 'requests': requests})
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class MarkAllNotificationsReadView(APIView):
     """Mark all activity notifications as read for the current user."""
 
@@ -215,7 +215,7 @@ class MarkAllNotificationsReadView(APIView):
         return Response({"success": True})
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class FriendsView(View):
     """List friends (users who share groups with you) with balances."""
 
@@ -302,7 +302,7 @@ class FriendsView(View):
         return render(request, "user/friends.html", context)
 
 
-@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
 class FriendDetailView(View):
     """Show detailed, per-group expenses between you and a friend."""
 
