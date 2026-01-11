@@ -213,6 +213,7 @@
     }
 
     function confirmDelete() {
+        // @ts-ignore - Django template variable
         const expenseId = {{ expense.id|safe }};
         const deleteBtn = document.querySelector('#deleteConfirmModal button:last-child');
         

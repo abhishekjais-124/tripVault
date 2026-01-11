@@ -75,7 +75,7 @@
                                 <tr class="hover:bg-slate-700 transition-colors expense-row cursor-pointer" 
                                     data-expense-id="{{ expense.id }}" 
                                     data-expense-paid-by="{{ expense.is_paid_by_user }}" 
-                                    onclick="window.location.href='{% url 'expense_detail' expense.id %}'">
+                                    data-expense-url="{% url 'expense_detail' expense.id %}">
                                     <td class="px-6 py-4">
                                         <div class="text-sm">
                                             <p class="font-medium text-white">{{ expense.date|date:"M d" }}</p>
@@ -169,6 +169,18 @@
                 setTimeout(() => el.remove(), 500);
             });
         }, 4000);
+
+        // Handle expense row clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.expense-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const url = this.getAttribute('data-expense-url');
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
     </script>
     <style>
         @keyframes fadeOut {
