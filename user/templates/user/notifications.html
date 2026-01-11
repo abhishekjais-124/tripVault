@@ -116,28 +116,29 @@
                         <div class="flex-1">
                             <div class="mb-3">
                                 {% if request.expense_title %}
+                                    <!-- Single sentence display with conditional styling -->
                                     <p class="text-gray-300 mb-2">
-                                        added 
+                                        <span class="text-white font-semibold">@{{ request.added_by }}</span>
+                                        added
                                         <span class="text-white font-semibold">{{ request.expense_title }}</span>
                                         for
                                         <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400">
                                             ₹{{ request.amount }}
                                         </span>
-                                    </p>
-                                    <p class="text-gray-300 text-sm mb-2">
-                                        in group
+                                        in
                                         <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
-                                    </p>
-                                    <p class="text-gray-300 text-sm">
-                                        You owe
-                                        <span class="text-yellow-300 font-semibold">₹{{ request.amount_owed }}</span>
+                                        {% if request.amount_owed|floatformat:0 == '0' %}
+                                            <span class="text-green-400 font-semibold">— You paid</span>
+                                        {% else %}
+                                            <span class="text-red-400 font-semibold">— You owe ₹{{ request.amount_owed }}</span>
+                                        {% endif %}
                                     </p>
                                 {% else %}
                                     <p class="text-gray-300">{{ request.message }}</p>
                                 {% endif %}
                             </div>
                             
-                            <div class="flex items-center space-x-2 text-sm text-gray-500 mt-3">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500">
                                 <i class="fas fa-clock"></i>
                                 <span>{{ request.time }}</span>
                             </div>
