@@ -439,11 +439,16 @@ class ForgotPasswordView(View):
             })
             
         except User.DoesNotExist:
-            # Don't reveal if email exists or not (security)
+            # Security best practice: Don't reveal if email exists or not
+            # Show same success message to prevent email enumeration attacks
             return render(request, "user/forgot_password.html", {
                 'success': True,
-                'email_sent': True
+                'no_account': True,
+                'submitted_email': email
             })
+        except Exception as e:
+            messages.error(request, "An error occurred. Please try again.")
+            return render(request, "user/forgot_password.html")
 
 
 class ResetPasswordView(View):
