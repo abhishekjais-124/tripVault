@@ -91,11 +91,11 @@
                 </div>
                 {% else %}
                 <!-- Activity Notification -->
-                <div id="notification_{{ request.id }}" class="glass rounded-3xl p-6 transition-all border {% if request.notification_type == 'expense_added' %}border-green-500/20 hover:border-green-400/40{% elif request.notification_type == 'expense_deleted' %}border-red-500/20 hover:border-red-400/40{% else %}border-blue-500/20 hover:border-blue-400/40{% endif %} shadow-xl hover:shadow-2xl">
+                <div id="notification_{{ request.id }}" class="glass rounded-3xl p-6 transition-all border {% if request.notification_type == 'expense_added' %}{% if request.amount_owed|floatformat:0 != '0' %}border-red-500/20 hover:border-red-400/40{% else %}border-green-500/20 hover:border-green-400/40{% endif %}{% elif request.notification_type == 'expense_deleted' %}border-red-500/20 hover:border-red-400/40{% else %}border-blue-500/20 hover:border-blue-400/40{% endif %} shadow-xl hover:shadow-2xl">
                     <!-- Header row -->
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div class="w-11 h-11 bg-gradient-to-tr {% if request.notification_type == 'expense_added' %}from-green-400 to-emerald-500{% elif request.notification_type == 'expense_deleted' %}from-red-400 to-pink-500{% else %}from-blue-400 to-cyan-500{% endif %} rounded-xl flex items-center justify-center ring-1 ring-white/10">
+                            <div class="w-11 h-11 bg-gradient-to-tr {% if request.notification_type == 'expense_added' %}{% if request.amount_owed|floatformat:0 != '0' %}from-red-400 to-pink-500{% else %}from-green-400 to-emerald-500{% endif %}{% elif request.notification_type == 'expense_deleted' %}from-red-400 to-pink-500{% else %}from-blue-400 to-cyan-500{% endif %} rounded-xl flex items-center justify-center ring-1 ring-white/10">
                                 {% if request.notification_type == 'expense_added' %}
                                     <i class="fas fa-plus text-white"></i>
                                 {% elif request.notification_type == 'expense_deleted' %}

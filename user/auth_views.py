@@ -150,7 +150,7 @@ class NotificationsView(View):
         for notif in expense_notifications:
             # Extract metadata
             metadata = notif.metadata or {}
-            amount_owed = '0'
+            amount_owed = 0
             group_name = metadata.get('group_name', '')
             added_by = metadata.get('added_by', '')
             
@@ -164,7 +164,8 @@ class NotificationsView(View):
                         user=user
                     ).first()
                     if expense_split:
-                        amount_owed = str(expense_split.amount_owed)
+                        # Pass numeric value so templates can format/compare
+                        amount_owed = float(expense_split.amount_owed)
                     
                     # Fallbacks for missing group name or added_by
                     if not group_name or not added_by:
