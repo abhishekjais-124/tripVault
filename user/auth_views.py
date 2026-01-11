@@ -2,14 +2,19 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth import get_user_model
 import os
+import json
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -17,6 +22,8 @@ from .forms import CustomerRegistrationForm
 from user import utils
 from user import models
 from common import utils as common_utils
+
+User = get_user_model()
 
 # Load environment variables from .env.local
 env_path = Path(__file__).resolve().parent.parent / '.env.local'
@@ -350,7 +357,7 @@ class SendContactEmailView(APIView):
             name = data.get('from_name', '')
             email = data.get('from_email', '')
             subject = data.get('subject', '')
-            message = data.get('message', '')
+            message = "TripVault Support: " + data.get('message', '')
 
             if not all([name, email, subject, message]):
                 return Response(
@@ -385,3 +392,129 @@ class SendContactEmailView(APIView):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class ForgotPasswordView(View):
+    """Handle forgot password - send reset email."""
+    
+    def get(self, request):
+        return render(request, "user/forgot_password.html")
+    
+    def post(self, request):
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            messages.error(request, "Please enter your email address.")
+            return render(request, "user/forgot_password.html")
+        
+        # Find user by email
+        try:
+            user = User.objects.get(email=email)
+            user_profile = user.user
+            
+            # Generate password reset token
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            # Build reset link
+            reset_url = request.build_absolute_uri(
+                f'/user/reset-password/{uid}/{token}/'
+            )
+            
+            # Prepare email data for EmailJS
+            email_data = {
+                'to_email': email,
+                'user_name': user_profile.name or user.username,
+                'reset_link': reset_url,
+                'site_name': 'TripVault'
+            }
+            
+            # Return success with email data (will be sent via EmailJS on frontend)
+            return render(request, "user/forgot_password.html", {
+                'success': True,
+                'email_data': json.dumps(email_data),
+                'emailjs_public_key': os.getenv('NEXT_PUBLIC_EMAILJS_PUBLIC_KEY', ''),
+                'emailjs_service_id': os.getenv('NEXT_PUBLIC_EMAILJS_SERVICE_ID', 'service_1'),
+                'emailjs_template_id': 'template_password_reset'
+            })
+            
+        except User.DoesNotExist:
+            # Don't reveal if email exists or not (security)
+            return render(request, "user/forgot_password.html", {
+                'success': True,
+                'email_sent': True
+            })
+
+
+class ResetPasswordView(View):
+    """Handle password reset with token."""
+    
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            
+            if default_token_generator.check_token(user, token):
+                return render(request, "user/reset_password.html", {
+                    'validlink': True,
+                    'uidb64': uidb64,
+                    'token': token
+                })
+            else:
+                return render(request, "user/reset_password.html", {
+                    'validlink': False,
+                    'error': 'Invalid or expired reset link.'
+                })
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return render(request, "user/reset_password.html", {
+                'validlink': False,
+                'error': 'Invalid reset link.'
+            })
+    
+    def post(self, request, uidb64, token):
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+        
+        if not password1 or not password2:
+            messages.error(request, "Please fill in both password fields.")
+            return render(request, "user/reset_password.html", {
+                'validlink': True,
+                'uidb64': uidb64,
+                'token': token
+            })
+        
+        if password1 != password2:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "user/reset_password.html", {
+                'validlink': True,
+                'uidb64': uidb64,
+                'token': token
+            })
+        
+        if len(password1) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, "user/reset_password.html", {
+                'validlink': True,
+                'uidb64': uidb64,
+                'token': token
+            })
+        
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            
+            if default_token_generator.check_token(user, token):
+                user.set_password(password1)
+                user.save()
+                messages.success(request, "Password reset successful! You can now login with your new password.")
+                return redirect('login')
+            else:
+                return render(request, "user/reset_password.html", {
+                    'validlink': False,
+                    'error': 'Invalid or expired reset link.'
+                })
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return render(request, "user/reset_password.html", {
+                'validlink': False,
+                'error': 'Invalid reset link.'
+            })
