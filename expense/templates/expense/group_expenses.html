@@ -271,7 +271,7 @@
 
     function showDeleteAction(row) {
         const expenseId = row.dataset.expenseId;
-        const isPaidByUser = row.dataset.expensePaydBy === 'True' || row.dataset.expensePaydBy === 'true';
+        const isPaidByUser = row.dataset.expensePaidBy === 'True' || row.dataset.expensePaidBy === 'true';
         
         if (!isPaidByUser) return;
 
@@ -315,12 +315,19 @@
 
     function handleRowClick(e) {
         const row = e.currentTarget;
-        // Don't reset on delete button click
-        if (!e.target.closest('.delete-action-btn')) {
-            // Clicking elsewhere resets swipe
-            if (currentSwipedRow && currentSwipedRow !== row) {
-                resetRowSwipe(currentSwipedRow);
-            }
+        // If clicking the inline delete action, do not navigate
+        if (e.target.closest('.delete-action-btn')) {
+            return;
+        }
+        // Navigate to expense detail
+        const url = row.getAttribute('data-expense-url');
+        if (url) {
+            window.location.href = url;
+            return;
+        }
+        // Otherwise, just reset any other swiped row
+        if (currentSwipedRow && currentSwipedRow !== row) {
+            resetRowSwipe(currentSwipedRow);
         }
     }
 
