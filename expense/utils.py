@@ -139,7 +139,7 @@ def get_group_balance(group, user):
         user=user
     ).aggregate(total=Sum('amount_owed'))['total'] or Decimal('0')
 
-    # Settlements reduce what you owe and increase what you are owed
+    # Settlements: paying reduces liability (less negative), receiving reduces credit (less positive)
     settlements_paid = Settlement.objects.filter(
         group=group,
         from_user=user
@@ -150,8 +150,8 @@ def get_group_balance(group, user):
         to_user=user
     ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
     
-    # Balance: positive means user is owed money
-    balance = paid_total - owed_total - settlements_paid + settlements_received
+    # Balance: positive means user is owed money. Paying should move balance toward zero (add), receiving should move balance toward zero (subtract).
+    balance = paid_total - owed_total + settlements_paid - settlements_received
     return balance
 
 
@@ -216,10 +216,8 @@ def get_user_balance_with_others(group, user):
             to_user=user
         ).aggregate(total=Sum('amount'))['total'] or Decimal('0')
         
-        # Calculate simple balance including settlements
-        # Positive: user is owed money
-        # Negative: user owes money
-        balance = paid_for_other - paid_by_other - settlements_user_to_other + settlements_other_to_user
+        # Positive: user is owed money. Paying other moves balance toward zero (add), receiving from other moves toward zero (subtract).
+        balance = paid_for_other - paid_by_other + settlements_user_to_other - settlements_other_to_user
         
         if balance != 0:
             balances[other_user.id] = {
