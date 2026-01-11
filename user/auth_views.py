@@ -150,6 +150,20 @@ class NotificationsView(View):
         for notif in expense_notifications:
             # Extract metadata
             metadata = notif.metadata or {}
+            amount_owed = '0'
+            
+            # Calculate amount owed if this is an expense_added notification
+            if notif.notification_type == 'expense_added' and metadata.get('expense_id'):
+                try:
+                    from expense.models import ExpenseSplit
+                    expense_split = ExpenseSplit.objects.filter(
+                        expense_id=metadata.get('expense_id'),
+                        user=user
+                    ).first()
+                    if expense_split:
+                        amount_owed = str(expense_split.amount_owed)
+                except Exception as e:
+                    print(f"Error fetching amount owed: {str(e)}")
             
             r = {
                 'id': notif.id,
@@ -163,6 +177,8 @@ class NotificationsView(View):
                 'added_by': metadata.get('added_by', 'Unknown'),
                 'expense_title': metadata.get('expense_title', ''),
                 'amount': metadata.get('amount', ''),
+                'group_name': metadata.get('group_name', ''),
+                'amount_owed': amount_owed,
             }
             requests.append(r)
         

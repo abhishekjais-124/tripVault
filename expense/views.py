@@ -239,7 +239,14 @@ class AddExpenseView(APIView):
                         title="New Expense",
                         message=notification_message,
                         notification_type="expense_added",
-                        metadata={"expense_title": title, "amount": str(amount), "added_by": user.username}
+                        metadata={
+                            "expense_title": title, 
+                            "amount": str(amount), 
+                            "added_by": user.username,
+                            "group_id": group.id,
+                            "group_name": group.name,
+                            "expense_id": expense.id
+                        }
                     )
             except Exception as e:
                 # Log but don't fail if notification creation fails

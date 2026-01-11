@@ -124,12 +124,20 @@
                                             ₹{{ request.amount }}
                                         </span>
                                     </p>
+                                    <p class="text-gray-300 text-sm mb-2">
+                                        in group
+                                        <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
+                                    </p>
+                                    <p class="text-gray-300 text-sm">
+                                        You owe
+                                        <span class="text-yellow-300 font-semibold">₹{{ request.amount_owed }}</span>
+                                    </p>
                                 {% else %}
                                     <p class="text-gray-300">{{ request.message }}</p>
                                 {% endif %}
                             </div>
                             
-                            <div class="flex items-center space-x-2 text-sm text-gray-500">
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mt-3">
                                 <i class="fas fa-clock"></i>
                                 <span>{{ request.time }}</span>
                             </div>
