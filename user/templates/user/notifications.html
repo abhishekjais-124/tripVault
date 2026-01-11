@@ -118,19 +118,32 @@
                                 {% if request.expense_title %}
                                     <!-- Single sentence display with conditional styling -->
                                     <p class="text-gray-300 mb-2">
-                                        <span class="text-white font-semibold">@{{ request.added_by }}</span>
-                                        added
-                                        <span class="text-white font-semibold">{{ request.expense_title }}</span>
-                                        for
-                                        <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400">
-                                            ₹{{ request.amount }}
-                                        </span>
-                                        in
-                                        <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
-                                        {% if request.amount_owed|floatformat:0 == '0' %}
-                                            <span class="text-green-400 font-semibold">— You paid</span>
+                                        {% if request.added_by == user.username %}
+                                            <span class="text-green-400 font-semibold">You added</span>
+                                            <span class="text-white font-semibold">{{ request.expense_title }}</span>
+                                            for
+                                            <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400">
+                                                ₹{{ request.amount }}
+                                            </span>
+                                            {% if request.group_name %}
+                                                in
+                                                <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
+                                            {% endif %}
                                         {% else %}
-                                            <span class="text-red-400 font-semibold">— You owe ₹{{ request.amount_owed }}</span>
+                                            <span class="text-white font-semibold">@{{ request.added_by }}</span>
+                                            added
+                                            <span class="text-white font-semibold">{{ request.expense_title }}</span>
+                                            for
+                                            <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400">
+                                                ₹{{ request.amount }}
+                                            </span>
+                                            {% if request.group_name %}
+                                                in
+                                                <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
+                                            {% endif %}
+                                            {% if request.amount_owed|floatformat:0 != '0' %}
+                                                <span class="text-red-400 font-semibold">— You owe ₹{{ request.amount_owed }}</span>
+                                            {% endif %}
                                         {% endif %}
                                     </p>
                                 {% else %}
