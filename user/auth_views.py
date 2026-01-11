@@ -151,19 +151,31 @@ class NotificationsView(View):
             # Extract metadata
             metadata = notif.metadata or {}
             amount_owed = '0'
+            group_name = metadata.get('group_name', '')
+            added_by = metadata.get('added_by', '')
             
-            # Calculate amount owed if this is an expense_added notification
+            # Calculate amount owed and fill missing details via expense if available
             if notif.notification_type == 'expense_added' and metadata.get('expense_id'):
                 try:
-                    from expense.models import ExpenseSplit
+                    from expense.models import ExpenseSplit, Expense
+                    # Amount owed for current user
                     expense_split = ExpenseSplit.objects.filter(
                         expense_id=metadata.get('expense_id'),
                         user=user
                     ).first()
                     if expense_split:
                         amount_owed = str(expense_split.amount_owed)
+                    
+                    # Fallbacks for missing group name or added_by
+                    if not group_name or not added_by:
+                        expense = Expense.objects.filter(id=metadata.get('expense_id')).select_related('group', 'paid_by').first()
+                        if expense:
+                            if not group_name and expense.group:
+                                group_name = expense.group.name
+                            if not added_by and expense.paid_by:
+                                added_by = expense.paid_by.username
                 except Exception as e:
-                    print(f"Error fetching amount owed: {str(e)}")
+                    print(f"Error enriching notification metadata: {str(e)}")
             
             r = {
                 'id': notif.id,
@@ -174,10 +186,10 @@ class NotificationsView(View):
                 'type': 'activity',
                 'is_read': notif.is_read,
                 'created_at': notif.created_at,
-                'added_by': metadata.get('added_by', 'Unknown'),
+                'added_by': added_by or 'Unknown',
                 'expense_title': metadata.get('expense_title', ''),
                 'amount': metadata.get('amount', ''),
-                'group_name': metadata.get('group_name', ''),
+                'group_name': group_name,
                 'amount_owed': amount_owed,
             }
             requests.append(r)
