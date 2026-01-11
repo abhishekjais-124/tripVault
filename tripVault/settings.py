@@ -3,9 +3,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-!3g4l^fnf%(%#-wgkzz!qmikm-a)s=idrjh1sh76hox94p$n-6'
-DEBUG = True
-
-ALLOWED_HOSTS = ['aj124.com', 'www.aj124.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -140,3 +137,13 @@ LOGGING = {
         },
     },
 }
+
+DEBUG = False
+
+ALLOWED_HOSTS = ["aj124.com", "www.aj124.com", "localhost", "127.0.0.1", ".onrender.com"]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
