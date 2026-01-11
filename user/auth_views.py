@@ -410,19 +410,24 @@ class SendContactEmailView(APIView):
             #         ['support@tripvault.com'],
             #         fail_silently=False,
             #     )
-            # except Exception as e:
-            #     print(f"Error sending email: {e}")
+            # except Exception:
+            #     import logging
+            #     logging.getLogger(__name__).error("Support email send failed", exc_info=True)
 
             return Response(
                 {"success": True, "message": "Email sent successfully"},
                 status=status.HTTP_200_OK
             )
         except json.JSONDecodeError:
+            import logging
+            logging.getLogger(__name__).error("Invalid JSON in support endpoint", exc_info=True)
             return Response(
                 {"error": "Invalid JSON"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
+            import logging
+            logging.getLogger(__name__).error("Unhandled error in support endpoint", exc_info=True)
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -476,12 +481,16 @@ class ForgotPasswordView(View):
         except User.DoesNotExist:
             # Security best practice: Don't reveal if email exists or not
             # Show same success message to prevent email enumeration attacks
+            import logging
+            logging.getLogger(__name__).error("ForgotPassword: user with submitted email not found")
             return render(request, "user/forgot_password.html", {
                 'success': True,
                 'no_account': True,
                 'submitted_email': email
             })
-        except Exception as e:
+        except Exception:
+            import logging
+            logging.getLogger(__name__).error("ForgotPassword: unexpected error", exc_info=True)
             messages.error(request, "An error occurred. Please try again.")
             return render(request, "user/forgot_password.html")
 
@@ -506,6 +515,8 @@ class ResetPasswordView(View):
                     'error': 'Invalid or expired reset link.'
                 })
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            import logging
+            logging.getLogger(__name__).error("ResetPassword: invalid link or user", exc_info=True)
             return render(request, "user/reset_password.html", {
                 'validlink': False,
                 'error': 'Invalid reset link.'

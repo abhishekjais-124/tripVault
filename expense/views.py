@@ -248,14 +248,17 @@ class AddExpenseView(APIView):
                             "expense_id": expense.id
                         }
                     )
-            except Exception as e:
+            except Exception:
                 # Log but don't fail if notification creation fails
-                print(f"Error creating notification: {str(e)}")
+                import logging
+                logging.getLogger(__name__).error("Failed to create 'expense_added' notifications", exc_info=True)
 
             messages.success(request, f"Expense '{title}' added successfully!")
             return redirect('group_expenses', group_id=group_id)
 
         except Exception as e:
+            import logging
+            logging.getLogger(__name__).error("Error creating expense", exc_info=True)
             messages.error(request, f"Error creating expense: {str(e)}")
             return redirect('group_expenses', group_id=group_id)
 
@@ -311,9 +314,10 @@ class DeleteExpenseView(APIView):
                     notification_type="expense_deleted",
                     metadata={"expense_title": expense_title, "deleted_by": user.username}
                 )
-        except Exception as e:
+        except Exception:
             # Log but don't fail if notification creation fails
-            print(f"Error creating notification: {str(e)}")
+            import logging
+            logging.getLogger(__name__).error("Failed to create 'expense_deleted' notifications", exc_info=True)
         
         # Check if it's an AJAX request
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':

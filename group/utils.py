@@ -1,4 +1,5 @@
 from collections import defaultdict
+import logging
 
 from group import models as group_models
 from user import constants
@@ -11,7 +12,7 @@ def create_user_group(name, user, description=None):
     user_group_mapping = group_models.UserGroupMapping.objects.create(
         user=user, group=group, role=constants.ADMIN
     )
-    print("Group created successfully.")
+    # Success path - no logging per current policy
     return group, user_group_mapping
 
 

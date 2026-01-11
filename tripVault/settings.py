@@ -94,3 +94,41 @@ REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
 REDIS_PASSWORD = None  # Set to your Redis password if applicable
+
+# Logging configuration - error-level only for now
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] %(levelname)s %(name)s: %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'level': 'ERROR',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(BASE_DIR / 'logs' / 'errors.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5MB
+            'backupCount': 2,
+            'formatter': 'standard',
+            'level': 'ERROR',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        # App modules use module-level loggers
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',
+        },
+    },
+}

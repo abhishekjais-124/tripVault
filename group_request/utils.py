@@ -1,3 +1,4 @@
+import logging
 from group import models as group_models
 from group_request import models as group_request_models
 from user import constants
@@ -23,8 +24,8 @@ def create_user_request(sender, receiver, group_id, role):
             notification_type="other",
             metadata={"group_name": group.name, "group_id": group_id, "receiver": receiver.username}
         )
-    except Exception as e:
-        print(f"Error creating notification: {str(e)}")
+    except Exception:
+        logging.getLogger(__name__).error("Failed to create 'Group Join Request Sent' notification", exc_info=True)
     
     return request
 
@@ -105,8 +106,8 @@ def accept_request(request_obj):
             notification_type="other",
             metadata={"group_name": group.name, "group_id": request_obj.group_id, "status": "accepted"}
         )
-    except Exception as e:
-        print(f"Error creating notification: {str(e)}")
+    except Exception:
+        logging.getLogger(__name__).error("Failed to create 'Group Invitation Accepted' notification", exc_info=True)
     
     return True, "Request accepted"
 
@@ -128,7 +129,7 @@ def decline_request(request_obj):
             notification_type="other",
             metadata={"group_name": group.name, "group_id": request_obj.group_id, "status": "declined"}
         )
-    except Exception as e:
-        print(f"Error creating notification: {str(e)}")
+    except Exception:
+        logging.getLogger(__name__).error("Failed to create 'Group Request Declined' notification", exc_info=True)
     
     return True, "Request declined"
