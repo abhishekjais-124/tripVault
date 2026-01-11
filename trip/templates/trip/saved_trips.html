@@ -1,0 +1,310 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block title %}Saved Trips{% endblock title %}
+
+{% block style %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/plan.css' %}">
+<style>
+    .trips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    .trip-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+        border: 1px solid rgba(34, 211, 238, 0.2);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 30px rgba(34, 211, 238, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .trip-card:hover {
+        border-color: rgba(34, 211, 238, 0.5);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 40px rgba(34, 211, 238, 0.15);
+        transform: translateY(-4px);
+    }
+    .trip-card h3 {
+        margin: 0 0 16px 0;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .trip-card h3 i {
+        color: #22d3ee;
+        font-size: 18px;
+    }
+    .trip-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .stat-item i {
+        color: #22d3ee;
+        font-size: 14px;
+        width: 20px;
+        text-align: center;
+    }
+    .stat-item .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .stat-item .stat-value {
+        font-size: 14px;
+        color: #fff;
+        font-weight: 600;
+    }
+    .trip-card .trip-meta {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 10px;
+        border-left: 3px solid #22d3ee;
+    }
+    .trip-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+    .trip-meta-row:last-child {
+        margin-bottom: 0;
+    }
+    .trip-meta-row i {
+        color: #22d3ee;
+        width: 16px;
+        font-size: 11px;
+    }
+    .trip-card .trip-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+    }
+    .trip-card button {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(34, 211, 238, 0.3);
+        background: linear-gradient(135deg, rgba(34, 211, 238, 0.15) 0%, rgba(34, 211, 238, 0.05) 100%);
+        color: #22d3ee;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .trip-card button:hover {
+        background: linear-gradient(135deg, rgba(34, 211, 238, 0.25) 0%, rgba(34, 211, 238, 0.15) 100%);
+        border-color: #22d3ee;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+    .empty-state i {
+        font-size: 64px;
+        color: rgba(34, 211, 238, 0.3);
+        margin-bottom: 24px;
+    }
+    .empty-state h2 {
+        color: var(--text);
+        margin-bottom: 16px;
+        font-size: 24px;
+    }
+    .empty-state p {
+        color: var(--muted);
+        margin-bottom: 24px;
+        font-size: 16px;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<div class="planner-shell pt-24 pb-16">
+    <div class="max-w-7xl mx-auto px-4 space-y-8">
+        <header class="planner-hero glass-dark">
+            <div>
+                <p class="eyebrow">Your Saved Trips</p>
+                <h1 class="hero-title">My Trips</h1>
+                <p class="hero-subtitle">Click on any trip to load it, edit it, and save your changes.</p>
+            </div>
+            <div class="hero-metrics">
+                <a href="{% url 'plan-dashboard' %}" class="btn-gradient" style="padding: 12px 20px; text-decoration: none; display: inline-block; border-radius: 12px;">
+                    <i class="fas fa-plus"></i> New Plan
+                </a>
+            </div>
+        </header>
+
+        <section class="planner-section">
+            <div id="trips-container" class="trips-grid">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <p style="color: var(--muted);">Loading your trips...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadTrips();
+});
+
+function loadTrips() {
+    fetch('/home/api/list/')
+        .then(res => {
+            if (res.status === 401) {
+                alert('Please log in to view your trips.');
+                window.location.href = '/user/login/';
+                return null;
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (data.success) {
+                renderTrips(data.trips);
+            } else {
+                alert('Error: ' + (data.message || 'Failed to load trips'));
+            }
+        })
+        .catch(err => {
+            console.error('Error loading trips:', err);
+            document.getElementById('trips-container').innerHTML = `
+                <div style="grid-column: 1 / -1;">
+                    <div class="empty-state">
+                        <p style="color: #ef4444;">Error loading trips. Please try again.</p>
+                    </div>
+                </div>
+            `;
+        });
+}
+
+function renderTrips(trips) {
+    const container = document.getElementById('trips-container');
+    
+    if (trips.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1;">
+                <div class="empty-state">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h2 style="color: var(--text); margin-bottom: 16px;">No saved trips yet</h2>
+                    <p>Start planning your next adventure and save it here!</p>
+                    <a href="{% url 'plan-dashboard' %}" class="btn-gradient" style="padding: 14px 28px; text-decoration: none; display: inline-block; border-radius: 12px; margin-top: 20px; font-size: 15px;">
+                        <i class="fas fa-plus"></i> Create Your First Trip
+                    </a>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = trips.map(trip => {
+        const updatedDate = new Date(trip.updated_at);
+        const createdDate = new Date(trip.created_at);
+        
+        const formatDateTime = (date) => {
+            const dateStr = date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+            const timeStr = date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            return `${dateStr} at ${timeStr}`;
+        };
+        
+        return `
+        <div class="trip-card">
+            <h3><i class="fas fa-route"></i>${escapeHtml(trip.name)}</h3>
+            
+            <div class="trip-meta">
+                <div class="trip-meta-row">
+                    <i class="fas fa-clock"></i>
+                    <span><strong>Updated:</strong> ${formatDateTime(updatedDate)}</span>
+                </div>
+                <div class="trip-meta-row">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span><strong>Created:</strong> ${formatDateTime(createdDate)}</span>
+                </div>
+            </div>
+            
+            <div class="trip-actions">
+                <button onclick="loadTrip(${trip.id})">
+                    <i class="fas fa-edit"></i> Load & Edit
+                </button>
+            </div>
+        </div>
+    `}).join('');
+}
+
+function loadTrip(tripId) {
+    fetch(`/home/api/trip/${tripId}/`)
+        .then(res => {
+            if (res.status === 401) {
+                alert('Please log in to view your trips.');
+                window.location.href = '/user/login/';
+                return null;
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (data.success) {
+                // Store the full trip data and mark this as the current working trip
+                const draftData = JSON.stringify(data.trip);
+                localStorage.setItem('trip-planner-draft', draftData);
+                localStorage.setItem('current-trip-id', tripId);
+                // Redirect to plan dashboard
+                window.location.href = '{% url "plan-dashboard" %}';
+            } else {
+                alert('Error: ' + (data.message || 'Failed to load trip'));
+            }
+        })
+        .catch(err => {
+            console.error('Error loading trip:', err);
+            alert('Failed to load trip: ' + err.message);
+        });
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+</script>
+{% endblock body %}

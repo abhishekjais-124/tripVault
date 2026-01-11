@@ -18,6 +18,10 @@
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
+                <a href="{% url 'plan-dashboard' %}" class="text-gray-300 hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1">
+                    <i class="fas fa-route"></i>
+                    <span>Plan</span>
+                </a>
                 
                 {% if request.user.is_authenticated %}
                 <a href="{% url 'group' %}" class="text-gray-300 hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1">
@@ -59,25 +63,37 @@
                 {% if request.user.is_authenticated %}
                 <!-- User Dropdown -->
                 <div class="relative group">
-                    <button class="flex items-center space-x-2 px-4 py-2 rounded-lg glass hover:bg-opacity-80 transition-all">
-                        <i class="fas fa-user text-cyan-400"></i>
-                        <span class="text-gray-300 hidden sm:inline">{{ request.user.username }}</span>
-                        <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                    <button class="flex items-center space-x-3 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 hover:border-cyan-400/50 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all duration-300">
+                        <i class="fas fa-user text-cyan-400 text-lg"></i>
+                        <span class="text-white font-semibold hidden sm:inline">{{ request.user.username }}</span>
+                        <i class="fas fa-chevron-down text-cyan-400 text-xs group-hover:rotate-180 transition-transform duration-300"></i>
                     </button>
                     
                     <!-- Dropdown Menu -->
-                    <div class="absolute right-0 mt-2 w-48 glass rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
-                        <a href="{% url 'userprofile' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors">
-                            <i class="fas fa-user-circle mr-2"></i> Profile
+                    <div class="absolute right-0 mt-3 w-56 bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-400/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-3 overflow-hidden">
+                        
+                        <a href="{% url 'userprofile' %}" class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-cyan-500/10 transition-all duration-200 group/item">
+                            <i class="fas fa-user-circle text-cyan-400 text-lg w-5"></i> 
+                            <span class="font-medium">Profile</span>
+                            <i class="fas fa-arrow-right ml-auto text-cyan-400 opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                         </a>
-                        <a href="{% url 'group' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors">
-                            <i class="fas fa-users mr-2"></i> Groups
+                        <a href="{% url 'group' %}" class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-cyan-500/10 transition-all duration-200 group/item">
+                            <i class="fas fa-users text-cyan-400 text-lg w-5"></i> 
+                            <span class="font-medium">Groups</span>
+                            <i class="fas fa-arrow-right ml-auto text-cyan-400 opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                         </a>
-                        <hr class="border-gray-700 my-2">
-                        <form method="post" action="{% url 'logout' %}" class="px-4 py-2">
+                        <a href="{% url 'saved-trips' %}" class="flex items-center space-x-3 px-5 py-3 text-gray-300 hover:text-white hover:bg-cyan-500/10 transition-all duration-200 group/item">
+                            <i class="fas fa-save text-cyan-400 text-lg w-5"></i> 
+                            <span class="font-medium">My Trips</span>
+                            <i class="fas fa-arrow-right ml-auto text-cyan-400 opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                        </a>
+                        <div class="my-2 mx-3 border-t border-cyan-400/20"></div>
+                        <form method="post" action="{% url 'logout' %}" class="px-5 py-2">
                             {% csrf_token %}
-                            <button type="submit" class="w-full text-left text-red-400 hover:text-red-300 hover:bg-red-500/10 px-0 py-2 rounded transition-colors">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            <button type="submit" class="flex items-center space-x-3 w-full text-left py-3 px-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 font-medium group/item">
+                                <i class="fas fa-sign-out-alt text-lg w-5"></i> 
+                                <span>Logout</span>
+                                <i class="fas fa-arrow-right ml-auto opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                             </button>
                         </form>
                     </div>
@@ -102,6 +118,7 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden pb-4">
             <a href="{% url 'home' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 rounded">Home</a>
+            <a href="{% url 'plan-dashboard' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 rounded">Plan</a>
             {% if request.user.is_authenticated %}
             <a href="{% url 'group' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 rounded">Groups</a>
             <a href="{% url 'friends' %}" class="block px-4 py-2 text-gray-300 hover:text-cyan-400 hover:bg-white/5 rounded">Friends</a>

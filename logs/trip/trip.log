@@ -1,0 +1,153 @@
+2026-01-11 18:10:52 - trip.api_views - INFO - [api_views.py:18] - Save trip request from user 6 (ajtest5)
+2026-01-11 18:10:52 - trip.models - DEBUG - [models.py:27] - SavedTrip created: 1 - Goa trip (user: ajtest5)
+2026-01-11 18:10:52 - trip.api_views - INFO - [api_views.py:41] - New trip created with ID 1 by user 6. Trip name: Goa trip
+2026-01-11 18:11:03 - trip.api_views - INFO - [api_views.py:177] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:11:25 - trip.api_views - INFO - [api_views.py:177] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:11:26 - trip.api_views - INFO - [api_views.py:177] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:11:27 - trip.api_views - INFO - [api_views.py:177] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:13:42 - trip.api_views - INFO - [api_views.py:177] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:13:42 - trip.api_views - INFO - [api_views.py:65] - List trips request from user 6 (ajtest5)
+2026-01-11 18:13:42 - trip.api_views - INFO - [api_views.py:69] - Retrieved 1 trips for user 6
+2026-01-11 18:13:55 - trip.api_views - INFO - [api_views.py:94] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:13:55 - trip.api_views - INFO - [api_views.py:97] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:18:12 - trip.api_views - INFO - [api_views.py:177] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:18:12 - trip.api_views - INFO - [api_views.py:65] - List trips request from user 6 (ajtest5)
+2026-01-11 18:18:12 - trip.api_views - INFO - [api_views.py:69] - Retrieved 1 trips for user 6
+2026-01-11 18:18:27 - trip.api_views - INFO - [api_views.py:94] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:18:27 - trip.api_views - INFO - [api_views.py:97] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:20:35 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:20:35 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:20:35 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:20:37 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:20:37 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:20:53 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:20:54 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:20:54 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:20:55 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:20:55 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:21:24 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:21:24 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:21:24 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:21:26 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:21:26 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:24:12 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:24:12 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:24:12 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:24:14 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:24:14 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:25:35 - trip.api_views - INFO - [api_views.py:18] - Save trip request from user 6 (ajtest5)
+2026-01-11 18:25:35 - trip.models - DEBUG - [models.py:27] - SavedTrip updated: 1 - hdfbd (user: ajtest5)
+2026-01-11 18:25:35 - trip.api_views - INFO - [api_views.py:37] - Trip 1 updated by user 6. Trip name: hdfbd
+2026-01-11 18:25:44 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:25:44 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:25:44 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:25:49 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:25:49 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:26:01 - trip.api_views - INFO - [api_views.py:18] - Save trip request from user 6 (ajtest5)
+2026-01-11 18:26:01 - trip.models - DEBUG - [models.py:27] - SavedTrip updated: 1 - hdfbd (user: ajtest5)
+2026-01-11 18:26:01 - trip.api_views - INFO - [api_views.py:37] - Trip 1 updated by user 6. Trip name: hdfbd
+2026-01-11 18:26:19 - trip.api_views - INFO - [api_views.py:18] - Save trip request from user 6 (ajtest5)
+2026-01-11 18:26:19 - trip.models - DEBUG - [models.py:27] - SavedTrip updated: 1 - hdfbd (user: ajtest5)
+2026-01-11 18:26:19 - trip.api_views - INFO - [api_views.py:37] - Trip 1 updated by user 6. Trip name: hdfbd
+2026-01-11 18:26:23 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:26:23 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:26:23 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:26:27 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:26:27 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:29:13 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:29:13 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:29:13 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:29:20 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:29:20 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:29:51 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:29:51 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:29:51 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:29:55 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:29:55 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:29:55 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:29:57 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:29:57 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:32:29 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:32:29 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:32:29 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:32:32 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:32:32 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:32:49 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:32:49 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:32:49 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:32:52 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:32:52 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:32:52 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:32:54 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:32:54 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:32:54 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:32:59 - trip.api_views - INFO - [api_views.py:182] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:32:59 - trip.api_views - INFO - [api_views.py:70] - List trips request from user 6 (ajtest5)
+2026-01-11 18:32:59 - trip.api_views - INFO - [api_views.py:74] - Retrieved 1 trips for user 6
+2026-01-11 18:33:03 - trip.api_views - INFO - [api_views.py:99] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:33:03 - trip.api_views - INFO - [api_views.py:102] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:35:09 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:35:09 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:35:09 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:35:12 - trip.api_views - INFO - [api_views.py:101] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:35:12 - trip.api_views - INFO - [api_views.py:104] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:35:31 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:35:31 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:35:31 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:38:42 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:38:42 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:38:42 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:38:44 - trip.api_views - INFO - [api_views.py:101] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:38:44 - trip.api_views - INFO - [api_views.py:104] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:38:57 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:38:57 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:38:57 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:39:00 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:39:00 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:39:00 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:40:43 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:40:43 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:40:43 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:40:45 - trip.api_views - INFO - [api_views.py:101] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:40:45 - trip.api_views - INFO - [api_views.py:104] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:40:54 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:40:54 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:40:54 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:44:05 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:44:06 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:44:06 - trip.api_views - INFO - [api_views.py:76] - Retrieved 1 trips for user 6
+2026-01-11 18:44:13 - trip.api_views - INFO - [api_views.py:101] - Get trip request from user 6. Trip ID: 1
+2026-01-11 18:44:13 - trip.api_views - INFO - [api_views.py:104] - Trip 1 retrieved successfully for user 6
+2026-01-11 18:44:33 - trip.api_views - INFO - [api_views.py:18] - Save trip request from user 6 (ajtest5)
+2026-01-11 18:44:33 - trip.api_views - INFO - [api_views.py:30] - Save trip: trip_id=None, trip_name=hdfbd 2 (copy), is_update=False
+2026-01-11 18:44:33 - trip.models - DEBUG - [models.py:27] - SavedTrip created: 2 - hdfbd 2 (copy) (user: ajtest5)
+2026-01-11 18:44:33 - trip.api_views - INFO - [api_views.py:48] - New trip created with ID 2 by user 6. Trip name: hdfbd 2 (copy)
+2026-01-11 18:44:42 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:44:42 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:44:42 - trip.api_views - INFO - [api_views.py:76] - Retrieved 2 trips for user 6
+2026-01-11 18:49:01 - trip.api_views - INFO - [api_views.py:18] - Save trip request from user 6 (ajtest5)
+2026-01-11 18:49:01 - trip.api_views - INFO - [api_views.py:30] - Save trip: trip_id=None, trip_name=hdfbd 3 (copy), is_update=False
+2026-01-11 18:49:01 - trip.models - DEBUG - [models.py:27] - SavedTrip created: 3 - hdfbd 3 (copy) (user: ajtest5)
+2026-01-11 18:49:01 - trip.api_views - INFO - [api_views.py:48] - New trip created with ID 3 by user 6. Trip name: hdfbd 3 (copy)
+2026-01-11 18:49:06 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:49:06 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:49:06 - trip.api_views - INFO - [api_views.py:76] - Retrieved 3 trips for user 6
+2026-01-11 18:55:10 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:55:11 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:55:11 - trip.api_views - INFO - [api_views.py:76] - Retrieved 3 trips for user 6
+2026-01-11 18:56:05 - trip.api_views - INFO - [api_views.py:101] - Get trip request from user 6. Trip ID: 2
+2026-01-11 18:56:05 - trip.api_views - INFO - [api_views.py:104] - Trip 2 retrieved successfully for user 6
+2026-01-11 18:56:09 - trip.api_views - INFO - [api_views.py:101] - Get trip request from user 6. Trip ID: 3
+2026-01-11 18:56:09 - trip.api_views - INFO - [api_views.py:104] - Trip 3 retrieved successfully for user 6
+2026-01-11 18:57:58 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 18:57:58 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 18:57:58 - trip.api_views - INFO - [api_views.py:76] - Retrieved 3 trips for user 6
+2026-01-11 19:02:31 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 19:02:31 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 19:02:31 - trip.api_views - INFO - [api_views.py:76] - Retrieved 3 trips for user 6
+2026-01-11 19:10:20 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 19:10:20 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 19:10:20 - trip.api_views - INFO - [api_views.py:76] - Retrieved 3 trips for user 6
+2026-01-11 19:15:50 - trip.api_views - INFO - [api_views.py:184] - Saved trips page accessed by user 6 (ajtest5)
+2026-01-11 19:15:50 - trip.api_views - INFO - [api_views.py:72] - List trips request from user 6 (ajtest5)
+2026-01-11 19:15:50 - trip.api_views - INFO - [api_views.py:76] - Retrieved 3 trips for user 6

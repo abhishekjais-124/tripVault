@@ -40,9 +40,40 @@ class GroupExpensesView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
         
+        # Get filters from query params
+        search_text = request.GET.get('search', '').strip()
+        date_from = request.GET.get('date_from', '').strip()
+        date_to = request.GET.get('date_to', '').strip()
+        paid_by_ids = request.GET.getlist('paid_by')  # Multiple users
+        categories = request.GET.getlist('category')  # Multiple categories
+        include_settlements = request.GET.get('include_settlements') == 'on'  # Checkbox
+        
         # Get expenses
         expenses = expense_utils.get_group_expenses(group)
-        settlements = Settlement.objects.filter(group=group).select_related('from_user', 'to_user').order_by('-created_at')
+        
+        # Apply filters
+        if search_text:
+            expenses = expenses.filter(title__icontains=search_text)
+        
+        if date_from:
+            expenses = expenses.filter(date__gte=date_from)
+        
+        if date_to:
+            expenses = expenses.filter(date__lte=date_to)
+        
+        if paid_by_ids:
+            expenses = expenses.filter(paid_by_id__in=paid_by_ids)
+        
+        if categories:
+            expenses = expenses.filter(category__in=categories)
+        
+        expense_count = expenses.count()
+        
+        # Only include settlements if checkbox is ticked
+        if include_settlements:
+            settlements = Settlement.objects.filter(group=group).select_related('from_user', 'to_user').order_by('-created_at')
+        else:
+            settlements = []
         
         # Calculate balances
         overall_balance = expense_utils.get_group_balance(group, user)
@@ -72,29 +103,30 @@ class GroupExpensesView(APIView):
             })
 
         settlement_items = []
-        from decimal import Decimal
-        for s in settlements:
-            user_delta = Decimal('0')
-            if s.from_user_id == user.id:
-                user_delta = -s.amount
-            elif s.to_user_id == user.id:
-                user_delta = s.amount
+        if include_settlements:
+            from decimal import Decimal
+            for s in settlements:
+                user_delta = Decimal('0')
+                if s.from_user_id == user.id:
+                    user_delta = -s.amount
+                elif s.to_user_id == user.id:
+                    user_delta = s.amount
 
-            settlement_items.append({
-                'id': s.id,
-                'title': f"Settlement to @{s.to_user.username}" if s.from_user_id == user.id else f"Settlement from @{s.from_user.username}",
-                'paid_by': s.from_user,
-                'amount': s.amount,
-                'amount_owed': user_delta,
-                'date': s.created_at.date(),
-                'category': 'Settlement',
-                'description': '',
-                'is_paid_by_user': s.from_user_id == user.id,
-                'is_owed_by_user': user_delta > 0,
-                'created_at': s.created_at,
-                'updated_at': s.updated_at,
-                'type': 'settlement',
-            })
+                settlement_items.append({
+                    'id': s.id,
+                    'title': f"Settlement to @{s.to_user.username}" if s.from_user_id == user.id else f"Settlement from @{s.from_user.username}",
+                    'paid_by': s.from_user,
+                    'amount': s.amount,
+                    'amount_owed': user_delta,
+                    'date': s.created_at.date(),
+                    'category': 'Settlement',
+                    'description': '',
+                    'is_paid_by_user': s.from_user_id == user.id,
+                    'is_owed_by_user': user_delta > 0,
+                    'created_at': s.created_at,
+                    'updated_at': s.updated_at,
+                    'type': 'settlement',
+                })
 
         items = sorted(formatted_expenses + settlement_items, key=lambda x: x['created_at'], reverse=True)
 
@@ -104,8 +136,18 @@ class GroupExpensesView(APIView):
             'items': items,
             'overall_balance': overall_balance,
             'total_expenses': total_group_expenses,
+            'expense_count': expense_count,
             'user_is_debtor': overall_balance < 0,
             'group_members': UserGroupMapping.objects.filter(group=group, is_active=True).select_related('user'),
+            'categories': Expense.CATEGORY_CHOICES,
+            'filters': {
+                'search': search_text,
+                'date_from': date_from,
+                'date_to': date_to,
+                'paid_by': paid_by_ids,
+                'category': categories,
+                'include_settlements': include_settlements,
+            },
         }
         
         return render(request, 'expense/group_expenses.html', context)

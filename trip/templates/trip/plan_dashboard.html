@@ -1,0 +1,271 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block title %}Plan{% endblock title %}
+
+{% block style %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'trip/css/plan.css' %}">
+{% endblock style %}
+
+{% block body %}
+<div class="planner-shell pt-24 pb-16">
+    <div class="max-w-7xl mx-auto px-4 space-y-8">
+        <header class="planner-hero glass-dark">
+            <div>
+                <p class="eyebrow">Smart · Reactive · Collaborative</p>
+                <h1 class="hero-title">Trip Planner + Expense Calculator</h1>
+                <p class="hero-subtitle">Design your itinerary like a financial plan. Every slider, toggle, and number stays editable with live cost breakdowns.</p>
+                <div class="hero-badges">
+                    <span class="badge">Live recalculation</span>
+                    <span class="badge">Budget / Standard / Luxury</span>
+                    <span class="badge">Per person vs Group</span>
+                </div>
+            </div>
+            <div class="hero-metrics">
+                <div class="metric-card">
+                    <p class="metric-label">Total Trip Cost</p>
+                    <p class="metric-value" id="metric-trip-total">Rs 0</p>
+                    <small class="metric-sub" id="metric-trip-mode">Standard mode</small>
+                </div>
+                <div class="metric-card">
+                    <p class="metric-label">Per Person</p>
+                    <p class="metric-value" id="metric-per-person">Rs 0</p>
+                    <small class="metric-sub" id="metric-people-count">0 people</small>
+                </div>
+                <div class="metric-card">
+                    <p class="metric-label">Daily Avg</p>
+                    <p class="metric-value" id="metric-daily-avg">Rs 0</p>
+                    <small class="metric-sub" id="metric-day-count">0 days</small>
+                </div>
+            </div>
+        </header>
+
+        <section class="planner-section" id="trip-setup">
+            <div class="section-header">
+                <div>
+                    <p class="eyebrow">01 · Trip Setup</p>
+                    <h2 class="section-title">Trip foundation</h2>
+                </div>
+                <div class="section-actions">
+                    <button class="chip" id="reset-planner" type="button">Reset plan</button>
+                </div>
+            </div>
+            <div class="grid gap-6 md:grid-cols-4">
+                <div class="planner-card">
+                    <label class="field-label" for="trip-name">Trip name</label>
+                    <input id="trip-name" data-trip-field="name" class="field-input" type="text" placeholder="Ex: Konkan Coastal Run">
+
+                    <label class="field-label mt-4" for="start-date">Start date</label>
+                    <input id="start-date" data-trip-field="startDate" class="field-input" type="date">
+
+                    <label class="field-label mt-4" for="end-date">End date</label>
+                    <input id="end-date" data-trip-field="endDate" class="field-input" type="date">
+
+                    <div class="grid gap-4 sm:grid-cols-2 mt-4">
+                        <div class="info-pill">
+                            <p><small>Days:</small> <span id="auto-days" class="highlight">0</span></p>
+                        </div>
+                        <div class="info-pill">
+                            <p><small>Nights:</small> <span id="auto-nights" class="highlight">0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="planner-card">
+                    <label class="field-label">Number of people: <span class="pill inline" id="people-pill">2</span></label>
+                    <div class="flex items-center gap-3 mb-4">
+                        <input id="people-slider" type="range" min="1" max="25" value="2" class="people-range">
+                    </div>
+                    <label class="field-label">Default cost mode</label>
+                    <div class="toggle-group" id="default-mode">
+                        <button type="button" data-mode="group" class="toggle active">Group</button>
+                        <button type="button" data-mode="per-person" class="toggle">Per person</button>
+                    </div>
+
+                    <label class="field-label mt-4">Travel style</label>
+                    <div class="toggle-group" id="tier-toggle">
+                        <button type="button" data-tier="budget" class="toggle">Budget (-15%)</button>
+                        <button type="button" data-tier="standard" class="toggle active">Standard</button>
+                        <button type="button" data-tier="luxury" class="toggle">Luxury (+25%)</button>
+                    </div>
+                </div>
+
+                <div class="planner-card">
+                    <div>
+                        <label class="field-label" for="start-city">Starting city</label>
+                        <input id="start-city" data-trip-field="startCity" class="field-input" type="text" placeholder="Origin">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="field-label" for="end-city">Ending city</label>
+                        <input id="end-city" data-trip-field="endCity" class="field-input" type="text" placeholder="Destination">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="field-label" for="approx-distance">Approx distance (km)</label>
+                        <input id="approx-distance" data-trip-field="approxDistance" class="field-input" type="number" min="0" step="0.1" placeholder="Total km" value="0">
+                    </div>
+                </div>
+
+                <div class="planner-card">
+                    <label class="field-label">Fuel price per litre</label>
+                    <input id="fuel-price" data-trip-field="fuelPrice" class="field-input" type="number" min="0" step="0.1" placeholder="Rs/l" value="105">
+                    <p class="info-pill mt-2"><i class="fas fa-info-circle"></i> Used for all self-transport calculations</p>
+
+                    <label class="field-label mt-4">Vehicle type</label>
+                    <select id="vehicle-type" data-trip-field="vehicle" class="field-input">
+                        <option value="bike">Bike</option>
+                        <option value="car" selected>Car</option>
+                        <option value="train">Train</option>
+                        <option value="flight">Flight</option>
+                    </select>
+
+                    <div id="vehicle-car" class="vehicle-section mt-4">
+                        <label class="field-label">Mileage (km/litre)</label>
+                        <input id="mileage" data-trip-field="mileage" class="field-input" type="number" min="1" step="0.1" placeholder="km/l" value="18">
+                    </div>
+
+                    <div id="vehicle-train" class="vehicle-section mt-4" style="display:none;">
+                        <label class="field-label">Ticket cost per person (Rs)</label>
+                        <input id="train-ticket" data-trip-field="trainTicket" class="field-input" type="number" min="0" step="0.01" placeholder="Rs" value="0">
+                    </div>
+
+                    <div id="vehicle-flight" class="vehicle-section mt-4" style="display:none;">
+                        <label class="field-label">Flight ticket cost per person (Rs)</label>
+                        <input id="flight-ticket" data-trip-field="flightTicket" class="field-input" type="number" min="0" step="0.01" placeholder="Rs" value="0">
+                    </div>
+
+                    <div id="vehicle-bike" class="vehicle-section mt-4" style="display:none;">
+                        <label class="field-label">Mileage (km/litre)</label>
+                        <input id="bike-mileage" data-trip-field="bikeMileage" class="field-input" type="number" min="1" step="0.1" placeholder="km/l" value="50">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="planner-section">
+            <div class="section-header">
+                <div>
+                    <p class="eyebrow">02 · Daily Itinerary Builder</p>
+                    <h2 class="section-title">Stack days, reorder</h2>
+                </div>
+                <div class="section-actions">
+                    <button id="add-day" class="btn-gradient" type="button"><i class="fas fa-plus"></i> Add day</button>
+                    <button id="duplicate-day" class="ghost-btn" type="button"><i class="fas fa-clone"></i> Duplicate last</button>
+                </div>
+            </div>
+            <div id="day-cards" class="day-list"></div>
+        </section>
+
+        <section class="planner-section">
+            <div class="section-header">
+                <div>
+                    <p class="eyebrow">03 · Expense Calculator</p>
+                    <h2 class="section-title">Live category totals</h2>
+                </div>
+            </div>
+            <div class="grid gap-4 md:grid-cols-5" id="category-grid">
+                <div class="mini-card">
+                    <p class="mini-label">Stay</p>
+                    <p class="mini-value" id="total-stay">Rs 0</p>
+                </div>
+                <div class="mini-card">
+                    <p class="mini-label">Transport</p>
+                    <p class="mini-value" id="total-transport">Rs 0</p>
+                </div>
+                <div class="mini-card">
+                    <p class="mini-label">Food</p>
+                    <p class="mini-value" id="total-food">Rs 0</p>
+                </div>
+                <div class="mini-card">
+                    <p class="mini-label">Activities</p>
+                    <p class="mini-value" id="total-activities">Rs 0</p>
+                </div>
+                <div class="mini-card">
+                    <p class="mini-label">Misc</p>
+                    <p class="mini-value" id="total-misc">Rs 0</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="planner-section">
+            <div class="section-header">
+                <div>
+                    <p class="eyebrow">04 · Summary & Per Person Split</p>
+                    <h2 class="section-title">See the full picture</h2>
+                </div>
+                <div class="section-actions gap-3">
+                    <label style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <input type="checkbox" id="save-as-new" style="width: 16px; height: 16px; cursor: pointer;">
+                        <span style="color: var(--text); font-size: 14px;">Save as a new trip</span>
+                    </label>
+                    <a href="{% url 'saved-trips' %}" class="ghost-btn" style="text-decoration: none;"><i class="fas fa-folder-open"></i> My Trips</a>
+                    <button class="ghost-btn" id="save-trip" type="button"><i class="fas fa-save"></i> Save trip</button>
+                    <button class="btn-gradient" id="export-pdf" type="button"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                </div>
+            </div>
+            <div class="grid gap-6 lg:grid-cols-3">
+                <div class="summary-card glass-dark lg:col-span-2">
+                    <div class="summary-grid">
+                        <div>
+                            <p class="summary-label">Trip total</p>
+                            <p class="summary-value" id="summary-trip-total">Rs 0</p>
+                        </div>
+                        <div>
+                            <p class="summary-label">Per person</p>
+                            <p class="summary-value" id="summary-per-person">Rs 0</p>
+                        </div>
+                        <div>
+                            <p class="summary-label">Daily average</p>
+                            <p class="summary-value" id="summary-daily-avg">Rs 0</p>
+                        </div>
+                        <div>
+                            <p class="summary-label">People</p>
+                            <p class="summary-value" id="summary-people">0</p>
+                        </div>
+                        <div>
+                            <p class="summary-label">Days</p>
+                            <p class="summary-value" id="summary-days">0</p>
+                        </div>
+                        <div>
+                            <p class="summary-label">Mode</p>
+                            <p class="summary-value" id="summary-mode">Standard</p>
+                        </div>
+                    </div>
+                    <div class="progress-wrap" aria-label="Category percentages">
+                        <div class="progress-row"><span>Stay</span><div class="progress-bar"><span id="bar-stay"></span></div><span id="pct-stay">0%</span></div>
+                        <div class="progress-row"><span>Transport</span><div class="progress-bar"><span id="bar-transport"></span></div><span id="pct-transport">0%</span></div>
+                        <div class="progress-row"><span>Food</span><div class="progress-bar"><span id="bar-food"></span></div><span id="pct-food">0%</span></div>
+                        <div class="progress-row"><span>Activities</span><div class="progress-bar"><span id="bar-activities"></span></div><span id="pct-activities">0%</span></div>
+                        <div class="progress-row"><span>Misc</span><div class="progress-bar"><span id="bar-misc"></span></div><span id="pct-misc">0%</span></div>
+                    </div>
+                </div>
+                <div class="summary-card glass-dark">
+                    <canvas id="category-chart" height="220" aria-label="Category pie chart"></canvas>
+                    <div class="chip mt-4" id="calculation-note">All numbers update live.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const plannerBootstrap = {
+        currencySymbol: 'Rs ',
+        defaults: {
+            people: 2,
+            mileage: 18,
+            fuelPrice: 105,
+            vehicle: 'car',
+            mode: 'group',
+            tier: 'standard',
+        },
+    };
+</script>
+<script src="{% static 'trip/js/plan.js' %}"></script>
+{% endblock script %}

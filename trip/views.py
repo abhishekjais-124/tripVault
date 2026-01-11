@@ -40,3 +40,10 @@ class HomeView(APIView):
         return render(
             request, "trip/home.html", {"user": user, "request_data": request_data}
         )
+
+
+@method_decorator(login_required(login_url="/user/login/"), name="dispatch")
+class TripPlannerView(APIView):
+    def get(self, request):
+        user = getattr(request.user, "user", None)
+        return render(request, "trip/plan_dashboard.html", {"user": user})
