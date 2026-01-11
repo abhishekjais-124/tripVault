@@ -202,11 +202,14 @@
 <!-- emailJS Script -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
-    // Initialize emailJS with Service ID
-    // Note: You need to set up a template in emailJS console
-    // Service ID: service_1
-    // Template: template_contact
-    emailjs.init('service_1');
+    // Initialize EmailJS with your Public Key
+    // Get this from EmailJS dashboard (Account -> API Keys)
+    const EMAILJS_PUBLIC_KEY = 'REPLACE_WITH_PUBLIC_KEY';
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    // Centralize EmailJS IDs for easy updates
+    const EMAILJS_SERVICE_ID = 'service_1';
+    const EMAILJS_TEMPLATE_ID = 'template_contact';
 
     // FAQ Toggle Function
     function toggleFAQ(button) {
@@ -236,19 +239,20 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner animate-spin"></i><span>Sending...</span>';
 
-        // Prepare form data
+        // Prepare form data - variables match EmailJS template
         const formData = {
             from_name: document.getElementById('name').value,
-            from_email: document.getElementById('email').value,
+            reply_to: document.getElementById('email').value,
             subject: document.getElementById('subject').value,
             message: document.getElementById('message').value,
+            site_name: 'TripVault',
             to_email: 'support@tripvault.com'
         };
 
         // Try emailJS first if template is configured
         const sendViaEmailJS = () => {
             return new Promise((resolve, reject) => {
-                emailjs.send('service_1', 'template_contact', formData)
+                emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData)
                     .then(
                         function(response) {
                             console.log('EmailJS SUCCESS!', response.status, response.text);
@@ -263,12 +267,20 @@
         };
 
         // Fallback to backend endpoint if emailJS is not configured
+        // Helper: read CSRF token from cookie (Django default 'csrftoken')
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return '';
+        }
+
         const sendViaBackend = () => {
             return fetch('{% url "send-contact-email" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                    'X-CSRFToken': getCookie('csrftoken'),
                 },
                 body: JSON.stringify(formData)
             })
