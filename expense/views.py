@@ -231,7 +231,7 @@ class AddExpenseView(APIView):
                     group=group, is_active=True
                 ).values_list('user_id', flat=True)
                 
-                notification_message = f"{user.username} added expense '{title}' (₹{amount}) to the group"
+                notification_message = f"{paid_by_user.username} added expense '{title}' (₹{amount}) to the group"
                 
                 for member_id in group_members:
                     Notification.objects.create(
@@ -242,7 +242,7 @@ class AddExpenseView(APIView):
                         metadata={
                             "expense_title": title, 
                             "amount": str(amount), 
-                            "added_by": user.username,
+                            "added_by": paid_by_user.username,
                             "group_id": group.id,
                             "group_name": group.name,
                             "expense_id": expense.id
