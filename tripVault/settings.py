@@ -140,10 +140,15 @@ LOGGING = {
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["aj124.com", "www.aj124.com", "localhost", "127.0.0.1", ".onrender.com"]
+ALLOWED_HOSTS = ["aj124.com", "www.aj124.com", "localhost", "127.0.0.1", ".onrender.com", "tripvault-1.onrender.com"]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://aj124.com",
+    "https://www.aj124.com",
+]
