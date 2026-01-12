@@ -952,6 +952,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
+            credentials: 'same-origin',
             body: JSON.stringify(payload)
         })
         .then(res => {
