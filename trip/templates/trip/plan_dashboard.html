@@ -24,20 +24,27 @@
                 </div>
             </div>
             <div class="hero-metrics">
-                <div class="metric-card">
-                    <p class="metric-label">Total Trip Cost</p>
-                    <p class="metric-value" id="metric-trip-total">Rs 0</p>
-                    <small class="metric-sub" id="metric-trip-mode">Standard mode</small>
-                </div>
-                <div class="metric-card">
-                    <p class="metric-label">Per Person</p>
-                    <p class="metric-value" id="metric-per-person">Rs 0</p>
-                    <small class="metric-sub" id="metric-people-count">0 people</small>
-                </div>
-                <div class="metric-card">
-                    <p class="metric-label">Daily Avg</p>
-                    <p class="metric-value" id="metric-daily-avg">Rs 0</p>
-                    <small class="metric-sub" id="metric-day-count">0 days</small>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="metric-card">
+                        <p class="metric-label">Total Trip Cost</p>
+                        <p class="metric-value" id="metric-trip-total">Rs 0</p>
+                        <small class="metric-sub" id="metric-trip-mode">Standard mode</small>
+                    </div>
+                    <div class="metric-card">
+                        <p class="metric-label">Per Person</p>
+                        <p class="metric-value" id="metric-per-person">Rs 0</p>
+                        <small class="metric-sub" id="metric-people-count">0 people</small>
+                    </div>
+                    <div class="metric-card">
+                        <p class="metric-label">Daily Avg</p>
+                        <p class="metric-value" id="metric-daily-avg">Rs 0</p>
+                        <small class="metric-sub" id="metric-day-count">0 days</small>
+                    </div>
+                    <div class="metric-card">
+                        <p class="metric-label">Nights</p>
+                        <p class="metric-value" id="metric-night-count">0</p>
+                        <small class="metric-sub">Nights</small>
+                    </div>
                 </div>
             </div>
         </header>
@@ -63,11 +70,11 @@
                     <label class="field-label mt-4" for="end-date">End date</label>
                     <input id="end-date" data-trip-field="endDate" class="field-input" type="date">
 
-                    <div class="grid gap-4 sm:grid-cols-2 mt-4">
-                        <div class="info-pill">
+                    <div class="flex gap-4 mt-4">
+                        <div class="info-pill flex-1 text-center">
                             <p><small>Days:</small> <span id="auto-days" class="highlight">0</span></p>
                         </div>
-                        <div class="info-pill">
+                        <div class="info-pill flex-1 text-center">
                             <p><small>Nights:</small> <span id="auto-nights" class="highlight">0</span></p>
                         </div>
                     </div>
@@ -197,13 +204,16 @@
                     <h2 class="section-title">See the full picture</h2>
                 </div>
                 <div class="section-actions gap-3">
-                    <label style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                        <input type="checkbox" id="save-as-new" style="width: 16px; height: 16px; cursor: pointer;">
-                        <span style="color: var(--text); font-size: 14px;">Save as a new trip</span>
+                    <a href="{% url 'saved-trips' %}" class="btn-gradient flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white shadow-md hover:shadow-lg transition-all"><i class="fas fa-folder-open"></i> My Trips</a>
+                    <button class="btn-gradient flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white shadow-md hover:shadow-lg transition-all" id="save-trip" type="button"><i class="fas fa-save"></i> Save trip</button>
+                    <button class="btn-gradient flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white shadow-md hover:shadow-lg transition-all" id="export-pdf" type="button"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                </div>
+                <div class="flex flex-col items-center mt-3 w-full">
+                    <label class="flex items-center gap-2 cursor-pointer select-none text-base text-gray-200">
+                        <input type="checkbox" id="save-as-new" class="form-checkbox w-5 h-5 accent-cyan-500">
+                        <span>Save as a new trip</span>
                     </label>
-                    <a href="{% url 'saved-trips' %}" class="ghost-btn" style="text-decoration: none;"><i class="fas fa-folder-open"></i> My Trips</a>
-                    <button class="ghost-btn" id="save-trip" type="button"><i class="fas fa-save"></i> Save trip</button>
-                    <button class="btn-gradient" id="export-pdf" type="button"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                </div>
                 </div>
             </div>
             <div class="grid gap-6 lg:grid-cols-3">
@@ -243,7 +253,7 @@
                     </div>
                 </div>
                 <div class="summary-card glass-dark">
-                    <canvas id="category-chart" height="220" aria-label="Category pie chart"></canvas>
+                    <canvas id="category-chart" height="220" aria-label="Category pie chart" style="display:block;"></canvas>
                     <div class="chip mt-4" id="calculation-note">All numbers update live.</div>
                 </div>
             </div>

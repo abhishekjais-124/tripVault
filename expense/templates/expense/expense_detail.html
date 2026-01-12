@@ -11,8 +11,10 @@
             <a href="{% url 'group_expenses' group_id=expense.group.id %}" class="text-cyan-400 hover:text-cyan-300 inline-flex items-center space-x-2 mb-4">
                 <i class="fas fa-arrow-left"></i><span>Back to Expenses</span>
             </a>
-            <h1 class="text-4xl font-bold text-white mb-2">{{ expense.title }}</h1>
-            <p class="text-slate-400">Group: <span class="font-semibold text-cyan-300">{{ expense.group.name }}</span></p>
+            <div class="flex flex-col items-center justify-center text-center">
+                <h1 class="text-4xl font-bold text-white mb-2">{{ expense.title }}</h1>
+                <p class="text-slate-400">Group: <span class="font-semibold text-cyan-300">{{ expense.group.name }}</span></p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -28,17 +30,13 @@
                         <div>
                             <p class="text-slate-400 text-sm mb-2">YOUR SHARE</p>
                             <p class="text-4xl font-bold {% if expense.is_paid_by_user %}text-green-400{% else %}text-red-400{% endif %}">
-                                {% if expense.is_paid_by_user %}
-                                    +₹{{ expense.user_amount_owed|floatformat:2 }}
-                                {% else %}
-                                    -₹{{ expense.user_amount_owed|floatformat:2 }}
-                                {% endif %}
+                                ₹{{ expense.user_amount_owed|floatformat:2|cut:'-' }}
                             </p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-700/50 rounded-lg p-4">
+                        <div class="bg-slate-700/50 rounded-lg p-4">`
                             <p class="text-slate-400 text-xs mb-2">DATE</p>
                             <p class="text-white font-semibold">{{ expense.date|date:"M d, Y" }}</p>
                         </div>

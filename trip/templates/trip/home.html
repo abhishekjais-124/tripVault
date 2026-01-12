@@ -4,53 +4,57 @@
 {% block title %} Home {% endblock title %}
 
 {% block body %}
-<div class="min-h-screen pt-20">
+<div class="min-h-screen pt-16 pb-2 sm:pt-24 bg-gradient-to-br from-slate-900 to-slate-800">
     <!-- Hero Section -->
-    <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="max-w-7xl mx-auto px-4 py-10 sm:py-16">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <!-- Left Content -->
-            <div class="text-center md:text-left">
+            <!-- Hero Content Centered -->
+            <div class="text-center w-full col-span-2 flex flex-col items-center justify-center">
                 <h1 class="text-5xl md:text-6xl font-bold mb-6">
                     <span class="gradient-text">Plan. Explore. Remember.</span>
                 </h1>
                 <p class="text-xl text-gray-400 mb-8">
                     Organize group trips effortlessly. Share itineraries, budgets, and memories with your travel companions.
                 </p>
-                {% if request.user.is_authenticated %}
-                <div class="flex gap-4 flex-col sm:flex-row">
-                    <a href="{% url 'group' %}" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 transform hover:scale-105">
+            </div>
+        </div>
+
+        <!-- Groups & Plans Section -->
+        <div class="max-w-2xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-2 mb-0 md:mb-[-4rem]">
+            <!-- Groups Card -->
+            <div class="relative group bg-gradient-to-br from-cyan-900/80 to-blue-900/80 border-2 border-cyan-500/30 hover:border-cyan-400/70 rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-500/20">
+                <div class="absolute -top-8 -left-8 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl z-0"></div>
+                <div class="z-10 flex flex-col items-center">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-users text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight drop-shadow">Groups</h2>
+                    <p class="text-gray-300 mb-5 text-center text-base">Create and manage trip groups. Collaborate with friends and keep everyone in sync.</p>
+                    <a href="{% url 'group' %}" class="inline-block bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-2 px-7 rounded-xl text-center transition-all duration-300 shadow-md hover:shadow-lg">
                         <i class="fas fa-users mr-2"></i> Manage Groups
                     </a>
-                    <a href="{% url 'userprofile' %}" class="glass text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 hover:bg-white/10">
-                        <i class="fas fa-user-circle mr-2"></i> My Profile
-                    </a>
                 </div>
-                {% else %}
-                <div class="flex gap-4 flex-col sm:flex-row">
-                    <a href="{% url 'customerregistration' %}" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 transform hover:scale-105">
-                        <i class="fas fa-user-plus mr-2"></i> Get Started
-                    </a>
-                    <a href="{% url 'login' %}" class="glass text-white font-bold py-3 px-8 rounded-lg text-center transition-all duration-300 hover:bg-white/10">
-                        <i class="fas fa-sign-in-alt mr-2"></i> Sign In
-                    </a>
-                </div>
-                {% endif %}
             </div>
-
-            <!-- Right Illustration -->
-            <div class="flex justify-center">
-                <div class="relative w-64 h-64 md:w-80 md:h-80">
-                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl transform rotate-6 opacity-20 blur-2xl"></div>
-                    <div class="relative glass rounded-2xl p-8 flex items-center justify-center">
-                        <i class="fas fa-map text-8xl gradient-text opacity-80"></i>
+            <!-- Plans Card -->
+            <div class="relative group bg-gradient-to-br from-blue-900/80 to-cyan-900/80 border-2 border-blue-500/30 hover:border-blue-400/70 rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-blue-500/20">
+                <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl z-0"></div>
+                <div class="z-10 flex flex-col items-center">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-blue-400 to-cyan-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                        <i class="fas fa-route text-white text-3xl"></i>
                     </div>
+                    <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight drop-shadow">Plans</h2>
+                    <p class="text-gray-300 mb-5 text-center text-base">Plan your trip day-by-day, share itineraries, and keep your adventure organized.</p>
+                    <a href="{% url 'plan-dashboard' %}" class="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-7 rounded-xl text-center transition-all duration-300 shadow-md hover:shadow-lg">
+                        <i class="fas fa-route mr-2"></i> Plan a Trip
+                    </a>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
     <!-- Features Section -->
-    <div class="max-w-7xl mx-auto px-4 py-16">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-14 md:mt-[-4rem]">
         <h2 class="text-4xl font-bold text-center gradient-text mb-12">Why Choose TripVault?</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Feature 1 -->
@@ -136,7 +140,7 @@
     {% endif %}
 
     <!-- Footer -->
-    <div class="max-w-7xl mx-auto px-4 py-12 mt-12 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 py-10 sm:py-14 mt-10 sm:mt-16 border-t border-gray-800">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
                 <h4 class="text-white font-bold mb-4">Product</h4>

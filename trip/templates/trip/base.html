@@ -17,6 +17,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+                /* iOS PWA yellow border fix */
+                html, body, nav, .glass-dark, .glass {
+                    border: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+                /* Remove iOS PWA focus ring */
+                *:focus {
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+                /* Remove iOS yellow border on tap */
+                *:active {
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+                /* Remove iOS Safari focus ring */
+                *::-webkit-focus-ring {
+                    outline: none !important;
+                }
         * {
             margin: 0;
             padding: 0;
@@ -66,6 +86,19 @@
         /* Smooth transitions */
         a, button {
             transition: all 0.3s ease;
+        }
+
+        /* Remove all yellow borders and outlines globally */
+        * {
+            border-color: initial !important;
+            outline-color: initial !important;
+        }
+        *[style*="border: 1px solid yellow"], *[style*="outline: 1px solid yellow"] {
+            border: none !important;
+            outline: none !important;
+        }
+        * {
+            box-shadow: none !important;
         }
     </style>
     {% block style %} {% endblock style %}

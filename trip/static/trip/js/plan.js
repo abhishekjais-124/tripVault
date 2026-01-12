@@ -336,27 +336,52 @@
             data.categories.activities,
             data.categories.misc,
         ];
-        if (!pieChart) {
-            pieChart = new Chart(els.categoryChart.getContext('2d'), {
-                type: 'pie',
-                data: {
-                    labels,
-                    datasets: [
-                        {
-                            data: values,
-                            backgroundColor: ['#22d3ee', '#3b82f6', '#a855f7', '#f97316', '#e11d48'],
-                            borderWidth: 0,
-                        },
-                    ],
-                },
-                options: {
-                    plugins: { legend: { labels: { color: '#e5e7eb' } } },
-                },
-            });
+        const allZero = values.every(v => v === 0);
+        let chartData, chartType, chartOptions;
+        if (allZero) {
+            chartType = 'doughnut';
+            chartData = {
+                labels: ['No Data'],
+                datasets: [{
+                    data: [1],
+                    backgroundColor: ['#38bdf8'],
+                    borderWidth: 0,
+                }]
+            };
+            chartOptions = {
+                cutout: '70%',
+                plugins: { legend: { display: false } },
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+            };
         } else {
-            pieChart.data.datasets[0].data = values;
-            pieChart.update();
+            chartType = 'pie';
+            chartData = {
+                labels,
+                datasets: [
+                    {
+                        data: values,
+                        backgroundColor: ['#22d3ee', '#3b82f6', '#a855f7', '#f97316', '#e11d48'],
+                        borderWidth: 0,
+                    },
+                ],
+            };
+            chartOptions = {
+                plugins: { legend: { labels: { color: '#e5e7eb' } } },
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+            };
         }
+        if (pieChart) {
+            pieChart.destroy();
+        }
+        pieChart = new Chart(els.categoryChart.getContext('2d'), {
+            type: chartType,
+            data: chartData,
+            options: chartOptions,
+        });
     }
 
     function renderDays(data) {
@@ -1060,6 +1085,7 @@
         syncPeopleInputs(state.trip.people);
         updateVehicleVisibility();
         render();
+        // Pie chart is always handled in renderChart
     }
 
     document.addEventListener('DOMContentLoaded', init);

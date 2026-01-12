@@ -8,23 +8,19 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header with Balance -->
         <div class="mb-8">
+            <div class="flex flex-col sm:flex-row gap-6 justify-end items-center group-action-btn-float mb-8">
+                <!-- <button 
+                    onclick="openSettlementModal()"
+                    class="group-action-btn mb-8">
+                    <i class="fas fa-handshake"></i>
+                    <span>Settle</span>
+                </button> -->
+            </div>
             <div class="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl shadow-xl p-8 text-white">
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h1 class="text-4xl font-bold mb-2">{{ group.name }}</h1>
                         <p class="text-cyan-100">Trip Expense Tracker</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button 
-                            onclick="openSettlementModal()"
-                            class="bg-white/20 border border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/30 transition-colors flex items-center space-x-2 shadow-lg">
-                            <i class="fas fa-handshake"></i>
-                            <span>Add Settlement</span>
-                        </button>
-                        <a href="{% url 'add_expense' group_id=group.id %}" class="bg-white text-cyan-600 px-6 py-3 rounded-lg font-semibold hover:bg-cyan-50 transition-colors flex items-center space-x-2 shadow-lg">
-                            <i class="fas fa-plus"></i>
-                            <span>Add Expense</span>
-                        </a>
                     </div>
                 </div>
                 
@@ -196,17 +192,25 @@
 
         <!-- Expenses Table -->
         <div class="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
+                            <!-- Floating Add/Settle Buttons -->
+                            <a href="{% url 'add_expense' group_id=group.id %}" class="floating-add-expense" title="Add Expense">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                            <button onclick="openSettlementModal()" class="floating-settle-expense" title="Settle">
+                                <i class="fas fa-handshake"></i>
+                            </button>
             {% if items %}
                 <div class="overflow-x-auto">
+                                                    <!-- Floating Add Expense Button -->
+                                                    <a href="{% url 'add_expense' group_id=group.id %}" class="floating-add-expense" title="Add Expense">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
                     <table class="w-full">
-                        <thead>
-                            <tr class="bg-slate-700 border-b border-slate-600">
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Date</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Title</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Category</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-cyan-300">Paid By</th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-cyan-300">Amount Paid</th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-cyan-300">Your Share</th>
+                        <thead class="sr-only">
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Your Share / Amount</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-700" id="expenseTableBody">
@@ -220,7 +224,6 @@
                                     <td class="px-6 py-4">
                                         <div class="text-sm">
                                             <p class="font-medium text-white">{{ item.date|date:"M d" }}</p>
-                                            <p class="text-xs text-slate-400">{{ item.date|date:"Y" }}</p>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
@@ -229,54 +232,20 @@
                                             {% if item.description %}
                                                 <p class="text-xs text-slate-400">{{ item.description }}</p>
                                             {% endif %}
-                                            {% if item.type == 'expense' %}
-                                                <p class="text-[11px] text-slate-500 mt-1">
-                                                    Created {{ item.created_at|date:"M d, Y H:i" }} • Updated {{ item.updated_at|date:"M d, Y H:i" }}
-                                                </p>
+                                            <p class="text-[11px] text-slate-500 mt-1">{{ item.created_at|date:"g:i a" }}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex flex-col items-end">
+                                            {% if item.amount_owed %}
+                                                <span class="font-bold text-base {% if item.is_paid_by_user %}text-green-400{% else %}text-red-400{% endif %}">
+                                                    ₹{{ item.amount_owed|floatformat:2|cut:'-' }}
+                                                </span>
                                             {% else %}
-                                                <p class="text-[11px] text-slate-500 mt-1">Recorded {{ item.created_at|date:"M d, Y H:i" }}</p>
+                                                <span class="font-bold text-base text-slate-400">N/A</span>
                                             {% endif %}
+                                            <span class="font-semibold text-xs text-slate-300 mt-1">₹{{ item.amount|floatformat:2 }}</span>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        {% if item.type == 'settlement' %}
-                                            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-emerald-900 text-emerald-300">Settlement</span>
-                                        {% else %}
-                                            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full
-                                                {% if item.category == 'Food' %}bg-orange-900 text-orange-300
-                                                {% elif item.category == 'Transport' %}bg-purple-900 text-purple-300
-                                                {% elif item.category == 'Accommodation' %}bg-pink-900 text-pink-300
-                                                {% elif item.category == 'Activity' %}bg-indigo-900 text-indigo-300
-                                                {% elif item.category == 'Shopping' %}bg-rose-900 text-rose-300
-                                                {% else %}bg-slate-600 text-slate-300
-                                                {% endif %}
-                                            ">
-                                                {{ item.category }}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center space-x-2">
-                                            <img src="{{ item.paid_by.icon }}" alt="{{ item.paid_by.name }}" class="w-6 h-6 rounded-full">
-                                            <span class="text-sm text-white">{{ item.paid_by.username }}</span>
-                                            {% if item.is_paid_by_user %}
-                                                <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">(You)</span>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <p class="font-semibold text-white">₹{{ item.amount|floatformat:2 }}</p>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        {% if item.amount_owed %}
-                                            {% if item.amount_owed > 0 %}
-                                                <span class="font-semibold text-green-400">+₹{{ item.amount_owed|floatformat:2 }}</span>
-                                            {% elif item.amount_owed < 0 %}
-                                                <span class="font-semibold text-red-400">-₹{{ item.amount_owed|floatformat:2|cut:'-' }}</span>
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="text-slate-400">N/A</span>
-                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -296,6 +265,128 @@
 
         <!-- Back Button -->
         <div class="mt-8">
+            <style>
+            .group-action-btn-wrap {
+                width: 100%;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                gap: 1.2rem;
+            }
+            .group-action-btn {
+                background: rgba(255,255,255,0.13);
+                color: #fff;
+                border: 2.5px solid rgba(56,189,248,0.32);
+                border-radius: 2.7rem;
+                font-weight: 900;
+                font-size: 1rem;
+                padding: 1.05rem 2.3rem;
+                margin: 0;
+                box-shadow: 0 8px 36px 0 rgba(56,189,248,0.22), 0 2px 16px 0 rgba(14,165,233,0.10), 0 0 0 8px rgba(56,189,248,0.07);
+                display: flex;
+                align-items: center;
+                gap: 1.1rem;
+                transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s, background 0.18s, border 0.18s;
+                position: relative;
+                overflow: hidden;
+                outline: none;
+                filter: drop-shadow(0 0 16px #38bdf8cc);
+                will-change: transform, box-shadow;
+                animation: popInBtn 0.5s cubic-bezier(.4,2,.6,1);
+                white-space: normal;
+                text-align: center;
+                flex-wrap: wrap;
+                justify-content: center;
+                min-width: 0;
+                word-break: break-word;
+                backdrop-filter: blur(16px) saturate(1.5);
+                -webkit-backdrop-filter: blur(16px) saturate(1.5);
+            }
+            .group-action-btn:hover, .group-action-btn:focus {
+                background: rgba(56,189,248,0.32);
+                border-color: #38bdf8;
+                box-shadow: 0 20px 60px 0 rgba(56,189,248,0.38), 0 6px 36px 0 rgba(14,165,233,0.18), 0 0 0 12px rgba(56,189,248,0.10);
+                transform: scale(1.07) translateY(-3px);
+            }
+            .group-action-btn i {
+                font-size: 1.6em;
+                filter: drop-shadow(0 2px 4px rgba(56,189,248,0.18));
+            }
+            .group-action-btn:hover, .group-action-btn:focus {
+                background: linear-gradient(90deg, #38bdf8 0%, #0ea5e9 100%);
+                box-shadow: 0 16px 48px 0 rgba(56,189,248,0.28), 0 4px 32px 0 rgba(14,165,233,0.18);
+                transform: scale(1.07) rotate(-1deg);
+            }
+            @keyframes popInBtn {
+                0% { transform: scale(0.7) translateY(30px); opacity: 0; }
+                80% { transform: scale(1.08) translateY(-4px); opacity: 1; }
+                100% { transform: scale(1) translateY(0); opacity: 1; }
+            }
+            .floating-add-expense {
+                position: fixed;
+                right: 2.2rem;
+                bottom: 2.2rem;
+                z-index: 50;
+                background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+                color: #fff;
+                border-radius: 50%;
+                width: 64px;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.2rem;
+                box-shadow: 0 6px 32px 0 rgba(34,211,238,0.18);
+                transition: background 0.2s, box-shadow 0.2s;
+            }
+            .floating-add-expense:hover {
+                background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 100%);
+                box-shadow: 0 8px 40px 0 rgba(34,211,238,0.28);
+            }
+            .floating-settle-expense {
+                position: fixed;
+                right: 1.9rem;
+                bottom: 5.4rem;
+                z-index: 51;
+                background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+                color: #fff;
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                box-shadow: 0 3px 12px 0 rgba(34,211,238,0.18);
+                transition: background 0.2s, box-shadow 0.2s;
+                border: none;
+                outline: none;
+                cursor: pointer;
+            }
+            .floating-settle-expense:hover {
+                background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 100%);
+                box-shadow: 0 6px 20px 0 rgba(34,211,238,0.28);
+            }
+            @media (max-width: 700px) {
+                .group-action-btn-wrap {
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 1rem;
+                }
+                .group-action-btn {
+                    width: 100%;
+                    justify-content: center;
+                    font-size: 1rem;
+                    padding: 1rem 0;
+                }
+                .floating-add-expense {
+                    right: 1.2rem;
+                    bottom: 1.2rem;
+                    width: 54px;
+                    height: 54px;
+                    font-size: 1.5rem;
+                }
+            }
+            </style>
             <a href="{% url 'group' %}" class="inline-block text-cyan-400 hover:text-cyan-300 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>Back to Groups
             </a>
@@ -646,6 +737,14 @@
 </script>
 
 <style>
+                .group-action-btn-float {
+                    position: relative;
+                    z-index: 10;
+                    margin-bottom: -2.5rem;
+                    margin-top: 0.5rem;
+                    padding-top: 0.5rem;
+                    padding-bottom: 0.5rem;
+                }
     @keyframes slideOut {
         to {
             opacity: 0;
