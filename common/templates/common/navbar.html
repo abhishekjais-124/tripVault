@@ -11,6 +11,19 @@
                     <span class="text-xl font-bold gradient-text hidden sm:inline">TripVault</span>
                 </a>
             </div>
+            <!-- Overall Balance Widget (top right) -->
+            {% if not request.resolver_match or request.resolver_match.url_name != 'group_table' %}
+            <div class="flex items-center ml-auto">
+                <div class="flex flex-row items-center justify-center h-full px-3 py-0.5 rounded-lg border border-cyan-700 bg-slate-800/80 shadow-sm text-xs font-medium whitespace-nowrap gap-1" style="min-height:2.25rem;">
+                    <i class="fas fa-scale-balanced text-cyan-400 text-base"></i>
+                    {% if overall_balance < 0 %}
+                        <span class="text-red-400 font-bold">-₹{{ overall_balance|floatformat:2|cut:"-" }}</span>
+                    {% else %}
+                        <span class="text-green-400 font-bold">₹{{ overall_balance|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8">

@@ -2,6 +2,16 @@
 {% load static %}
 <html lang="en">
 <head>
+        <style>
+            /* Hide scrollbars globally (all browsers) */
+            html, body, * {
+                scrollbar-width: none !important; /* Firefox */
+                -ms-overflow-style: none !important; /* IE and Edge */
+            }
+            html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+                display: none !important; /* Chrome, Safari, Opera */
+            }
+        </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TripVault | {% block title %} {% endblock title %} </title>
@@ -128,6 +138,8 @@
         }
     </script>
     
+</body>
+{% include 'trip/base.html' %}
     {% block script %} {% endblock script %}
 </body>
 </html>

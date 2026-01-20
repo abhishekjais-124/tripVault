@@ -3,7 +3,7 @@
 <!-- Settings Sidebar (mobile only) -->
 <!-- Overlay for closing sidebar -->
 <div id="settings-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-40 z-[100] hidden md:hidden"></div>
-<div id="settings-sidebar" class="fixed top-0 right-0 h-full w-72 bg-gradient-to-b from-[#1e293b] to-[#0f172a] shadow-2xl z-[110] transform translate-x-full transition-transform duration-300 md:hidden" style="border-top-left-radius: 1.5rem; border-bottom-left-radius: 1.5rem;">
+<div id="settings-sidebar" class="fixed top-0 right-0 h-full w-72 bg-gradient-to-b from-[#1e293b] to-[#0f172a] shadow-2xl z-[110] transition-transform duration-300 md:hidden" style="border-top-left-radius: 1.5rem; border-bottom-left-radius: 1.5rem; transform: translateX(100%);">
     <div class="flex flex-col h-full p-6 relative" tabindex="-1">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-bold text-cyan-300">Settings</h2>
@@ -48,6 +48,16 @@
 {% load static %}
 <html lang="en">
 <head>
+        <style>
+            /* Hide scrollbars globally (all browsers) */
+            html, body, * {
+                scrollbar-width: none !important; /* Firefox */
+                -ms-overflow-style: none !important; /* IE and Edge */
+            }
+            html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+                display: none !important; /* Chrome, Safari, Opera */
+            }
+        </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TripVault | {% block title %} {% endblock title %} </title>
@@ -69,6 +79,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Hide scrollbars globally */
+        html, body, * {
+            scrollbar-width: none !important; /* Firefox */
+            -ms-overflow-style: none !important; /* IE and Edge */
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+            display: none !important; /* Chrome, Safari, Opera */
+        }
                 /* iOS PWA yellow border fix */
                 html, body, nav, .glass-dark, .glass {
                     border: none !important;
@@ -224,27 +242,27 @@
 <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full z-50 md:hidden bg-gradient-to-t from-[#1e293b] to-[#0f172a] shadow-2xl py-2 px-2 flex justify-center items-center" style="border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem;">
     <div class="relative w-full max-w-md mx-auto flex items-center justify-between">
         <div class="flex w-full justify-between items-center">
-            <a href="{% url 'friends' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all" style="flex:1;">
+            <a href="{% url 'friends' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all pb-6" style="flex:1;">
                 <i class="fas fa-user-friends text-xl"></i>
                 <span class="text-xs mt-1">Friends</span>
             </a>
-            <a href="{% url 'group' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all" style="flex:1;">
+            <a href="{% url 'group' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all pb-6" style="flex:1;">
                 <i class="fas fa-users text-xl"></i>
                 <span class="text-xs mt-1">Groups</span>
             </a>
             <div class="w-14"></div> <!-- Spacer for plus button -->
-            <a href="{% url 'notifications' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all" style="flex:1;">
+            <a href="{% url 'notifications' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all pb-6" style="flex:1;">
                 <i class="fas fa-clock text-xl"></i>
                 <span class="text-xs mt-1">Activities</span>
             </a>
-            <button id="settings-btn" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all focus:outline-none" style="flex:1;">
+            <button id="settings-btn" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all focus:outline-none pb-6" style="flex:1;">
                 <i class="fas fa-cog text-xl"></i>
                 <span class="text-xs mt-1">Settings</span>
             </button>
         </div>
         <!-- Plus (center) -->
         <button class="absolute left-1/2 -translate-x-1/2 -top-6 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-[#1e293b] focus:outline-none z-10">
-            <i class="fas fa-plus text-white text-2xl"></i>
+            <i class="fas fa-plus text-white text-2xl" style="margin-left: -8px;"></i>
         </button>
     </div>
 </nav>
@@ -380,11 +398,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var closeBtn = document.getElementById('close-settings');
 
     function openSidebar() {
-        sidebar.classList.remove('translate-x-full');
+        sidebar.style.transform = 'translateX(0)';
         overlay.classList.remove('hidden');
     }
     function closeSidebar() {
-        sidebar.classList.add('translate-x-full');
+        sidebar.style.transform = 'translateX(100%)';
         overlay.classList.add('hidden');
     }
 
