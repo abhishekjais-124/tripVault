@@ -171,4 +171,179 @@
     
     {% block script %} {% endblock script %}
 </body>
+</body>
+
+<!-- Mobile Bottom Navigation Bar -->
+
+<nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full z-50 md:hidden bg-gradient-to-t from-[#1e293b] to-[#0f172a] shadow-2xl py-2 px-2 flex justify-center items-center" style="border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem;">
+    <div class="relative w-full max-w-md mx-auto flex items-center justify-between">
+        <div class="flex w-full justify-between items-center">
+            <a href="{% url 'friends' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all" style="flex:1;">
+                <i class="fas fa-user-friends text-xl"></i>
+                <span class="text-xs mt-1">Friends</span>
+            </a>
+            <a href="{% url 'group' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all" style="flex:1;">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-xs mt-1">Groups</span>
+            </a>
+            <div class="w-14"></div> <!-- Spacer for plus button -->
+            <a href="{% url 'notifications' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all" style="flex:1;">
+                <i class="fas fa-clock text-xl"></i>
+                <span class="text-xs mt-1">Activities</span>
+            </a>
+            <button id="settings-btn" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all focus:outline-none" style="flex:1;">
+                <i class="fas fa-cog text-xl"></i>
+                <span class="text-xs mt-1">Settings</span>
+            </button>
+        </div>
+        <!-- Plus (center) -->
+        <button class="absolute left-1/2 -translate-x-1/2 -top-6 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-[#1e293b] focus:outline-none z-10">
+            <i class="fas fa-plus text-white text-2xl"></i>
+        </button>
+    </div>
+</nav>
+
+<style>
+    #mobile-bottom-nav .flex > a, #mobile-bottom-nav .flex > button {
+        min-width: 0;
+        flex: 1 1 0%;
+        text-align: center;
+    }
+    @media (max-width: 400px) {
+        #mobile-bottom-nav .flex > a span, #mobile-bottom-nav .flex > button span {
+            font-size: 0.7rem;
+        }
+    }
+    @media (min-width: 350px) {
+        #mobile-bottom-nav .flex > a, #mobile-bottom-nav .flex > button {
+            padding-left: 0.5rem;
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+                min-height: 100vh;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .glass {
+                background: rgba(30, 41, 59, 0.5);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .glass-dark {
+                background: rgba(15, 23, 42, 0.6);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .gradient-text {
+                background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .btn-gradient {
+                background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+                transition: all 0.3s ease;
+            }
+            .btn-gradient:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
+            }
+            a, button {
+                transition: all 0.3s ease;
+            }
+            * {
+                border-color: initial !important;
+                outline-color: initial !important;
+            }
+            *[style*="border: 1px solid yellow"], *[style*="outline: 1px solid yellow"] {
+                border: none !important;
+                outline: none !important;
+            }
+            * {
+                box-shadow: none !important;
+            }
+            /* MOBILE OPTIMIZATION */
+            @media (max-width: 767px) {
+                .btn-gradient, .glass, .glass-dark, .trip-card, .planner-card, .metric-card, .field-input, .field-textarea, .people-range {
+                    font-size: 0.92rem !important;
+                    padding: 6px 8px !important;
+                    border-radius: 0.7rem !important;
+                }
+                button, .btn, .trip-card button, .planner-card button {
+                    font-size: 0.92rem !important;
+                    padding: 6px 8px !important;
+                    min-width: 0 !important;
+                }
+                .trip-card h3, .planner-card h3, .metric-value, .metric-label {
+                    font-size: 1rem !important;
+                    margin-bottom: 4px !important;
+                }
+                .trip-card .trip-meta, .planner-card .trip-meta {
+                    font-size: 0.85rem !important;
+                    margin-bottom: 2px !important;
+                }
+                .avatar, .user-avatar, .profile-avatar {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    min-height: 32px !important;
+                }
+                .user-name, .user-handle, .user-groups, .user-balance {
+                    font-size: 0.95rem !important;
+                }
+                .user-balance {
+                    font-weight: 600 !important;
+                }
+                .trip-actions, .planner-actions {
+                    gap: 6px !important;
+                }
+                .trip-card, .planner-card {
+                    padding: 8px !important;
+                    margin-bottom: 6px !important;
+                }
+                .trip-card button, .planner-card button {
+                    font-size: 0.92rem !important;
+                    padding: 6px 8px !important;
+                }
+                .metric-value {
+                    font-size: 1.1rem !important;
+                }
+                .metric-label {
+                    font-size: 0.85rem !important;
+                }
+            }
+                #settings-sidebar nav {
+                    margin-top: 1.5rem;
+                }
+            </style>
+        </div>
+    </div>
+
+<script>
+// Sidebar open/close logic
+document.getElementById('settings-btn')?.addEventListener('click', function() {
+    document.getElementById('settings-sidebar').classList.remove('translate-x-full');
+});
+document.getElementById('close-settings')?.addEventListener('click', function() {
+    document.getElementById('settings-sidebar').classList.add('translate-x-full');
+});
+</script>
+
+<style>
+    #mobile-bottom-nav {
+        box-shadow: 0 -8px 32px 0 rgba(6,182,212,0.10), 0 1.5px 0 0 rgba(59,130,246,0.10);
+    }
+    #settings-sidebar {
+        box-shadow: -8px 0 32px 0 rgba(6,182,212,0.10), -1.5px 0 0 0 rgba(59,130,246,0.10);
+    }
+    @media (min-width: 768px) {
+        #mobile-bottom-nav, #settings-sidebar { display: none !important; }
+    }
+</style>
 </html>
