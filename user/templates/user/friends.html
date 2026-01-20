@@ -15,10 +15,10 @@
             <span class="text-white font-semibold">Balanced overall</span>
           {% elif overall_is_debtor %}
             <span class="text-gray-300">Overall:</span>
-            <span class="text-red-400 font-bold">You owe ₹{{ overall_balance|floatformat:2|cut:"-" }}</span>
+            <span class="text-red-400 font-bold">- ₹{{ overall_balance|floatformat:2|cut:"-" }}</span>
           {% else %}
             <span class="text-gray-300">Overall:</span>
-            <span class="text-green-400 font-bold">You are owed ₹{{ overall_balance|floatformat:2 }}</span>
+            <span class="text-green-400 font-bold">₹{{ overall_balance|floatformat:2 }}</span>
           {% endif %}
         </div>
         {% endif %}
@@ -41,16 +41,16 @@
               </div>
               <div>
                 <p class="text-white font-semibold">{{ f.name }}</p>
-                <p class="text-gray-400 text-sm">@{{ f.username }} • {{ f.groups_count }} groups</p>
+                <p class="text-gray-400 text-[10px]">@{{ f.username }} • {{ f.groups_count }} groups</p>
               </div>
             </div>
             <div class="text-right">
               {% if f.balance == 0 %}
                 <span class="text-gray-300 font-semibold">Settled</span>
               {% elif f.is_debtor %}
-                <span class="text-red-400 font-semibold">You owe ₹{{ f.balance|floatformat:2|cut:"-" }}</span>
+                <span class="text-red-400 font-semibold">- ₹{{ f.balance|floatformat:2|cut:"-" }}</span>
               {% else %}
-                <span class="text-green-400 font-semibold">You are owed ₹{{ f.balance|floatformat:2 }}</span>
+                <span class="text-green-400 font-semibold">₹{{ f.balance|floatformat:2 }}</span>
               {% endif %}
             </div>
           </div>

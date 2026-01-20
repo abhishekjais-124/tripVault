@@ -6,6 +6,8 @@ from trip import api_views
 urlpatterns = [
 	path('plan/', views.TripPlannerView.as_view(), name='plan-dashboard'),
 	path('saved/', api_views.saved_trips_page, name='saved-trips'),
+    path('plan/', views.plan_placeholder),
+    path('saved/', views.saved_placeholder),
 	path('api/save/', api_views.save_trip, name='api-save-trip'),
 	path('api/list/', api_views.list_trips, name='api-list-trips'),
 	path('api/trip/<int:trip_id>/', api_views.get_trip, name='api-get-trip'),

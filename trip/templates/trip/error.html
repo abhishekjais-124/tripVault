@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error | TripVault</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #0f172a; color: #fff; font-family: 'Inter', Arial, sans-serif; margin: 0; }
+        .error-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .error-container h1 { font-size: 2.5rem; margin: 1rem 0 0.5rem 0; color: #fff; }
+        .error-container p { font-size: 1.2rem; color: #94a3b8; max-width: 400px; margin: 0 auto; }
+        .error-container a.button { margin-top: 2rem; padding: 0.75rem 2rem; background: #06b6d4; color: #fff; border-radius: 2rem; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(6,182,212,0.1); transition: background 0.2s; display: inline-block; }
+        .error-container a.button:hover { background: #0891b2; }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div style="font-size:5rem;color:#e74c3c;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <p style="font-size:1.3rem;color:#fbbf24;margin-bottom:1.5rem;">{{ error_code|default:'Error' }} {% if error_message %}- {{ error_message }}{% endif %}</p>
+        <p style="font-size:1.1rem;color:#cbd5e1;max-width:420px;margin:0 auto 2rem auto;">
+            {% if error_code == 404 %}
+                The page you are looking for does not exist.<br>
+            {% elif error_code == 500 %}
+                Our server encountered an unexpected problem.<br>
+            {% else %}
+                We couldn't process your request.<br>
+            {% endif %}
+        </p>
+        <a href="/tripvault/" class="button" style="font-size:1.1rem;padding:0.9rem 2.5rem;background:linear-gradient(90deg,#06b6d4,#3b82f6);border:none;">Go Home</a>
+        <div style="margin-top:2.5rem;opacity:0.12;font-size:7rem;pointer-events:none;user-select:none;">
+            <i class="fas fa-map-marked-alt"></i>
+        </div>
+    </div>
+</body>
+</html>

@@ -23,3 +23,7 @@ urlpatterns = [
 # Serve static files in development
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Error handlers
+handler404 = 'trip.views.custom_404_view'
+handler500 = 'trip.views.custom_500_view'

@@ -18,35 +18,66 @@
 
         <!-- Activities List -->
         {% if requests %}
-        <div class="space-y-4">
+        <div class="space-y-2">
             {% for request in requests %}
                 {% if request.type == 'group_request' %}
                 <!-- Group Request Notification -->
-                <div id="notification_{{ request.id }}" class="glass rounded-3xl p-6 transition-all border border-cyan-500/20 hover:border-cyan-400/40 shadow-xl hover:shadow-2xl">
+                <div id="notification_{{ request.id }}" class="glass rounded-lg p-2 transition-all border border-cyan-500/20 hover:border-cyan-400/40 shadow-sm hover:shadow-md relative flex flex-col gap-1 text-xs">
+                    <!-- Time Top Right -->
+                    <div class="absolute right-2 top-2 flex items-center space-x-1 text-gray-500 text-[9px]">
+                        <i class="fas fa-clock text-[11px]"></i>
+                        <span>{{ request.time_short|default:request.time }}</span>
+                    </div>
                     <!-- Header row -->
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-1">
                         <div class="flex items-center space-x-3">
-                            <div class="w-11 h-11 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center ring-1 ring-white/10">
-                                <i class="fas fa-user-plus text-white"></i>
+                            <div class="w-7 h-7 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center ring-1 ring-white/10">
+                                <i class="fas fa-user-plus text-white text-[13px]"></i>
                             </div>
                             <div>
-                                <h3 class="text-white font-extrabold tracking-wide">New Request</h3>
-                                <p class="text-gray-400 text-sm">@{{ request.requested_by }}</p>
+                                <h3 class="text-white font-extrabold tracking-wide text-xs">New Request</h3>
+                                <p class="text-gray-400 text-[10px]">@{{ request.requested_by }}</p>
                             </div>
                         </div>
                         <!-- Dismiss button removed for Activity page requests -->
                     </div>
 
-                    <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start justify-between gap-2">
                         <!-- User Info -->
-                        <div class="flex items-start space-x-4 flex-1">
-                            <div class="w-12 h-12 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-white/10">
-                                {% if request.sender_icon %}
-                                    <img src="{{ request.sender_icon }}" alt="{{ request.requested_by }}" class="w-full h-full rounded-full object-cover">
+                                {% if request.expense_title %}
+                                    <!-- Single sentence display with conditional styling -->
+                                    <p class="text-gray-300 mb-2">
+                                        {% if request.added_by == user.username %}
+                                            <span class="text-green-400 font-semibold">You added</span>
+                                            <span class="text-white font-semibold">{{ request.expense_title }}</span>
+                                            for
+                                            <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400">
+                                                ₹{{ request.amount }}
+                                            </span>
+                                            {% if request.group_name %}
+                                                in
+                                                <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-white font-semibold">@{{ request.added_by }}</span>
+                                            added
+                                            <span class="text-white font-semibold">{{ request.expense_title }}</span>
+                                            for
+                                            <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500/20 text-green-400">
+                                                ₹{{ request.amount }}
+                                            </span>
+                                            {% if request.group_name %}
+                                                in
+                                                <span class="text-cyan-300 font-semibold">{{ request.group_name }}</span>
+                                            {% endif %}
+                                            {% if request.amount_owed|floatformat:0 != '0' %}
+                                                <span class="text-red-400 font-semibold">— You owe ₹{{ request.amount_owed }}</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </p>
                                 {% else %}
-                                    <i class="fas fa-user text-white text-lg"></i>
+                                    <p class="text-gray-300">{{ request.message }}</p>
                                 {% endif %}
-                            </div>
                             
                             <div class="flex-1">
                                 <div class="flex items-center space-x-2 mb-1">
@@ -62,11 +93,11 @@
                                         {{ request.role }}
                                     </span>
                                 </p>
-                                
+<!--                                 
                                 <div class="flex items-center space-x-2 text-sm text-gray-500">
                                     <i class="fas fa-clock"></i>
                                     <span>{{ request.time }}</span>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
@@ -91,22 +122,27 @@
                 </div>
                 {% else %}
                 <!-- Activity Notification -->
-                <div id="notification_{{ request.id }}" class="glass rounded-3xl p-6 transition-all border {% if request.notification_type == 'expense_added' %}{% if request.amount_owed|floatformat:0 != '0' %}border-red-500/20 hover:border-red-400/40{% else %}border-green-500/20 hover:border-green-400/40{% endif %}{% elif request.notification_type == 'expense_deleted' %}border-red-500/20 hover:border-red-400/40{% else %}border-blue-500/20 hover:border-blue-400/40{% endif %} shadow-xl hover:shadow-2xl">
+                <div id="notification_{{ request.id }}" class="glass rounded-lg p-2 transition-all border {% if request.notification_type == 'expense_added' %}{% if request.amount_owed|floatformat:0 != '0' %}border-red-500/20 hover:border-red-400/40{% else %}border-green-500/20 hover:border-green-400/40{% endif %}{% elif request.notification_type == 'expense_deleted' %}border-red-500/20 hover:border-red-400/40{% else %}border-blue-500/20 hover:border-blue-400/40{% endif %} shadow-sm hover:shadow-md relative flex flex-col gap-1 text-xs">
+                    <!-- Time Top Right -->
+                    <div class="absolute right-2 top-2 flex items-center space-x-1 text-gray-500 text-[9px]">
+                        <i class="fas fa-clock text-[11px]"></i>
+                        <span>{{ request.time_short|default:request.time }}</span>
+                    </div>
                     <!-- Header row -->
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-1">
                         <div class="flex items-center space-x-3">
-                            <div class="w-11 h-11 bg-gradient-to-tr {% if request.notification_type == 'expense_added' %}{% if request.amount_owed|floatformat:0 != '0' %}from-red-400 to-pink-500{% else %}from-green-400 to-emerald-500{% endif %}{% elif request.notification_type == 'expense_deleted' %}from-red-400 to-pink-500{% else %}from-blue-400 to-cyan-500{% endif %} rounded-xl flex items-center justify-center ring-1 ring-white/10">
+                            <div class="w-7 h-7 bg-gradient-to-tr {% if request.notification_type == 'expense_added' %}{% if request.amount_owed|floatformat:0 != '0' %}from-red-400 to-pink-500{% else %}from-green-400 to-emerald-500{% endif %}{% elif request.notification_type == 'expense_deleted' %}from-red-400 to-pink-500{% else %}from-blue-400 to-cyan-500{% endif %} rounded-lg flex items-center justify-center ring-1 ring-white/10">
                                 {% if request.notification_type == 'expense_added' %}
-                                    <i class="fas fa-plus text-white"></i>
+                                    <i class="fas fa-plus text-white text-[13px]"></i>
                                 {% elif request.notification_type == 'expense_deleted' %}
-                                    <i class="fas fa-trash text-white"></i>
+                                    <i class="fas fa-trash text-white text-[13px]"></i>
                                 {% else %}
-                                    <i class="fas fa-bell text-white"></i>
+                                    <i class="fas fa-bell text-white text-[13px]"></i>
                                 {% endif %}
                             </div>
                             <div>
-                                <h3 class="text-white font-extrabold tracking-wide">{{ request.title }}</h3>
-                                <p class="text-gray-400 text-sm">
+                                <h3 class="text-white font-extrabold tracking-wide text-xs">{{ request.title }}</h3>
+                                <p class="text-gray-400 text-[10px]">
                                     {% if request.added_by == user.username %}
                                         You
                                     {% else %}
@@ -117,9 +153,13 @@
                         </div>
                     </div>
 
-                    <div class="flex items-start justify-between gap-4">
-                        <!-- Activity Info -->
-                        <div class="flex-1">
+                    <div class="flex items-start justify-between gap-2">
+                        <!-- Activity Info and Time Top Right -->
+                        <div class="flex-1 relative">
+                            <!-- <div class="absolute right-0 top-0 flex items-center space-x-1 text-gray-500 text-[10px]">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ request.time_short|default:request.time }}</span>
+                            </div> -->
                             <div class="mb-3">
                                 {% if request.expense_title %}
                                     <!-- Single sentence display with conditional styling -->
@@ -158,8 +198,7 @@
                             </div>
                             
                             <div class="flex items-center space-x-2 text-sm text-gray-500">
-                                <i class="fas fa-clock"></i>
-                                <span>{{ request.time }}</span>
+                                <!-- time moved to top right -->
                             </div>
                         </div>
 

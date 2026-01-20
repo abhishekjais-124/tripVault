@@ -1,3 +1,16 @@
+
+def plan_placeholder(request):
+    from django.http import HttpResponse
+    return HttpResponse('<html><body><h2>Plan page placeholder</h2></body></html>')
+
+def saved_placeholder(request):
+    from django.http import HttpResponse
+    return HttpResponse('<html><body><h2>Saved page placeholder</h2></body></html>')
+def custom_404_view(request, exception, template_name="trip/error.html"):
+    return render(request, template_name, {"error_code": 404, "error_message": "Page Not Found"}, status=404)
+
+def custom_500_view(request, template_name="trip/error.html"):
+    return render(request, template_name, {"error_code": 500, "error_message": "Internal Server Error"}, status=500)
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.http import HttpResponse

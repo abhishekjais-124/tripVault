@@ -35,7 +35,7 @@
         <!-- Groups Grid -->
         <div class="space-y-8">
             {% for user_list, group, isGroupAdmin in group_user_mapping %}
-            <div class="bg-gradient-to-br from-slate-800/90 to-slate-900/80 border-2 border-slate-700 rounded-3xl shadow-xl hover:shadow-2xl transition-all hover:border-cyan-400/60 p-4 md:p-6 flex flex-col gap-2">
+            <div class="bg-gradient-to-br from-slate-900/95 to-blue-900/90 border border-cyan-700/40 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:border-cyan-400/80 p-4 flex flex-col gap-2 relative">
                 <!-- Group Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div class="flex items-center gap-4 cursor-pointer flex-1" onclick="window.location.href='{% url 'group_expenses' group_id=group.id %}'">
@@ -53,9 +53,8 @@
                             <i class="fas fa-receipt"></i>
                             <span>Expenses</span>
                         </a>
-                        <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}', {% if isGroupAdmin %}true{% else %}false{% endif %})" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 btn-gradient text-white rounded-xl font-semibold text-base shadow-md hover:shadow-lg transition-all">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Add User</span>
+                        <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}', {% if isGroupAdmin %}true{% else %}false{% endif %})" class="absolute top-3 right-3 flex items-center justify-center z-10 bg-transparent p-0 shadow-none hover:bg-transparent" title="Add User">
+                            <i class="fas fa-user-plus text-cyan-400 text-xl"></i>
                         </button>
                         <button onclick="event.stopPropagation(); toggleGroupDetails('{{ group.id }}')" class="flex items-center justify-center p-2 rounded-lg bg-slate-700/60 hover:bg-cyan-500/20 text-cyan-400 transition-all" id="toggleBtn_{{ group.id }}">
                             <i class="fas fa-chevron-down text-lg transition-transform duration-300" id="toggleIcon_{{ group.id }}"></i>
