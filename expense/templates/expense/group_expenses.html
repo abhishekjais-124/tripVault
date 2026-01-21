@@ -4,7 +4,7 @@
 {% block title %}{{ group.name }} - Expenses{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8 px-4 pt-28">
+<div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-8 px-4 pt-30">
     <div class="max-w-7xl mx-auto">
         <!-- Header with Balance -->
         <div class="mb-8">
@@ -19,13 +19,13 @@
             <div class="bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl shadow-xl p-8 text-white">
                 <div class="flex justify-between items-start mb-6">
                     <div>
-                        <h1 class="text-4xl font-bold mb-2">{{ group.name }}</h1>
-                        <p class="text-cyan-100">Trip Expense Tracker</p>
+                        <h2 class="text-4xl font-bold mb-2">{{ group.name }}</h12>
+                        <p class="text-cyan-100 text-xs">Trip Expense Tracker</p>
                     </div>
                 </div>
                 
                 <!-- Balance Display -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-2 gap-3 items-stretch">
                     <div class="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur">
                         <p class="text-cyan-100 text-sm mb-2">YOUR BALANCE</p>
                         <p class="text-3xl font-bold">
@@ -43,17 +43,10 @@
                             {% endif %}
                         </p>
                     </div>
-                    
                     <div class="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur">
                         <p class="text-cyan-100 text-sm mb-2">TOTAL EXPENSES</p>
                         <p class="text-3xl font-bold text-white">₹{{ total_expenses|floatformat:2 }}</p>
                         <p class="text-xs text-cyan-100 mt-2">Group total</p>
-                    </div>
-                    
-                    <div class="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur">
-                        <p class="text-cyan-100 text-sm mb-2">TOTAL EXPENSES</p>
-                        <p class="text-3xl font-bold text-white">{{ expense_count }}</p>
-                        <p class="text-xs text-cyan-100 mt-2">Transaction count</p>
                     </div>
                 </div>
             </div>
@@ -192,66 +185,73 @@
 
         <!-- Expenses Table -->
         <div class="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
-                            <!-- Floating Add/Settle Buttons -->
-                            <a href="{% url 'add_expense' group_id=group.id %}" class="floating-add-expense" title="Add Expense">
-                                <i class="fas fa-plus"></i>
-                            </a>
-                            <button onclick="openSettlementModal()" class="floating-settle-expense" title="Settle">
-                                <i class="fas fa-handshake"></i>
-                            </button>
+            <!-- Floating Add/Settle Buttons -->
+            <a href="{% url 'add_expense' group_id=group.id %}" class="floating-add-expense" title="Add Expense" style="margin-bottom: 6rem; margin-right: -1rem;">
+                <i class="fas fa-plus"></i>
+            </a>
+            <button onclick="openSettlementModal()" class="floating-settle-expense" title="Settle" style="margin-bottom: 2rem; margin-right: 3px;">
+                <i class="fas fa-handshake"></i>
+            </button>
             {% if items %}
-                <div class="overflow-x-auto">
-                                                    <!-- Floating Add Expense Button -->
-                                                    <a href="{% url 'add_expense' group_id=group.id %}" class="floating-add-expense" title="Add Expense">
-                                                        <i class="fas fa-plus"></i>
-                                                    </a>
-                    <table class="w-full">
-                        <thead class="sr-only">
-                            <tr>
-                                <th>Date</th>
-                                <th>Title</th>
-                                <th>Your Share / Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-700" id="expenseTableBody">
-                            {% for item in items %}
-                                <tr class="hover:bg-slate-700 transition-colors {% if item.type == 'expense' %}expense-row cursor-pointer{% else %}cursor-default{% endif %}" 
-                                    {% if item.type == 'expense' %}
-                                    data-expense-id="{{ item.id }}" 
-                                    data-expense-paid-by="{{ item.is_paid_by_user }}" 
-                                    data-expense-url="{% url 'expense_detail' item.id %}"
-                                    {% endif %}>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm">
-                                            <p class="font-medium text-white">{{ item.date|date:"M d" }}</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div>
-                                            <p class="font-semibold text-white">{{ item.title }}</p>
-                                            {% if item.description %}
-                                                <p class="text-xs text-slate-400">{{ item.description }}</p>
-                                            {% endif %}
-                                            <p class="text-[11px] text-slate-500 mt-1">{{ item.created_at|date:"g:i a" }}</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex flex-col items-end">
-                                            {% if item.amount_owed %}
-                                                <span class="font-bold text-base {% if item.is_paid_by_user %}text-green-400{% else %}text-red-400{% endif %}">
-                                                    ₹{{ item.amount_owed|floatformat:2|cut:'-' }}
-                                                </span>
-                                            {% else %}
-                                                <span class="font-bold text-base text-slate-400">N/A</span>
-                                            {% endif %}
-                                            <span class="font-semibold text-xs text-slate-300 mt-1">₹{{ item.amount|floatformat:2 }}</span>
-                                        </div>
-                                    </td>
+                {% regroup items by date|date:'Y-m' as month_list %}
+                {% for month in month_list %}
+                    <div class="overflow-x-auto mb-4">
+                        <div class="flex items-center justify-center mb-2">
+                            {# Try to parse YYYY-MM to Month Year #}
+                            {% with y=month.grouper|slice:':4' m=month.grouper|slice:'5:' %}
+                                <span class="text-cyan-200 font-bold text-base">
+                                    {% if m == '01' %}January{% elif m == '02' %}February{% elif m == '03' %}March{% elif m == '04' %}April{% elif m == '05' %}May{% elif m == '06' %}June{% elif m == '07' %}July{% elif m == '08' %}August{% elif m == '09' %}September{% elif m == '10' %}October{% elif m == '11' %}November{% elif m == '12' %}December{% else %}{{ m }}{% endif %} {{ y }}
+                                </span>
+                            {% endwith %}
+                        </div>
+                        <table class="w-full">
+                            <thead class="sr-only">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Your Share / Amount</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700">
+                                {% for item in month.list %}
+                                    <tr class="hover:bg-slate-700 transition-colors {% if item.type == 'expense' %}expense-row cursor-pointer{% else %}cursor-default{% endif %}"
+                                        {% if item.type == 'expense' %}
+                                        data-expense-id="{{ item.id }}"
+                                        data-expense-paid-by="{{ item.is_paid_by_user }}"
+                                        data-expense-url="{% url 'expense_detail' item.id %}"
+                                        {% endif %}>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm">
+                                                <p class="font-medium text-white">{{ item.date|date:"D d" }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div>
+                                                <p class="font-semibold text-white">{{ item.title }}</p>
+                                                {% if item.description %}
+                                                    <p class="text-xs text-slate-400" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">{{ item.description }}</p>
+                                                {% endif %}
+                                                <p class="text-[11px] text-slate-500 mt-1">{{ item.created_at|date:"g:i a" }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex flex-col items-end">
+                                                {% if item.amount_owed %}
+                                                    <span class="font-bold text-base {% if item.is_paid_by_user %}text-green-400{% else %}text-red-400{% endif %}">
+                                                        ₹{{ item.amount_owed|floatformat:2|cut:'-' }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="font-bold text-base text-slate-400">N/A</span>
+                                                {% endif %}
+                                                <span class="font-semibold text-xs text-slate-300 mt-1">₹{{ item.amount|floatformat:2 }}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
             {% else %}
                 <div class="p-12 text-center">
                     <i class="fas fa-inbox text-6xl text-slate-600 mb-4 block"></i>
@@ -323,9 +323,10 @@
             }
             .floating-add-expense {
                 position: fixed;
-                right: 2.2rem;
-                bottom: 2.2rem;
-                z-index: 50;
+                right: 5%;
+                transform: translateX(-50%);
+                bottom: 10%;
+                z-index: 9950;
                 background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
                 color: #fff;
                 border-radius: 50%;
@@ -344,9 +345,10 @@
             }
             .floating-settle-expense {
                 position: fixed;
-                right: 1.9rem;
-                bottom: 5.4rem;
-                z-index: 51;
+                right: 5%;
+                transform: translateX(-50%);
+                bottom: 10%;
+                z-index: 9950;
                 background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
                 color: #fff;
                 border-radius: 50%;
@@ -469,18 +471,17 @@
 </div>
 
 <!-- Settlement Modal -->
-<div id="settlementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-800 rounded-xl shadow-2xl p-8 max-w-md w-full border border-slate-700">
-        <div class="mb-4">
-            <h2 class="text-2xl font-bold text-white mb-2">Add Settlement</h2>
-            <p class="text-slate-300 text-sm">Record a payment to a group member to settle your balance.</p>
+<div id="settlementModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-2">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl p-4 max-w-xs w-full border border-slate-700">
+        <div class="mb-2 text-center">
+            <h2 class="text-xl font-bold text-cyan-300 mb-1">Add Settlement</h2>
+            <p class="text-slate-400 text-xs">Record a payment to a group member to settle your balance.</p>
         </div>
-
-        <form method="post" action="{% url 'add_settlement' group_id=group.id %}" class="space-y-4">
+        <form method="post" action="{% url 'add_settlement' group_id=group.id %}" class="space-y-2">
             {% csrf_token %}
             <div>
-                <label class="block text-slate-200 text-sm font-semibold mb-2">Paid To</label>
-                <select name="to_user" class="w-full bg-slate-900 border border-slate-700 rounded-lg text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+                <label class="block text-xs text-slate-300 mb-1">Paid To</label>
+                <select name="to_user" class="w-full bg-slate-900 border border-slate-700 rounded-lg text-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm">
                     <option value="">Select member</option>
                     {% for gm in group_members %}
                         {% if gm.user.id != user.id %}
@@ -490,12 +491,12 @@
                 </select>
             </div>
             <div>
-                <label class="block text-slate-200 text-sm font-semibold mb-2">Amount (₹)</label>
-                <input type="number" step="0.01" min="0" name="amount" class="w-full bg-slate-900 border border-slate-700 rounded-lg text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="0.00" required />
+                <label class="block text-xs text-slate-300 mb-1">Amount (₹)</label>
+                <input type="number" step="0.01" min="0" name="amount" class="w-full bg-slate-900 border border-slate-700 rounded-lg text-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm" placeholder="0.00" required />
             </div>
-            <div class="flex gap-3">
-                <button type="button" onclick="closeSettlementModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 rounded-lg transition-colors">Record Settlement</button>
+            <div class="flex gap-2 pt-1">
+                <button type="button" onclick="closeSettlementModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-1.5 rounded-lg transition-colors text-sm">Cancel</button>
+                <button type="submit" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-1.5 rounded-lg transition-colors text-sm">Record</button>
             </div>
         </form>
     </div>
@@ -758,5 +759,102 @@
             transform: translateY(-20px);
         }
     }
+</style>
+<style>
+/* --- Compact & Small Text Styles for Expenses Page --- */
+.bg-gradient-to-r.from-cyan-600.to-blue-600.rounded-xl.shadow-xl.p-8.text-white {
+    padding: 18px 12px !important;
+}
+.bg-white.bg-opacity-10.rounded-lg.p-4.backdrop-blur {
+    padding: 10px 8px !important;
+    margin-bottom: 8px !important;
+}
+.text-4xl.font-bold.mb-2, h1.text-4xl.font-bold.mb-2 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.2rem !important;
+}
+.text-cyan-100, .text-cyan-100.text-sm, .text-xs.text-cyan-100 {
+    font-size: 0.85rem !important;
+}
+.text-3xl.font-bold, .text-3xl.font-bold.text-white {
+    font-size: 1.25rem !important;
+}
+.font-semibold, .font-semibold.text-white {
+    font-size: 1rem !important;
+}
+.text-xs, .text-xs.text-cyan-100, .text-xs.text-slate-400, .text-xs.text-slate-300 {
+    font-size: 0.75rem !important;
+}
+.mb-8, .mb-6, .mb-4, .mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+.py-4, .py-3, .py-2, .py-1, .p-4, .p-6, .p-8, .p-12 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+.px-6, .px-4, .px-3, .px-2, .px-1 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+.rounded-xl, .rounded-lg {
+    border-radius: 0.6rem !important;
+}
+.gap-6, .gap-4, .gap-3, .gap-2 {
+    gap: 0.4rem !important;
+}
+.min-h-screen.bg-gradient-to-br.from-slate-900.to-slate-800.py-8.px-4.pt-28 {
+    padding: 0.5rem 0.5rem 0 0.5rem !important;
+}
+.max-w-7xl.mx-auto {
+    margin-top: 0.5rem !important;
+}
+.table td, .table th, td.px-6.py-4, th.px-6.py-4 {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.95rem !important;
+}
+.expense-row {
+    min-height: 32px !important;
+}
+.floating-add-expense {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.3rem !important;
+    bottom: 1.2rem !important;
+    right: 1.2rem !important;
+}
+.floating-settle-expense {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 0.9rem !important;
+    bottom: 3.2rem !important;
+    right: 1.1rem !important;
+}
+.filters-bar, .w-full.px-6.py-4.flex.items-center.justify-between.bg-slate-700 {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.95rem !important;
+}
+.form-checkbox.h-4.w-4 {
+    height: 0.9rem !important;
+    width: 0.9rem !important;
+}
+.inline-block.bg-cyan-600.text-white.px-6.py-3.rounded-lg.font-semibold.hover\:bg-cyan-700.transition-colors {
+    padding: 0.4rem 1rem !important;
+    font-size: 0.95rem !important;
+}
+.text-lg {
+    font-size: 1rem !important;
+}
+.text-base {
+    font-size: 0.95rem !important;
+}
+.text-6xl {
+    font-size: 2.2rem !important;
+}
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.3rem !important;
+}
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.4rem !important;
+}
 </style>
 {% endblock %}

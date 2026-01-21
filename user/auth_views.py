@@ -328,7 +328,7 @@ class FriendDetailView(View):
         shared_group_ids = list(user_group_ids.intersection(friend_group_ids))
 
         groups = []
-        overall_balance = Decimal('0')
+        friend_balance = Decimal('0')
         for gid in shared_group_ids:
             try:
                 group = Group.objects.get(id=gid)
@@ -338,7 +338,7 @@ class FriendDetailView(View):
             # Pairwise net balance for this group
             pair_balances = expense_utils.get_user_balance_with_others(group, user)
             net = pair_balances.get(friend.id, {}).get('balance', Decimal('0'))
-            overall_balance += net
+            friend_balance += net
 
             groups.append({
                 'group': group,
@@ -355,8 +355,8 @@ class FriendDetailView(View):
                 'icon': friend.icon,
             },
             'groups': groups,
-            'overall_balance': overall_balance,
-            'overall_is_debtor': overall_balance < 0,
+            'friend_balance': friend_balance,
+            'friend_is_debtor': friend_balance < 0,
         }
 
         return render(request, "user/friend_detail.html", context)

@@ -4,47 +4,47 @@
 {% block title %} Home {% endblock title %}
 
 {% block body %}
-<div class="min-h-screen pt-16 pb-2 sm:pt-24 bg-gradient-to-br from-slate-900 to-slate-800">
+<div class="pt-8 sm:pt-12 bg-gradient-to-br from-slate-900 to-slate-800">
     <!-- Hero Section -->
-    <div class="max-w-7xl mx-auto px-4 py-10 sm:py-16">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    <div class="max-w-5xl mx-auto px-2 py-4 sm:py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
             <!-- Hero Content Centered -->
             <div class="text-center w-full col-span-2 flex flex-col items-center justify-center">
-                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold mb-3">
                     <span class="gradient-text">Plan. Explore. Remember.</span>
                 </h1>
-                <p class="text-xl text-gray-400 mb-8">
-                    Organize group trips effortlessly. Share itineraries, budgets, and memories with your travel companions.
+                <p class="text-base text-sm text-gray-400 mb-4">
+                    Organize group trips effortlessly.
                 </p>
             </div>
         </div>
 
         <!-- Groups & Plans Section -->
-        <div class="max-w-2xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6 mt-2 mb-0 md:mb-[-4rem]">
+        <div class="max-w-xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 mb-0 md:mb-[-2rem]">
             <!-- Groups Card -->
-            <div class="relative group bg-gradient-to-br from-cyan-900/80 to-blue-900/80 border-2 border-cyan-500/30 hover:border-cyan-400/70 rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-500/20">
+            <div class="relative group bg-gradient-to-br from-cyan-900/80 to-blue-900/80 border border-cyan-500/30 hover:border-cyan-400/70 rounded-2xl shadow-xl p-4 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-cyan-500/20">
                 <div class="absolute -top-8 -left-8 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl z-0"></div>
                 <div class="z-10 flex flex-col items-center">
-                    <div class="w-16 h-16 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center mb-2 shadow-md">
                         <i class="fas fa-users text-white text-3xl"></i>
                     </div>
-                    <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight drop-shadow">Groups</h2>
-                    <p class="text-gray-300 mb-5 text-center text-base">Create and manage trip groups. Collaborate with friends and keep everyone in sync.</p>
-                    <a href="{% url 'group' %}" class="inline-block bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-2 px-7 rounded-xl text-center transition-all duration-300 shadow-md hover:shadow-lg">
+                    <h2 class="text-lg font-extrabold text-white mb-1 tracking-tight drop-shadow">Groups</h2>
+                    <p class="text-gray-300 mb-2 text-center text-xs">Create and manage trip groups.</p>
+                    <a href="{% url 'group' %}" class="inline-block bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-1.5 px-4 rounded-lg text-center transition-all duration-300 shadow hover:shadow-md text-sm">
                         <i class="fas fa-users mr-2"></i> Manage Groups
                     </a>
                 </div>
             </div>
             <!-- Plans Card -->
-            <div class="relative group bg-gradient-to-br from-blue-900/80 to-cyan-900/80 border-2 border-blue-500/30 hover:border-blue-400/70 rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-blue-500/20">
+            <div class="relative group bg-gradient-to-br from-blue-900/80 to-cyan-900/80 border border-blue-500/30 hover:border-blue-400/70 rounded-2xl shadow-xl p-4 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-blue-500/20">
                 <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl z-0"></div>
                 <div class="z-10 flex flex-col items-center">
-                    <div class="w-16 h-16 bg-gradient-to-tr from-blue-400 to-cyan-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center mb-2 shadow-md">
                         <i class="fas fa-route text-white text-3xl"></i>
                     </div>
-                    <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight drop-shadow">Plans</h2>
-                    <p class="text-gray-300 mb-5 text-center text-base">Plan your trip day-by-day, share itineraries, and keep your adventure organized.</p>
-                    <a href="{% url 'plan-dashboard' %}" class="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-7 rounded-xl text-center transition-all duration-300 shadow-md hover:shadow-lg">
+                    <h2 class="text-lg font-extrabold text-white mb-1 tracking-tight drop-shadow">Plans</h2>
+                    <p class="text-gray-300 mb-2 text-center text-xs">Plan your trip day-by-day.</p>
+                    <a href="{% url 'plan-dashboard' %}" class="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-1.5 px-4 rounded-lg text-center transition-all duration-300 shadow hover:shadow-md text-sm">
                         <i class="fas fa-route mr-2"></i> Plan a Trip
                     </a>
                 </div>
@@ -54,39 +54,39 @@
     </div>
 
     <!-- Features Section -->
-    <div class="max-w-7xl mx-auto px-4 py-6 sm:py-14 md:mt-[-4rem]">
-        <h2 class="text-4xl font-bold text-center gradient-text mb-12">Why Choose TripVault?</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="max-w-5xl mx-auto px-2 py-4 sm:py-8 md:mt-[-2rem]">
+        <h2 class="text-2xl font-bold text-center gradient-text mb-6">Why Choose TripVault?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Feature 1 -->
-            <div class="glass rounded-2xl p-8 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
-                <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+            <div class="glass rounded-xl p-4 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
+                <div class="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded flex items-center justify-center mb-2">
                     <i class="fas fa-users text-white text-2xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Group Management</h3>
-                <p class="text-gray-400">
-                    Create and manage multiple trip groups. Invite friends and collaborate seamlessly on travel plans.
+                <h3 class="text-base font-bold text-white mb-1">Group Management</h3>
+                <p class="text-gray-400 text-xs">
+                    Create and manage multiple trip groups. Invite friends and family to join your adventures.
                 </p>
             </div>
 
             <!-- Feature 2 -->
-            <div class="glass rounded-2xl p-8 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
-                <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+            <div class="glass rounded-xl p-4 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
+                <div class="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded flex items-center justify-center mb-2">
                     <i class="fas fa-calendar text-white text-2xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Smart Itineraries</h3>
-                <p class="text-gray-400">
-                    Plan your trip day-by-day with detailed itineraries. Share schedules with your group in real-time.
+                <h3 class="text-base font-bold text-white mb-1">Smart Itineraries</h3>
+                <p class="text-gray-400 text-xs">
+                    Plan your trip day-by-day with detailed itineraries. Keep everyone informed and organized.
                 </p>
             </div>
 
             <!-- Feature 3 -->
-            <div class="glass rounded-2xl p-8 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
-                <div class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+            <div class="glass rounded-xl p-4 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
+                <div class="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded flex items-center justify-center mb-2">
                     <i class="fas fa-shield-alt text-white text-2xl"></i>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-3">Secure & Private</h3>
-                <p class="text-gray-400">
-                    Your data is protected with enterprise-grade encryption. Only approved members can access your trips.
+                <h3 class="text-base font-bold text-white mb-1">Secure & Private</h3>
+                <p class="text-gray-400 text-xs">
+                    Your data is protected with enterprise-grade encryption. We respect your privacy.
                 </p>
             </div>
         </div>
@@ -140,19 +140,19 @@
     {% endif %}
 
     <!-- Footer -->
-    <div class="max-w-7xl mx-auto px-4 py-10 sm:py-14 mt-10 sm:mt-16 border-t border-gray-800">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <div class="max-w-5xl mx-auto px-2 py-6 sm:py-8 mt-6 sm:mt-8 border-t border-gray-800 text-xs">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
             <div>
                 <h4 class="text-white font-bold mb-4">Product</h4>
-                <ul class="space-y-2 text-gray-400 text-sm">
-                    <li><a href="#" class="hover:text-cyan-400 transition-colors">Features</a></li>
+                <ul class="space-y-2 text-gray-400 text-xs">
+                    <li><a href="#" class="hover:text-cyan-400 transition-colors ">Features</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Pricing</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Security</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">Company</h4>
-                <ul class="space-y-2 text-gray-400 text-sm">
+                <ul class="space-y-2 text-gray-400 text-xs">
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">About</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Blog</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Contact</a></li>
@@ -160,7 +160,7 @@
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">Legal</h4>
-                <ul class="space-y-2 text-gray-400 text-sm">
+                <ul class="space-y-2 text-gray-400 text-xs">
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Privacy</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Terms</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Cookies</a></li>
@@ -168,14 +168,14 @@
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">Follow</h4>
-                <ul class="space-y-2 text-gray-400 text-sm">
+                <ul class="space-y-2 text-gray-400 text-xs">
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Twitter</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Facebook</a></li>
                     <li><a href="#" class="hover:text-cyan-400 transition-colors">Instagram</a></li>
                 </ul>
             </div>
         </div>
-        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+        <div class="border-t border-gray-800 mt-4 pt-4 text-center text-gray-500 text-xs">
             <p>&copy; 2026 TripVault. All rights reserved.</p>
         </div>
     </div>

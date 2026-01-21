@@ -6,12 +6,12 @@
 <div class="min-h-screen pt-20 pb-12">
     <div class="max-w-7xl mx-auto px-4">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-12">
+        <div class="flex justify-between items-center mb-3">
             <div class="flex-1">
-                <h1 class="text-4xl font-bold gradient-text mb-2">My Groups</h1>
-                <p class="text-gray-400">Manage your travel groups</p>
+                <h2 class="text-4xl font-bold gradient-text mb-2">My Groups</h2>
+                <p class="text-gray-400 text-sm">Manage your travel groups</p>
                 {% if overall_balance is not None %}
-                <div class="mt-3 inline-flex items-center space-x-3 glass px-4 py-2 rounded-lg">
+                <div class="mt-3 inline-flex items-center space-x-3 glass px-4 py-2 rounded-lg text-sm">
                     <i class="fas fa-scale-balanced text-cyan-400"></i>
                     {% if overall_balance == 0 %}
                         <span class="text-white font-semibold">Balanced</span>
@@ -24,40 +24,45 @@
                     {% endif %}
                 </div>
                 {% endif %}
-                <div class="mt-4 w-full flex justify-start">
-                    <button onclick="openCreateGroupModal()" class="btn-gradient text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
-                        <i class="fas fa-plus mr-2"></i> Create Group
-                    </button>
-                </div>
+            </div>
+
             </div>
         </div>
 
+                <!-- Create Group Button (top right) -->
+        <div class="flex-0 flex justify-end items-center mb-2 mr-2">
+            <button onclick="openCreateGroupModal()" class="flex items-center gap-2 text-cyan-300 font-bold text-base hover:text-cyan-400 transition-all focus:outline-none text-sm">
+                <i class="fas fa-plus"></i>
+                <span>Create Group</span>
+            </button>
+        </div>
+
         <!-- Groups Grid -->
-        <div class="space-y-8">
+        <div class="space-y-4 mr-1 ml-1">
             {% for user_list, group, isGroupAdmin in group_user_mapping %}
-            <div class="bg-gradient-to-br from-slate-900/95 to-blue-900/90 border border-cyan-700/40 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:border-cyan-400/80 p-4 flex flex-col gap-2 relative">
+            <div class="bg-gradient-to-br from-slate-900/95 to-blue-900/90 border border-cyan-700/40 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:border-cyan-400/80 p-2 flex flex-col gap-1 relative">
                 <!-- Group Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div class="flex items-center gap-4 cursor-pointer flex-1" onclick="window.location.href='{% url 'group_expenses' group_id=group.id %}'">
-                        <div class="flex flex-col gap-1">
-                            <h2 class="text-2xl font-extrabold text-white mb-0 tracking-tight drop-shadow">{{ group.name }}</h2>
-                            <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div class="flex items-center gap-2 cursor-pointer flex-1" onclick="window.location.href='{% url 'group_expenses' group_id=group.id %}'">
+                        <div class="flex flex-col gap-0.5">
+                            <h2 class="text-lg font-bold text-white mb-0 tracking-tight drop-shadow">{{ group.name }}</h2>
+                            <div class="flex flex-wrap items-center gap-1 text-xs text-gray-400">
                                 <span class="flex items-center"><i class="fas fa-user-circle mr-1"></i>Created by <span class="text-cyan-400 ml-1">{{ group.created_by }}</span></span>
-                                <span class="mx-1">•</span>
+                                <span class="mx-0.5">•</span>
                                 <span class="flex items-center"><i class="fas fa-users mr-1"></i><span class="text-cyan-400">{{ user_list|length }} members</span></span>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <a href="{% url 'group_expenses' group_id=group.id %}" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold text-base shadow-md hover:shadow-lg transition-all" onclick="event.stopPropagation();">
+                    <div class="flex items-center gap-1 w-full sm:w-auto">
+                        <a href="{% url 'group_expenses' group_id=group.id %}" class="flex-1 sm:flex-none flex items-center justify-center gap-1 px-2 py-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all" onclick="event.stopPropagation();">
                             <i class="fas fa-receipt"></i>
                             <span>Expenses</span>
                         </a>
-                        <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}', {% if isGroupAdmin %}true{% else %}false{% endif %})" class="absolute top-3 right-3 flex items-center justify-center z-10 bg-transparent p-0 shadow-none hover:bg-transparent" title="Add User">
-                            <i class="fas fa-user-plus text-cyan-400 text-xl"></i>
+                        <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}', {% if isGroupAdmin %}true{% else %}false{% endif %})" class="absolute top-2 right-2 flex items-center justify-center z-10 bg-transparent p-0 shadow-none hover:bg-transparent" title="Add User">
+                            <i class="fas fa-user-plus text-cyan-400 text-lg"></i>
                         </button>
-                        <button onclick="event.stopPropagation(); toggleGroupDetails('{{ group.id }}')" class="flex items-center justify-center p-2 rounded-lg bg-slate-700/60 hover:bg-cyan-500/20 text-cyan-400 transition-all" id="toggleBtn_{{ group.id }}">
-                            <i class="fas fa-chevron-down text-lg transition-transform duration-300" id="toggleIcon_{{ group.id }}"></i>
+                        <button onclick="event.stopPropagation(); toggleGroupDetails('{{ group.id }}')" class="flex items-center justify-center p-1 rounded-lg bg-slate-700/60 hover:bg-cyan-500/20 text-cyan-400 transition-all" id="toggleBtn_{{ group.id }}">
+                            <i class="fas fa-chevron-down text-base transition-transform duration-300" id="toggleIcon_{{ group.id }}"></i>
                         </button>
                     </div>
                 </div>
@@ -65,49 +70,49 @@
                 <!-- Members Table (Hidden by default) -->
                 <div class="overflow-x-auto max-h-0 opacity-0 transition-all duration-300 ease-in-out" id="groupDetails_{{ group.id }}" style="overflow: hidden;">
                     <div class="w-full overflow-x-auto">
-                    <table class="w-full min-w-[500px]">
+                    <table class="w-full min-w-[400px]">
                         <thead>
                             <tr class="border-b border-gray-700">
-                                <th class="text-left px-6 py-4 text-gray-400 font-semibold text-sm">Username</th>
-                                <th class="text-left px-6 py-4 text-gray-400 font-semibold text-sm">Name</th>
-                                <th class="text-left px-6 py-4 text-gray-400 font-semibold text-sm">Role</th>
-                                <th class="text-center px-6 py-4 text-gray-400 font-semibold text-sm">Action</th>
+                                <th class="text-left px-3 py-2 text-gray-400 font-semibold text-xs">Username</th>
+                                <th class="text-left px-3 py-2 text-gray-400 font-semibold text-xs">Name</th>
+                                <th class="text-left px-3 py-2 text-gray-400 font-semibold text-xs">Role</th>
+                                <th class="text-center px-3 py-2 text-gray-400 font-semibold text-xs">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for group_user_list in user_list %}
                                 {% with group_user=group_user_list.0 %}
                                 <tr class="border-b border-gray-700 hover:bg-white/5 transition-colors" id="user_group_{{ group_user.id }}_{{ group.id }}">
-                                    <td class="px-6 py-4 text-gray-300">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="w-10 h-10 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <i class="fas fa-user text-white text-sm"></i>
+                                    <td class="px-3 py-2 text-gray-300">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <i class="fas fa-user text-white text-xs"></i>
                                             </div>
                                             <span>{{ group_user.username }}</span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-gray-300">{{ group_user.name }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold {% if group_user_list.1|lower == 'admin' %}bg-red-500/20 text-red-400{% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                                    <td class="px-3 py-2 text-gray-300">{{ group_user.name }}</td>
+                                    <td class="px-3 py-2">
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold {% if group_user_list.1|lower == 'admin' %}bg-red-500/20 text-red-400{% else %}bg-blue-500/20 text-blue-400{% endif %}">
                                             {{ group_user_list.1 }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-center">
+                                    <td class="px-3 py-2 text-center">
                                         {% if isGroupAdmin %}
-                                            <div class="flex justify-center space-x-2">
-                                                <button class="text-gray-400 hover:text-yellow-400 transition-colors p-2">
+                                            <div class="flex justify-center space-x-1">
+                                                <button class="text-gray-400 hover:text-yellow-400 transition-colors p-1">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button onclick="showDeleteConfirmation({{ group_user.id }}, {{ group.id }})" class="text-gray-400 hover:text-red-400 transition-colors p-2">
+                                                <button onclick="showDeleteConfirmation({{ group_user.id }}, {{ group.id }})" class="text-gray-400 hover:text-red-400 transition-colors p-1">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </div>
                                         {% elif group_user.uid == user.uid %}
-                                            <button onclick="showDeleteConfirmation({{ group_user.id }}, {{ group.id }})" class="text-gray-400 hover:text-red-400 transition-colors p-2">
+                                            <button onclick="showDeleteConfirmation({{ group_user.id }}, {{ group.id }})" class="text-gray-400 hover:text-red-400 transition-colors p-1">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         {% else %}
-                                            <span class="text-gray-600 text-sm">-</span>
+                                            <span class="text-gray-600 text-xs">-</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -118,18 +123,18 @@
                     </div>
 
                     <!-- Group Stats -->
-                    <div class="p-6 border-t border-gray-700 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="p-3 border-t border-gray-700 grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <p class="text-gray-400 text-sm">Members</p>
-                            <p class="text-2xl font-bold text-white">{{ user_list|length }}</p>
+                            <p class="text-gray-400 text-xs">Members</p>
+                            <p class="text-lg font-bold text-white">{{ user_list|length }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-400 text-sm">Role</p>
-                            <p class="text-cyan-400 font-semibold">{{ isGroupAdmin|yesno:'Admin,Member' }}</p>
+                            <p class="text-gray-400 text-xs">Role</p>
+                            <p class="text-cyan-400 font-semibold text-sm">{{ isGroupAdmin|yesno:'Admin,Member' }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-400 text-sm">Description</p>
-                            <p class="text-gray-300 truncate">{{ group.description|default:'—' }}</p>
+                            <p class="text-gray-400 text-xs">Description</p>
+                            <p class="text-gray-300 truncate text-xs">{{ group.description|default:'—' }}</p>
                         </div>
                     </div>
                 </div>
