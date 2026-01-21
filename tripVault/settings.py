@@ -140,7 +140,7 @@ LOGGING = {
     },
 }
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["aj124.com", "www.aj124.com", "localhost", "127.0.0.1", ".onrender.com", "tripvault-1.onrender.com"]
 
