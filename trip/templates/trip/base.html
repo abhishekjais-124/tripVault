@@ -48,6 +48,56 @@
 {% load static %}
 <html lang="en">
 <head>
+                <style>
+                    .custom-modal-bg {
+                        position: fixed;
+                        top: 0; left: 0; right: 0; bottom: 0;
+                        background: rgba(15,23,42,0.75);
+                        z-index: 9999;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .custom-modal {
+                        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                        border-radius: 1.5rem;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+                        padding: 2.5rem 2rem 1.5rem 2rem;
+                        text-align: center;
+                        color: #fff;
+                        min-width: 260px;
+                        max-width: 90vw;
+                    }
+                    .custom-modal-title {
+                        font-size: 1.3rem;
+                        font-weight: 700;
+                        margin-bottom: 0.5rem;
+                        color: #38bdf8;
+                    }
+                    .custom-modal-desc {
+                        font-size: 1rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    .custom-modal-btn {
+                        background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+                        color: #fff;
+                        border: none;
+                        border-radius: 0.75rem;
+                        padding: 0.7rem 2.2rem;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        box-shadow: 0 2px 8px rgba(6,182,212,0.15);
+                        transition: background 0.2s;
+                    }
+                    .custom-modal-btn:hover {
+                        background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+                    }
+                </style>
+            <script>
+                window.primary_group_id = {{ primary_group_id|default:'null' }};
+                window.primary_group_name = {% if primary_group_name %}'{{ primary_group_name|escapejs }}'{% else %}null{% endif %};
+            </script>
         <style>
             /* Hide scrollbars globally (all browsers) */
             html, body, * {
@@ -321,9 +371,41 @@
             </button>
         </div>
         <!-- Plus (center) -->
-        <button class="absolute left-1/2 -translate-x-1/2 -top-6 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-[#1e293b] focus:outline-none z-10">
+        <button id="add-expense-btn" class="absolute left-1/2 -translate-x-1/2 -top-6 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-[#1e293b] focus:outline-none z-10">
             <i class="fas fa-plus text-white text-2xl" style="margin-left: -8px;"></i>
         </button>
+    </div>
+</nav>
+<script>
+// Plus button opens add expense for primary group
+document.addEventListener('DOMContentLoaded', function() {
+    var plusBtn = document.getElementById('add-expense-btn');
+    if (plusBtn) {
+        plusBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var primaryGroupId = window.primary_group_id;
+            var primaryGroupName = window.primary_group_name;
+            if (!primaryGroupId) {
+                alert('Primary group not found.');
+                return;
+            }
+            // Show custom modal
+            var modalBg = document.createElement('div');
+            modalBg.className = 'custom-modal-bg';
+            var modal = document.createElement('div');
+            modal.className = 'custom-modal';
+            modal.innerHTML = '<div class="custom-modal-title">Add Expense</div>' +
+                '<div class="custom-modal-desc">Adding expense in <span style="color:#38bdf8;font-weight:600;">' + (primaryGroupName || 'Primary Group') + '</span></div>';
+            modalBg.appendChild(modal);
+            document.body.appendChild(modalBg);
+            setTimeout(function() {
+                document.body.removeChild(modalBg);
+                window.location.href = '/expense/group/' + primaryGroupId + '/expenses/add/';
+            }, 2000);
+        });
+    }
+});
+</script>
     </div>
 </nav>
 

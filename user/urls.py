@@ -4,7 +4,7 @@ from user.auth_views import (
     FriendsView, FriendDetailView, MarkAllNotificationsReadView, 
     SupportView, SendContactEmailView, ForgotPasswordView, ResetPasswordView
 )
-from group.views import GroupView, UserGroupView
+from group.views import GroupView, UserGroupView, GroupEditView
 from group_request.views import (
     SearchUserView, 
     RequestUserView, 
@@ -36,6 +36,7 @@ urlpatterns = [
     # Group management routes
     path('groups/', GroupView.as_view(), name='group'),
     path('user_group/', UserGroupView.as_view(), name='user_group'),
+    path('groups/<int:group_id>/edit/', GroupEditView.as_view(), name='edit_group'),
     
     # Group request routes
     path('groups/search/', SearchUserView.as_view(), name='search'),

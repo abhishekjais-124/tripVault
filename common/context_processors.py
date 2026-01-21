@@ -1,3 +1,11 @@
+def primary_group_context(request):
+    if not request.user.is_authenticated or not hasattr(request.user, 'user'):
+        return {'primary_group_id': None}
+    user = request.user.user
+    mapping = UserGroupMapping.objects.filter(user=user, is_primary=True, is_active=True).select_related('group').first()
+    primary_group_id = mapping.group.id if mapping else None
+    primary_group_name = mapping.group.name if mapping else None
+    return {'primary_group_id': primary_group_id, 'primary_group_name': primary_group_name}
 from decimal import Decimal
 from expense.utils import get_group_balance
 from group.models import Group, UserGroupMapping

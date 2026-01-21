@@ -41,6 +41,13 @@
         <div class="space-y-4 mr-1 ml-1">
             {% for user_list, group, isGroupAdmin in group_user_mapping %}
             <div class="bg-gradient-to-br from-slate-900/95 to-blue-900/90 border border-cyan-700/40 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:border-cyan-400/80 p-2 flex flex-col gap-1 relative">
+                {% if group.id == primary_group_id %}
+                <div class="absolute top-1 right-10 z-20 select-none pointer-events-none">
+                    <span class="inline-block px-3 py-0.5 rounded-full border border-cyan-200 bg-cyan-50 text-cyan-400 text-xs font-medium tracking-wide opacity-60 shadow-none" style="min-width: 70px; text-align: center; letter-spacing: 0.04em;">
+                        Primary
+                    </span>
+                </div>
+                {% endif %}
                 <!-- Group Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div class="flex items-center gap-2 cursor-pointer flex-1" onclick="window.location.href='{% url 'group_expenses' group_id=group.id %}'">
@@ -57,6 +64,9 @@
                         <a href="{% url 'group_expenses' group_id=group.id %}" class="flex-1 sm:flex-none flex items-center justify-center gap-1 px-2 py-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold text-sm shadow-md hover:shadow-lg transition-all" onclick="event.stopPropagation();">
                             <i class="fas fa-receipt"></i>
                             <span>Expenses</span>
+                        </a>
+                        <a href="{% url 'edit_group' group_id=group.id %}" class="flex items-center justify-center p-2 text-gray-400 hover:text-cyan-400 transition-all ml-1" title="Edit Group" onclick="event.stopPropagation();">
+                            <i class="fas fa-edit"></i>
                         </a>
                         <button onclick="event.stopPropagation(); openMemberModal('{{ group.id }}', {% if isGroupAdmin %}true{% else %}false{% endif %})" class="absolute top-2 right-2 flex items-center justify-center z-10 bg-transparent p-0 shadow-none hover:bg-transparent" title="Add User">
                             <i class="fas fa-user-plus text-cyan-400 text-lg"></i>

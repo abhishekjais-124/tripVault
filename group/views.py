@@ -1,3 +1,47 @@
+
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+from group import utils as group_utils
+from group import models as group_models
+from user import constants
+from expense import utils as expense_utils
+from decimal import Decimal
+from .forms import GroupEditForm, UserGroupMappingForm
+
+@method_decorator(login_required(login_url="/tripvault/user/login/"), name="dispatch")
+class GroupEditView(APIView):
+    """Allow user to edit group name, description, and mark as primary."""
+    def get(self, request, group_id):
+        user = request.user.user
+        group = get_object_or_404(group_models.Group, id=group_id)
+        mapping = get_object_or_404(group_models.UserGroupMapping, user=user, group=group)
+        group_form = GroupEditForm(instance=group)
+        mapping_form = UserGroupMappingForm(instance=mapping)
+        return render(request, "user/edit_group.html", {"group_form": group_form, "mapping_form": mapping_form, "group": group})
+
+    def post(self, request, group_id):
+        user = request.user.user
+        group = get_object_or_404(group_models.Group, id=group_id)
+        mapping = get_object_or_404(group_models.UserGroupMapping, user=user, group=group)
+        group_form = GroupEditForm(request.POST, instance=group)
+        mapping_form = UserGroupMappingForm(request.POST, instance=mapping)
+        if group_form.is_valid() and mapping_form.is_valid():
+            group_form.save()
+            if mapping_form.cleaned_data['is_primary']:
+                # Unset other primaries for this user
+                group_models.UserGroupMapping.objects.filter(user=user, is_primary=True).exclude(group=group).update(is_primary=False)
+            mapping_form.save()
+            return redirect("group")
+        return render(request, "user/edit_group.html", {"group_form": group_form, "mapping_form": mapping_form, "group": group})
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -33,6 +77,10 @@ class GroupView(APIView):
             list(set(group_ids)), user
         ).values()
 
+        # Find the user's primary group id
+        primary_mapping = group_models.UserGroupMapping.objects.filter(user=user, is_primary=True, is_active=True).first()
+        primary_group_id = primary_mapping.group.id if primary_mapping else None
+
         # Compute overall balance across all groups for this user
         overall_balance = Decimal("0")
         for grp in group_models.Group.objects.filter(id__in=list(set(group_ids)), is_active=True):
@@ -41,7 +89,7 @@ class GroupView(APIView):
         return render(
             request,
             "user/group_table.html",
-            {"user": user, "group_user_mapping": group_user_mapping, "overall_balance": overall_balance, "overall_is_debtor": overall_is_debtor},
+            {"user": user, "group_user_mapping": group_user_mapping, "overall_balance": overall_balance, "overall_is_debtor": overall_is_debtor, "primary_group_id": primary_group_id},
         )
 
     def post(self, request):

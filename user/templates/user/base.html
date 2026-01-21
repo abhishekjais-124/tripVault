@@ -83,6 +83,10 @@
 
 <body>
     {% include 'common/navbar.html' %}
+    <script>
+    // Set primary_group_id for JS (used by bottom nav plus button)
+    window.primary_group_id = {% if primary_group_id %}{{ primary_group_id }}{% else %}null{% endif %};
+    </script>
     {% block newbody %} {% endblock newbody %}
     {% block body %}
     {% block messages %}

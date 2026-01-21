@@ -32,9 +32,16 @@ class UserGroupMapping(BaseModel):
         max_length=10, choices=constants.ROLE_CHOICES, default="Member"
     )
     is_active = models.BooleanField(default=True)
+    is_primary = models.BooleanField(default=False, help_text="Mark this group as primary for the user.")
 
     def __str__(self):
         return f"{self.user.username} - {self.group.name}"
-    
+
+    def save(self, *args, **kwargs):
+        if self.is_primary:
+            # Unset other primaries for this user
+            UserGroupMapping.objects.filter(user=self.user, is_primary=True).exclude(pk=self.pk).update(is_primary=False)
+        super().save(*args, **kwargs)
+
     class Meta:
         unique_together = ('user', 'group')
