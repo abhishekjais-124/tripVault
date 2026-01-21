@@ -15,7 +15,6 @@ urlpatterns = [
     path('tripvault/user/', include(user_urls)),
     path('tripvault/home/', include(trip_urls)),
     path('tripvault/expense/', include(expense_urls)),
-    path('expense/', include(expense_urls)),
     # PWA support - direct access to manifest and service worker
     path('tripvault/manifest.json', trip_views.ManifestView.as_view(), name='manifest'),
     path('tripvault/serviceworker.js', trip_views.ServiceWorkerView.as_view(), name='serviceworker'),

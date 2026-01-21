@@ -5,7 +5,6 @@ const BASE_PATH = '/tripvault';
 const urlsToCache = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/plan/`,
-  `${BASE_PATH}/saved/`,
   '/static/icons/icon-192.png',
   '/static/icons/icon-512.png',
 ];
