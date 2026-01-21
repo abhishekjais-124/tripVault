@@ -45,6 +45,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'common.context_processors.overall_balance_context',
                 'common.context_processors.primary_group_context',
+                'common.context_processors_notifications.unread_notifications_context',
             ],
         },
     },
@@ -117,24 +118,16 @@ LOGGING = {
             'formatter': 'standard',
             'level': 'ERROR',
         },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': str(BASE_DIR / 'logs' / 'errors.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5MB
-            'backupCount': 2,
-            'formatter': 'standard',
-            'level': 'ERROR',
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': True,
         },
         # App modules use module-level loggers
         '': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'ERROR',
         },
     },

@@ -3,10 +3,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 from user import urls as user_urls
 from trip import urls as trip_urls
 from expense import urls as expense_urls
 from trip import views as trip_views
+from common.api_views import UnreadNotificationCountView
 
 urlpatterns = [
     path('tripvault/admin/', admin.site.urls),
@@ -18,6 +20,9 @@ urlpatterns = [
     # PWA support - direct access to manifest and service worker
     path('tripvault/manifest.json', trip_views.ManifestView.as_view(), name='manifest'),
     path('tripvault/serviceworker.js', trip_views.ServiceWorkerView.as_view(), name='serviceworker'),
+
+    # API endpoint for unread notification count
+    path('tripvault/api/unread-notification-count/', UnreadNotificationCountView.as_view(), name='unread_notification_count'),
 ]
 
 # Serve static files in development

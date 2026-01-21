@@ -35,10 +35,12 @@ class HomeView(APIView):
             return Response(
                 {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
             )
-        request_data = {}
+        request_data = None
         pending_requests = group_request_utils.get_user_group_pending_request(user)
         if pending_requests:
             request_data = {
+                "id": pending_requests.id,
+                "request_id": pending_requests.id,  # Ensure request_id is always present
                 "sender": pending_requests.sender.username,
                 "group": pending_requests.group.name,
                 "group_id": pending_requests.group.id,
@@ -49,7 +51,7 @@ class HomeView(APIView):
             )
             value = redis_client.get_value(key)
             if value:
-                request_data = {}
+                request_data = None
             else:
                 redis_client.set_value(key, 1, 10*60)
         return render(

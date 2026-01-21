@@ -15,7 +15,7 @@ def create_user_request(sender, receiver, group_id, role):
     # Create activity notification for the sender only
     try:
         group = group_models.Group.objects.get(id=group_id)
-        notification_message = f"You requested to join '{group.name}' as {role}"
+        notification_message = f"You requested {receiver.username} to join '{group.name}' as {role}"
         
         Notification.objects.create(
             user=sender,

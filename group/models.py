@@ -38,6 +38,12 @@ class UserGroupMapping(BaseModel):
         return f"{self.user.username} - {self.group.name}"
 
     def save(self, *args, **kwargs):
+        # If this is the only group mapping for the user, set as primary
+        if not self.pk:  # Only for new mappings
+            user_group_count = UserGroupMapping.objects.filter(user=self.user, is_active=True).count()
+            if user_group_count == 0:
+                self.is_primary = True
+
         if self.is_primary:
             # Unset other primaries for this user
             UserGroupMapping.objects.filter(user=self.user, is_primary=True).exclude(pk=self.pk).update(is_primary=False)

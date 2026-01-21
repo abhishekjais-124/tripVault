@@ -66,6 +66,7 @@ class UserProfileView(APIView):
         
         requests = []
         pending_requests = group_request_utils.get_user_group_all_pending_request(user)
+        popup_shown = False
         for req in pending_requests:
             r = {
                 'id': req.id,
@@ -74,8 +75,15 @@ class UserProfileView(APIView):
                 'group_name': req.group.name,
                 'time': common_utils.format_time_difference(req.created_at),
                 'sender_uid': req.sender.uid,
-                'group_id': req.group.id
+                'group_id': req.group.id,
+                'type': 'group_request',
+                'popup_shown': popup_shown,
             }
+            if not popup_shown:
+                r['popup_shown'] = False
+                popup_shown = True
+            else:
+                r['popup_shown'] = True
             requests.append(r.copy())
         return render(request, "user/user_profile.html", {"user": user, 'requests': requests})
 
@@ -129,6 +137,7 @@ class NotificationsView(View):
             id__in=[req.id for req in pending_requests]
         ).update(is_seen=True)
         requests = []
+        popup_shown = False
         for req in pending_requests:
             r = {
                 'id': req.id,
@@ -142,7 +151,13 @@ class NotificationsView(View):
                 'sender_uid': req.sender.uid,
                 'type': 'group_request',
                 'created_at': req.created_at,
+                'popup_shown': popup_shown,
             }
+            if not popup_shown:
+                r['popup_shown'] = False
+                popup_shown = True
+            else:
+                r['popup_shown'] = True
             requests.append(r.copy())
         
         # Get expense notifications

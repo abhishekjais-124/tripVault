@@ -44,9 +44,12 @@
                         <i class="fas fa-user-friends"></i>
                         <span>Friends</span>
                     </a>
-                    <a href="{% url 'notifications' %}" class="text-gray-300 hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1 relative">
+                    <a href="{% url 'notifications' %}" class="text-gray-300 hover:text-cyan-400 transition-colors duration-300 flex items-center space-x-1 relative" id="navbar-activities-link">
                         <i class="fas fa-bell"></i>
                         <span>Activities</span>
+                        <span id="navbar-red-dot" class="absolute -top-1 -right-2 inline-flex items-center justify-center w-3 h-3 bg-red-500 rounded-full" style="display: {% if unread_notifications_count > 0 %}inline-flex{% else %}none{% endif %};">
+                            <span class="sr-only">New notifications</span>
+                        </span>
                     </a>
                     {% if request.user.user %}
                         {% load custom_filters %}
@@ -110,6 +113,26 @@
         }
     </style>
 </nav>
+
+<script>
+// Poll unread notification count every 10 seconds and update red dot
+function updateNavbarRedDot() {
+    fetch('/tripvault/api/unread-notification-count/', { credentials: 'same-origin' })
+        .then(response => response.json())
+        .then(data => {
+            const dot = document.getElementById('navbar-red-dot');
+            if (dot) {
+                if (data.unread_count > 0) {
+                    dot.style.display = 'inline-flex';
+                } else {
+                    dot.style.display = 'none';
+                }
+            }
+        });
+}
+setInterval(updateNavbarRedDot, 10000);
+document.addEventListener('DOMContentLoaded', updateNavbarRedDot);
+</script>
 
 <script>
     document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {

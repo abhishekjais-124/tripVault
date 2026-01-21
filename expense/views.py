@@ -307,12 +307,15 @@ class AddExpenseView(APIView):
                 
                 notification_message = f"{paid_by_user.username} added expense '{title}' (₹{amount}) to the group"
                 
+                import logging
+                logger = logging.getLogger(__name__)
                 for member_id in group_members:
-                    Notification.objects.create(
+                    notif = Notification.objects.create(
                         user_id=member_id,
                         title="New Expense",
                         message=notification_message,
                         notification_type="expense_added",
+                        is_read=False,
                         metadata={
                             "expense_title": title, 
                             "amount": str(amount), 
@@ -322,6 +325,7 @@ class AddExpenseView(APIView):
                             "expense_id": expense.id
                         }
                     )
+                    logger.info(f"Created notification {notif.id} for user {member_id} (is_read={notif.is_read})")
             except Exception:
                 # Log but don't fail if notification creation fails
                 import logging

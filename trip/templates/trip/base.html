@@ -280,7 +280,9 @@
                         var loader = document.getElementById('global-loader');
                         if(loader) {
                             loader.style.opacity = 0;
-                            setTimeout(function() { loader.style.display = 'none'; }, 500);
+                            setTimeout(function() {
+                                if (loader.parentNode) loader.parentNode.removeChild(loader);
+                            }, 500);
                         }
                     }, 400); // keep loader for at least 400ms for smoothness
                 });
@@ -347,7 +349,7 @@
 </body>
 </body>
 
-<!-- Mobile Bottom Navigation Bar -->
+<!-- Mobile Bottom Navigation Bar (plus icon should always be visible on mobile pages) -->
 
 <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full z-50 md:hidden bg-gradient-to-t from-[#1e293b] to-[#0f172a] shadow-2xl py-2 px-2 flex justify-center items-center" style="border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem;">
     <div class="relative w-full max-w-md mx-auto flex items-center justify-between">
@@ -362,7 +364,12 @@
             </a>
             <div class="w-14"></div> <!-- Spacer for plus button -->
             <a href="{% url 'notifications' %}" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all pb-6" style="flex:1;">
-                <i class="fas fa-clock text-xl"></i>
+                <span class="relative">
+                    <i class="fas fa-clock text-xl"></i>
+                    <span id="mobile-navbar-red-dot" class="absolute -top-1 -right-2 inline-flex items-center justify-center w-3 h-3 bg-red-500 rounded-full" style="display: {% if unread_notifications_count > 0 %}inline-flex{% else %}none{% endif %};">
+                        <span class="sr-only">New notifications</span>
+                    </span>
+                </span>
                 <span class="text-xs mt-1">Activities</span>
             </a>
             <button id="settings-btn" class="flex flex-col items-center text-gray-300 hover:text-cyan-400 transition-all focus:outline-none pb-6" style="flex:1;">
@@ -372,11 +379,29 @@
         </div>
         <!-- Plus (center) -->
         <button id="add-expense-btn" class="absolute left-1/2 -translate-x-1/2 -top-6 bg-gradient-to-tr from-cyan-400 to-blue-500 rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-[#1e293b] focus:outline-none z-10">
+
             <i class="fas fa-plus text-white text-2xl" style="margin-left: -8px;"></i>
         </button>
     </div>
 </nav>
 <script>
+// Poll unread notification count every 10 seconds and update red dot for mobile nav
+function updateMobileNavbarRedDot() {
+    fetch('/tripvault/api/unread-notification-count/', { credentials: 'same-origin' })
+        .then(response => response.json())
+        .then(data => {
+            const dot = document.getElementById('mobile-navbar-red-dot');
+            if (dot) {
+                if (data.unread_count > 0) {
+                    dot.style.display = 'inline-flex';
+                } else {
+                    dot.style.display = 'none';
+                }
+            }
+        });
+}
+setInterval(updateMobileNavbarRedDot, 10000);
+document.addEventListener('DOMContentLoaded', updateMobileNavbarRedDot);
 // Plus button opens add expense for primary group
 document.addEventListener('DOMContentLoaded', function() {
     var plusBtn = document.getElementById('add-expense-btn');
@@ -386,7 +411,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var primaryGroupId = window.primary_group_id;
             var primaryGroupName = window.primary_group_name;
             if (!primaryGroupId) {
-                alert('Primary group not found.');
+                // Redirect to groups page if no primary group
+                window.location.href = '/tripvault/user/groups/';
                 return;
             }
             // Show custom modal

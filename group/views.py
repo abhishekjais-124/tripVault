@@ -65,23 +65,17 @@ class GroupView(APIView):
     """Handle group listing and creation."""
     
     def get(self, request):
+        from group.forms import GroupEditForm
         user = request.user.user
+        form = GroupEditForm()
         if not user:
-            return Response(
-                {"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "User Not Found!"}, status=status.HTTP_404_NOT_FOUND)
         group_ids = group_utils.get_user_groups(user)
         if not group_ids:
-            return render(request, "user/group.html", {"user": user, "overall_balance": Decimal("0"), "overall_is_debtor": False})
-        group_user_mapping = group_utils.create_group_user_mapping(
-            list(set(group_ids)), user
-        ).values()
-
-        # Find the user's primary group id
+            return render(request, "user/group.html", {"user": user, "form": form, "overall_balance": Decimal("0"), "overall_is_debtor": False})
+        group_user_mapping = group_utils.create_group_user_mapping(list(set(group_ids)), user).values()
         primary_mapping = group_models.UserGroupMapping.objects.filter(user=user, is_primary=True, is_active=True).first()
         primary_group_id = primary_mapping.group.id if primary_mapping else None
-
-        # Compute overall balance across all groups for this user
         overall_balance = Decimal("0")
         for grp in group_models.Group.objects.filter(id__in=list(set(group_ids)), is_active=True):
             overall_balance += expense_utils.get_group_balance(grp, user)
@@ -89,17 +83,35 @@ class GroupView(APIView):
         return render(
             request,
             "user/group_table.html",
-            {"user": user, "group_user_mapping": group_user_mapping, "overall_balance": overall_balance, "overall_is_debtor": overall_is_debtor, "primary_group_id": primary_group_id},
+            {"user": user, "form": form, "group_user_mapping": group_user_mapping, "overall_balance": overall_balance, "overall_is_debtor": overall_is_debtor, "primary_group_id": primary_group_id},
         )
 
     def post(self, request):
+        from group.forms import GroupEditForm
         user = request.user.user
-        name = request.POST.get("groupName")
-        description = request.POST.get("groupDescription", "").strip()
-        if not name:
+        form = GroupEditForm(request.POST)
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.created_by = user.username
+            group.save()
+            group_utils.create_user_group(group.name, user, group.description)
             return redirect("group")
-        group_utils.create_user_group(name, user, description or None)
-        return redirect("group")
+        # If not valid, re-render with errors
+        group_ids = group_utils.get_user_groups(user)
+        if not group_ids:
+            return render(request, "user/group.html", {"user": user, "form": form, "overall_balance": Decimal("0"), "overall_is_debtor": False})
+        group_user_mapping = group_utils.create_group_user_mapping(list(set(group_ids)), user).values()
+        primary_mapping = group_models.UserGroupMapping.objects.filter(user=user, is_primary=True, is_active=True).first()
+        primary_group_id = primary_mapping.group.id if primary_mapping else None
+        overall_balance = Decimal("0")
+        for grp in group_models.Group.objects.filter(id__in=list(set(group_ids)), is_active=True):
+            overall_balance += expense_utils.get_group_balance(grp, user)
+        overall_is_debtor = overall_balance < 0
+        return render(
+            request,
+            "user/group_table.html",
+            {"user": user, "form": form, "group_user_mapping": group_user_mapping, "overall_balance": overall_balance, "overall_is_debtor": overall_is_debtor, "primary_group_id": primary_group_id},
+        )
 
 
 @authentication_classes([SessionAuthentication, BasicAuthentication])
