@@ -47,42 +47,43 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Ignore Django dynamic URLs (do not cache or intercept)
+  const dynamicPatterns = [
+    /\/expense\/group\/[0-9]+\//,
+    /\/expense\/group\/[0-9]+\/expenses\//,
+    /\/expense\/group\/[0-9]+\/expenses\//,
+    /\/user\//,
+    /\/trip\//,
+    /\/group\//
+  ];
+  const urlPath = new URL(event.request.url).pathname;
+  if (dynamicPatterns.some((re) => re.test(urlPath))) {
+    // Let the network handle these requests
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Cache hit - return response from cache
         if (response) {
           console.log('[ServiceWorker] Found in cache:', event.request.url);
           return response;
         }
-
-        // Clone the request
         const fetchRequest = event.request.clone();
-
-        // Make network request
         return fetch(fetchRequest).then((response) => {
-          // Check if valid response
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
-
-          // Clone the response
           const responseToCache = response.clone();
-
-          // Cache the fetched response for future use
           caches.open(CACHE_NAME)
             .then((cache) => {
-              // Only cache GET requests
               if (event.request.method === 'GET') {
                 cache.put(event.request, responseToCache);
               }
             });
-
           return response;
         }).catch((error) => {
           console.log('[ServiceWorker] Fetch failed:', error);
-          // You could return a custom offline page here
-          // return caches.match('/offline.html');
         });
       })
   );
