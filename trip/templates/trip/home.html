@@ -36,17 +36,17 @@
                 </div>
             </div>
             <!-- Plans Card -->
-            <div class="relative group bg-gradient-to-br from-blue-900/80 to-cyan-900/80 border border-blue-500/30 hover:border-blue-400/70 rounded-2xl shadow-xl p-4 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-blue-500/20">
+            <div class="relative group bg-gradient-to-br from-blue-900/80 to-cyan-900/80 border border-blue-500/30 rounded-2xl shadow-xl p-4 flex flex-col items-center justify-center overflow-hidden transition-all duration-300 opacity-60 cursor-not-allowed">
                 <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl z-0"></div>
                 <div class="z-10 flex flex-col items-center">
-                    <div class="w-10 h-10 bg-gradient-to-tr from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center mb-2 shadow-md">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center mb-2 shadow-md opacity-50">
                         <i class="fas fa-route text-white text-3xl"></i>
                     </div>
-                    <h2 class="text-lg font-extrabold text-white mb-1 tracking-tight drop-shadow">Plans</h2>
+                    <h2 class="text-lg font-extrabold text-white mb-1 tracking-tight drop-shadow">Plans <span class="text-xs text-gray-400">(upcoming)</span></h2>
                     <p class="text-gray-300 mb-2 text-center text-xs">Plan your trip day-by-day.</p>
-                    <a href="{% url 'plan-dashboard' %}" class="inline-block bg-blue-500 hover:bg-blue-400 text-white font-bold py-1.5 px-4 rounded-lg text-center transition-all duration-300 shadow hover:shadow-md text-sm">
+                    <button disabled class="inline-block bg-gray-500 text-white font-bold py-1.5 px-4 rounded-lg text-center text-sm cursor-not-allowed opacity-50">
                         <i class="fas fa-route mr-2"></i> Plan a Trip
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -68,11 +68,11 @@
             </div>
 
             <!-- Feature 2 -->
-            <div class="glass rounded-xl p-4 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center">
-                <div class="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded flex items-center justify-center mb-2">
+            <div class="glass rounded-xl p-4 hover:bg-opacity-60 transition-all duration-300 transform hover:scale-105 flex flex-col items-center text-center opacity-60">
+                <div class="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded flex items-center justify-center mb-2 opacity-50">
                     <i class="fas fa-calendar text-white text-2xl"></i>
                 </div>
-                <h3 class="text-base font-bold text-white mb-1">Smart Itineraries</h3>
+                <h3 class="text-base font-bold text-white mb-1">Smart Itineraries <span class="text-xs text-gray-400">(upcoming)</span></h3>
                 <p class="text-gray-400 text-xs">
                     Plan your trip day-by-day with detailed itineraries. Keep everyone informed and organized.
                 </p>

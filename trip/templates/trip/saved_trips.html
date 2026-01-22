@@ -155,9 +155,9 @@
                 <p class="hero-subtitle">Click on any trip to load it, edit it, and save your changes.</p>
             </div>
             <div class="hero-metrics">
-                <a href="{% url 'plan-dashboard' %}" class="btn-gradient" style="padding: 12px 20px; text-decoration: none; display: inline-block; border-radius: 12px;">
-                    <i class="fas fa-plus"></i> New Plan
-                </a>
+                <button disabled class="btn-gradient opacity-50 cursor-not-allowed" style="padding: 12px 20px; border-radius: 12px;">
+                    <i class="fas fa-plus"></i> New Plan (upcoming)
+                </button>
             </div>
         </header>
 
@@ -283,8 +283,8 @@ function loadTrip(tripId) {
                 const draftData = JSON.stringify(data.trip);
                 localStorage.setItem('trip-planner-draft', draftData);
                 localStorage.setItem('current-trip-id', tripId);
-                // Redirect to plan dashboard
-                window.location.href = '{% url "plan-dashboard" %}';
+                // Planning feature is upcoming
+                alert('Trip planning feature is coming soon!');
             } else {
                 alert('Error: ' + (data.message || 'Failed to load trip'));
             }
